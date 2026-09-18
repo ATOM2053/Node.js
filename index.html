@@ -1011,6 +1011,30 @@
         </div>
     </div>
 
+    <!-- Socket.io scriptsรวมกันตามคำขอ -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // เชื่อมต่อไปยังเซิร์ฟเวอร์ Node.js ที่รันอยู่
+      const socket = io();
+
+      // สมมติว่าดึงชื่อผู้เล่นมาจากโปรไฟล์หรือให้สุ่มชื่อชั่วคราว
+      // (ระวังไม่ให้ทับซ้อนกับตัวแปร playerName ด้านล่าง จึงใช้ฟังก์ชันดึงค่าจากระบบแทนหรือปล่อยไว้)
+
+      // เมื่อเชื่อมต่อสำเร็จ ให้ส่งชื่อตัวเองไปบอกเซิร์ฟเวอร์
+      socket.on('connect', () => {
+        console.log("เชื่อมต่อกับเซิร์ฟเวอร์สำเร็จแล้ว รหัสไอดี:", socket.id);
+        if (typeof playerName !== 'undefined' && playerName) {
+            socket.emit('join_game', { name: playerName });
+        }
+      });
+
+      // รับข้อมูลรายชื่อผู้เล่นทั้งหมดจากเซิร์ฟเวอร์มาแสดงผลหน้าจอ
+      socket.on('update_players_list', (players) => {
+        console.log("รายชื่อผู้เล่นออนไลน์:", players);
+        // อัปเดตจำนวนคนออนไลน์ตามต้องการ
+      });
+    </script>
+
     <script>
         function checkOrientation() {
             let warningBox = document.getElementById('orientation-warning');
@@ -2240,5 +2264,4 @@
     </script>
 </body>
 </html>
-<script src="/socket.io/socket.io.js"></script>
 
