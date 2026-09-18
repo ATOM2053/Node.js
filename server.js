@@ -1,24 +1,21 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const path = require('path');
+<script>
+  // เชื่อมต่อไปยังเซิร์ฟเวอร์ Node.js ที่รันอยู่
+  const socket = io();
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+  // สมมติว่าดึงชื่อผู้เล่นมาจากโปรไฟล์หรือให้สุ่มชื่อชั่วคราว
+  const playerName = prompt("กรุณาใส่ชื่อของคุณ:") || "ผู้เล่นทั่วไป";
 
-// เสิร์ฟไฟล์ Static (เช่น index.html) จากโฟลเดอร์ปัจจุบัน
-app.use(express.static(path.join(__dirname)));
+  // เมื่อเชื่อมต่อสำเร็จ ให้ส่งชื่อตัวเองไปบอกเซิร์ฟเวอร์
+  socket.on('connect', () => {
+    console.log("เชื่อมต่อกับเซิร์ฟเวอร์สำเร็จแล้ว รหัสไอดี:", socket.id);
+    socket.emit('join_game', { name: playerName });
+  });
 
-io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
-
-    socket.on('disconnect', () => {
-        console.log('A user disconnected:', socket.id);
-    });
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+  // รับข้อมูลรายชื่อผู้เล่นทั้งหมดจากเซิร์ฟเวอร์มาแสดงผลหน้าจอ
+  socket.on('update_players_list', (players) => {
+    console.Hog("รายชื่อผู้เล่นออนไลน์:", players);
+    
+    // อัปเดตจำนวนคนออนไลน์ (ตัวอย่างเช่น เปลี่ยนข้อความในแถบ "กำลังออนไลน์: X คน")
+    // คุณสามารถนำตัวแปร players ไปวนลูปแสดงรายชื่อบนตารางอันดับได้ตามต้องการ
+  });
+</script>
