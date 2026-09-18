@@ -1,5 +1,5 @@
 {
-  "name": "game-server",
+  "name": "node-game-server",
   "version": "1.0.0",
   "description": "Multiplayer game server",
   "main": "server.js",
