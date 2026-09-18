@@ -1458,8 +1458,6 @@
             }
 
             userArray.sort((a, b) => b.credit - a.credit);
-            
-            // แสดงผลผู้เล่นทั้งหมด (ไม่จำกัดเฉพาะ Top 100 เพื่อให้เห็นทุกคน)
             let allUsers = userArray;
 
             if (allUsers.length === 0) {
@@ -1484,7 +1482,6 @@
 
             listContainer.innerHTML = html;
 
-            // ระบบจำลองบอกจำนวนคนออนไลน์ (อิงจากจำนวนผู้เล่นทั้งหมดในฐานข้อมูล + สุ่มจำลองเล็กน้อยเพื่อความมีชีวิตชีวา หรือนับจาก Active)
             let onlineCount = Math.max(1, Object.keys(users).length);
             let onlineDisplay = document.getElementById('online-counter-display');
             if (onlineDisplay) {
@@ -2243,4 +2240,5 @@
     </script>
 </body>
 </html>
+<script src="/socket.io/socket.io.js"></script>
 
