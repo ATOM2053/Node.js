@@ -1,21 +1,39 @@
-<script>
-  // เชื่อมต่อไปยังเซิร์ฟเวอร์ Node.js ที่รันอยู่
-  const socket = io();
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const path = require('path');
 
-  // สมมติว่าดึงชื่อผู้เล่นมาจากโปรไฟล์หรือให้สุ่มชื่อชั่วคราว
-  const playerName = prompt("กรุณาใส่ชื่อของคุณ:") || "ผู้เล่นทั่วไป";
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*", methods: ["GET", "POST"] }
+});
 
-  // เมื่อเชื่อมต่อสำเร็จ ให้ส่งชื่อตัวเองไปบอกเซิร์ฟเวอร์
-  socket.on('connect', () => {
-    console.log("เชื่อมต่อกับเซิร์ฟเวอร์สำเร็จแล้ว รหัสไอดี:", socket.id);
-    socket.emit('join_game', { name: playerName });
+app.use(express.static(path.join(__dirname)));
+
+// เก็บรายชื่อผู้เล่นที่ออนไลน์อยู่
+let onlinePlayers = {};
+
+io.on('connection', (socket) => {
+  console.log('มีผู้เล่นเชื่อมต่อ:', socket.id);
+
+  // เมื่อมีผู้เล่นส่งชื่อเข้ามา
+  socket.on('join_game', (data) => {
+    onlinePlayers[socket.id] = data.name;
+    // ส่งรายชื่ออัปเดตทั้งหมดให้ทุกคนเห็นพร้อมกัน
+    io.emit('update_players_list', onlinePlayers);
   });
 
-  // รับข้อมูลรายชื่อผู้เล่นทั้งหมดจากเซิร์ฟเวอร์มาแสดงผลหน้าจอ
-  socket.on('update_players_list', (players) => {
-    console.Hog("รายชื่อผู้เล่นออนไลน์:", players);
-    
-    // อัปเดตจำนวนคนออนไลน์ (ตัวอย่างเช่น เปลี่ยนข้อความในแถบ "กำลังออนไลน์: X คน")
-    // คุณสามารถนำตัวแปร players ไปวนลูปแสดงรายชื่อบนตารางอันดับได้ตามต้องการ
+  // เมื่อผู้เล่นหลุดการเชื่อมต่อหรือปิดเว็บ
+  socket.on('disconnect', () => {
+    console.log('ผู้เล่นออกจากระบบ:', socket.id);
+    delete onlinePlayers[socket.id];
+    // ส่งรายชื่อที่เหลืออัปเดตให้ทุกคน
+    io.emit('update_players_list', onlinePlayers);
   });
-</script>
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
