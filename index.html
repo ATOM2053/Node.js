@@ -902,7 +902,7 @@
 
                 <div class="info-bar">
                     <div class="info-item">
-                        <span class="info-label">สถานะ</span>
+                        <span class="info-label">สถานะ / UID</span>
                         <span id="player-id-display" class="info-value">-</span>
                     </div>
                     <div class="info-item">
@@ -1483,7 +1483,7 @@
             let html = "";
             userArray.forEach((user, index) => {
                 let rankClass = index === 0 ? "top-1" : (index === 1 ? "top-2" : (index === 2 ? "top-3" : ""));
-                let displayName = user.name;
+                let displayName = `${user.name} (${user.id})`;
                 if (user.id === playerId) displayName += " (คุณ)";
 
                 html += `
@@ -1518,10 +1518,10 @@
                     debt = 0;
                     currentDay = 1;
                     secondsLeftInDay = 60;
-                    document.getElementById('player-id-display').innerText = "ADMIN";
+                    document.getElementById('player-id-display').innerText = `${playerName} (ADMIN)`;
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('lobby-screen').style.display = 'flex';
-                    document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับผู้ดูแลระบบ: ${playerName}`;
+                    document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับผู้ดูแลระบบ: ${playerName} (ADMIN)`;
                     document.getElementById('admin-panel').style.display = 'block';
                     
                     socket.emit('join_game', { name: playerName, credit: 999999999, uid: playerId });
@@ -1565,10 +1565,10 @@
                     secondsLeftInDay = 60;
                     
                     localStorage.setItem('baccarat_active_user', playerId);
-                    document.getElementById('player-id-display').innerText = "ADMIN";
+                    document.getElementById('player-id-display').innerText = `${playerName} (ADMIN)`;
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('lobby-screen').style.display = 'flex';
-                    document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับผู้ดูแลระบบ: ${playerName}`;
+                    document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับผู้ดูแลระบบ: ${playerName} (ADMIN)`;
                     document.getElementById('admin-panel').style.display = 'block';
                     
                     sendDiscordNotification("👑 แอดมินเข้าสู่ระบบ", `**ผู้ดูแลระบบ:** Administrator เข้าสู่ระบบสำเร็จ`, "#00ffcc");
@@ -1626,7 +1626,8 @@
             
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
-            document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (UID: ${playerId}) (เครดิต: ${isAdmin ? '∞' : credit.toLocaleString()})`;
+            document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (${playerId}) (เครดิต: ${isAdmin ? '∞' : credit.toLocaleString()})`;
+            document.getElementById('player-id-display').innerText = `${playerName} (${playerId})`;
 
             if (!isAutoLogin) {
                 sendDiscordNotification("✅ ผู้เล่นเข้าสู่ระบบสำเร็จ", `**ชื่อผู้เล่น:** ${playerName}\n**UID:** ${playerId}\n**เครดิตเริ่มต้น:** ${credit.toLocaleString()}`, "#00ff00");
@@ -1655,7 +1656,7 @@
             document.getElementById('uno-screen').style.display = 'none';
             document.getElementById('joker-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
-            document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (UID: ${playerId}) (เครดิต: ${isAdmin ? '∞' : credit.toLocaleString()})`;
+            document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (${playerId}) (เครดิต: ${isAdmin ? '∞' : credit.toLocaleString()})`;
         }
 
         function saveGameProgress() {
@@ -1799,7 +1800,7 @@
         // --- ระบบเกม JOKER ---
         function startJokerGame() {
             let nameEl = document.getElementById('joker-player-name');
-            if (nameEl) nameEl.innerText = playerName;
+            if (nameEl) nameEl.innerText = `${playerName} (${playerId})`;
             startJokerRound();
             updateUI();
         }
@@ -1934,7 +1935,7 @@
 
             renderUnoUI();
             let pNameEl = document.getElementById('uno-player-name');
-            if (pNameEl) pNameEl.innerText = playerName;
+            if (pNameEl) pNameEl.innerText = `${playerName} (${playerId})`;
             updateUI();
         }
 
@@ -2251,4 +2252,3 @@
     </script>
 </body>
 </html>
-
