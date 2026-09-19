@@ -982,7 +982,7 @@
             <div class="sidebar-column">
                 <div class="panel-box">
                     <div class="online-counter-box" id="online-counter-display">👥 กำลังออนไลน์: 1 คน</div>
-                    <div class="panel-title">🏆 อันดับผู้เล่นทั้งหมด</div>
+                    <div class="panel-title">🏆 ผู้เล่นออนไลน์ทั้งหมด</div>
                     <div id="leaderboard-list" class="leaderboard-list"></div>
                 </div>
 
@@ -1010,30 +1010,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Socket.io scriptsรวมกันตามคำขอ -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      // เชื่อมต่อไปยังเซิร์ฟเวอร์ Node.js ที่รันอยู่
-      const socket = io();
-
-      // สมมติว่าดึงชื่อผู้เล่นมาจากโปรไฟล์หรือให้สุ่มชื่อชั่วคราว
-      // (ระวังไม่ให้ทับซ้อนกับตัวแปร playerName ด้านล่าง จึงใช้ฟังก์ชันดึงค่าจากระบบแทนหรือปล่อยไว้)
-
-      // เมื่อเชื่อมต่อสำเร็จ ให้ส่งชื่อตัวเองไปบอกเซิร์ฟเวอร์
-      socket.on('connect', () => {
-        console.log("เชื่อมต่อกับเซิร์ฟเวอร์สำเร็จแล้ว รหัสไอดี:", socket.id);
-        if (typeof playerName !== 'undefined' && playerName) {
-            socket.emit('join_game', { name: playerName });
-        }
-      });
-
-      // รับข้อมูลรายชื่อผู้เล่นทั้งหมดจากเซิร์ฟเวอร์มาแสดงผลหน้าจอ
-      socket.on('update_players_list', (players) => {
-        console.log("รายชื่อผู้เล่นออนไลน์:", players);
-        // อัปเดตจำนวนคนออนไลน์ตามต้องการ
-      });
-    </script>
 
     <script>
         function checkOrientation() {
@@ -1175,27 +1151,32 @@
         }
 
         function banPlayerWithDuration(adminId, targetUid, reason, durationType) {
-            let now = new Date();
-            let unbanTime = null;
-
-            switch (durationType) {
-                case '5_minutes':
-                    unbanTime = new Date(now.getTime() + 5 * 60 * 1000);
-                    break;
-                case '24_hours':
-                    unbanTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-                    break;
-                case '1_year':
-                    unbanTime = new Date(now.setFullYear(now.getFullYear() + 1));
-                    break;
-                case 'permanent':
-                    unbanTime = null;
-                    break;
-                default:
-                    return { success: false, message: 'ระยะเวลาการแบนไม่ถูกต้อง' };
-            }
-
             try {
+                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
+                if (!users[targetUid]) {
+                    return { success: false, message: `ไม่พบผู้เล่น UID: ${targetUid} ในระบบ` };
+                }
+
+                let now = new Date();
+                let unbanTime = null;
+
+                switch (durationType) {
+                    case '5_minutes':
+                        unbanTime = new Date(now.getTime() + 5 * 60 * 1000);
+                        break;
+                    case '24_hours':
+                        unbanTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+                        break;
+                    case '1_year':
+                        unbanTime = new Date(now.setFullYear(now.getFullYear() + 1));
+                        break;
+                    case 'permanent':
+                        unbanTime = null;
+                        break;
+                    default:
+                        return { success: false, message: 'ระยะเวลาการแบนไม่ถูกต้อง' };
+                }
+
                 let bans = JSON.parse(localStorage.getItem('baccarat_bans_detail') || '{}');
                 bans[targetUid] = {
                     bannedBy: adminId,
@@ -1254,6 +1235,7 @@
             if (result.success) {
                 sendDiscordNotification("🔨 แอดมินแบนผู้เล่น", `**UID ที่ถูกแบน:** ${targetUID}\n**ระยะเวลา:** ${durationType}\n**จัดการโดย:** Administrator`, "#ff0000");
                 document.getElementById('ban-uid-input').value = "";
+                updateLeaderboard();
             }
         }
 
@@ -1270,6 +1252,7 @@
             if (result.success) {
                 sendDiscordNotification("🛡️ แอดมินปลดแบนผู้เล่น", `**UID ที่ปลดแบน:** ${targetUID}\n**จัดการโดย:** Administrator`, "#00ffcc");
                 document.getElementById('ban-uid-input').value = "";
+                updateLeaderboard();
             }
         }
 
@@ -1474,31 +1457,34 @@
 
             let userArray = [];
             for (let id in users) {
-                userArray.push({
-                    id: id,
-                    name: users[id].name || 'Player',
-                    credit: Number(users[id].credit) || 0
-                });
+                let isBanned = checkActiveBanStatus(id);
+                if (!isBanned) {
+                    userArray.push({
+                        id: id,
+                        name: users[id].name || 'Player',
+                        credit: Number(users[id].credit) || 0
+                    });
+                }
             }
 
             userArray.sort((a, b) => b.credit - a.credit);
             let allUsers = userArray;
 
             if (allUsers.length === 0) {
-                listContainer.innerHTML = `<div class="lb-empty">ยังไม่มีผู้เล่นในระบบ</div>`;
+                listContainer.innerHTML = `<div class="lb-empty">ยังไม่มีผู้เล่นออนไลน์ในระบบ</div>`;
                 return;
             }
 
             let html = "";
             allUsers.forEach((user, index) => {
-                let rankClass = index === 0 ? "top-1" : (index === 1 ? "top-2" : (index === 2 ? "top-3" : ""));
+                let rankClass = index === 0 ? "top-1" : (index === 1 ? "top-2" : (index === 3 ? "top-3" : ""));
                 let displayName = user.name;
                 if (user.id === playerId) displayName += " (คุณ)";
 
                 html += `
                     <div class="leaderboard-item ${rankClass}">
                         <span class="lb-rank">#${index + 1}</span>
-                        <span class="lb-name" title="${user.name} (UID: ${user.id})">${displayName} <small style="color:#888; font-size:0.55rem;">[${user.id}]</small></span>
+                        <span class="lb-name" title="${user.name} (UID: ${user.id})">🟢 ${displayName} <small style="color:#aaa; font-size:0.55rem;">[${user.id}]</small></span>
                         <span class="lb-score">${user.credit.toLocaleString()}</span>
                     </div>
                 `;
@@ -1506,7 +1492,7 @@
 
             listContainer.innerHTML = html;
 
-            let onlineCount = Math.max(1, Object.keys(users).length);
+            let onlineCount = Math.max(1, allUsers.length);
             let onlineDisplay = document.getElementById('online-counter-display');
             if (onlineDisplay) {
                 onlineDisplay.innerText = `👥 กำลังออนไลน์: ${onlineCount} คน`;
