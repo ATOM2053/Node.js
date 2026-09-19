@@ -36,6 +36,23 @@ io.on('connection', (socket) => {
     }
   });
 
+  // รองรับคำสั่งแอดมินสั่งแบนผู้เล่น
+  socket.on('admin_ban_user', (data) => {
+    // data ประกอบด้วย targetUid หรือ socketId ที่ต้องการเตะ
+    // ค้นหา socket ของผู้เล่นคนนั้นแล้วสั่ง disconnect หรือส่งสัญญาณเตือน
+    for (let [id, player] of Object.entries(onlinePlayers)) {
+      if (player.uid === data.targetUid) {
+        io.to(id).emit('force_logout', { reason: data.reason });
+        // ตัดการเชื่อมต่อ socket ทันที
+        const targetSocket = io.sockets.sockets.get(id);
+        if (targetSocket) {
+          targetSocket.disconnect(true);
+        }
+        break;
+      }
+    }
+  });
+
   // เมื่อผู้เล่นหลุดการเชื่อมต่อหรือปิดเว็บ
   socket.on('disconnect', () => {
     console.log('ผู้เล่นออกจากระบบ:', socket.id);
@@ -49,4 +66,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
