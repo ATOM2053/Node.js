@@ -24,7 +24,6 @@ io.on('connection', (socket) => {
       credit: data.credit || 1000,
       uid: data.uid || socket.id
     };
-    // ส่งรายชื่ออัปเดตทั้งหมดให้ทุกคนเห็นพร้อมกัน
     io.emit('update_players_list', onlinePlayers);
   });
 
