@@ -214,7 +214,6 @@
 
         .header-btn-group { display: flex; gap: 6px; align-items: center; }
 
-        /* ส่วนแสดงโปรไฟล์มุมซ้ายบน */
         .header-profile-mini {
             display: flex;
             align-items: center;
@@ -249,6 +248,7 @@
         }
         .btn-top-action:hover { transform: scale(1.05); }
         .btn-logout { background: linear-gradient(135deg, #ff4d4d, #b30000); color: #fff; }
+        .btn-admin-panel { background: linear-gradient(135deg, #ff007f, #7209b7); color: #fff; display: none; }
 
         .main-layout {
             display: flex;
@@ -300,13 +300,6 @@
             padding-bottom: 5px;
             letter-spacing: 1px;
         }
-
-        #admin-panel {
-            display: none;
-            border-color: #ff006e;
-            background: rgba(30, 10, 20, 0.95);
-        }
-        #admin-panel .panel-title { color: #ff006e; border-bottom-color: #900; }
 
         .online-counter-box {
             background: rgba(0, 255, 128, 0.1);
@@ -702,12 +695,8 @@
         <div class="login-card">
             <h2>LUXURY CASINO</h2>
             <div class="input-group">
-                <label for="username-input">ชื่อผู้เล่น</label>
+                <label for="username-input">ชื่อผู้เล่น (พิมพ์ "admin" เพื่อเข้าสู่โหมดแอดมิน)</label>
                 <input type="text" id="username-input" placeholder="กรอกชื่อผู้เล่น..." maxlength="20" value="">
-            </div>
-            <div class="input-group">
-                <label for="password-input">รหัสผ่าน (เว้นว่างไว้ถ้าไม่ใช่แอดมิน)</label>
-                <input type="password" id="password-input" placeholder="กรอกรหัสผ่าน..." value="">
             </div>
             <div id="login-error"></div>
             <button class="btn btn-deal" style="width: 100%; padding: 12px; font-size: 0.9rem;" onclick="handleLogin()">เข้าสู่คาสิโน</button>
@@ -727,6 +716,7 @@
                         <div class="mini-avatar" id="mini-avatar-display">👑</div>
                         <span class="mini-name" id="mini-name-display">-</span>
                     </div>
+                    <button class="btn-top-action btn-admin-panel" id="lobby-admin-btn" onclick="toggleAdminModal(true)">🛡️ แอดมิน</button>
                     <button class="btn-top-action" onclick="toggleEventModal(true)">🎁 กิจกรรม</button>
                     <button class="btn-top-action" onclick="toggleProfileModal(true)">🛡️ โปรไฟล์</button>
                     <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
@@ -739,7 +729,7 @@
                     <div class="game-card" onclick="selectGame('baccarat')">
                         <div class="game-icon">🃏</div>
                         <div class="game-title">LUXURY BACCARAT</div>
-                        <div class="game-desc">บาคาร่าพรีเมียม ลุ้นไพ่ตื่นเต้น อัตราจ่ายสูง ระบบป้องกันการโกงเต็มรูปแบบ</div>
+                        <div class="game-desc">บาคาร่าพรีเมียม ลุ้นไพ่ตื่นเต้น อัตราจ่ายสูง ระบบเสถียรเต็มรูปแบบ</div>
                         <button class="btn btn-deal" style="width: 100%; padding: 6px; font-size: 0.7rem;">เข้าสู่ห้องเกม</button>
                     </div>
                     <div class="game-card" onclick="selectGame('uno')">
@@ -768,6 +758,7 @@
             </div>
             <h1 style="color: #ff5252;">LUXURY UNO</h1>
             <div class="header-btn-group">
+                <button class="btn-top-action btn-admin-panel" id="uno-admin-btn" onclick="toggleAdminModal(true)">🛡️ แอดมิน</button>
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 เลือกเกม</button>
                 <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
             </div>
@@ -815,6 +806,7 @@
             </div>
             <h1 style="color: #ffaa00;">LUXURY JOKER</h1>
             <div class="header-btn-group">
+                <button class="btn-top-action btn-admin-panel" id="joker-admin-btn" onclick="toggleAdminModal(true)">🛡️ แอดมิน</button>
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 เลือกเกม</button>
                 <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
             </div>
@@ -851,6 +843,45 @@
 
     <!-- Main Baccarat Game Screen -->
     <div id="game-screen">
+        <!-- Admin Panel Modal -->
+        <div id="admin-modal" class="modal-overlay">
+            <div class="ff-profile-card" style="max-width: 480px; border-color: #ff007f;">
+                <div class="ff-header-banner" style="background: linear-gradient(90deg, #ff007f, #7209b7);">
+                    <span class="ff-header-title">🛡️ ระบบจัดการแอดมิน (ADMIN PANEL)</span>
+                    <button class="ff-close-btn" onclick="toggleAdminModal(false)">✕</button>
+                </div>
+                <div class="ff-body">
+                    <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; border: 1px solid #ff007f;">
+                        <h4 style="color: #ff007f; font-size: 0.75rem; margin-bottom: 6px;">⚡ ฟังก์ชันเสกเงินให้ผู้เล่น</h4>
+                        <div class="input-group">
+                            <label for="admin-target-uid">UID หรือ ชื่อผู้เล่น</label>
+                            <input type="text" id="admin-target-uid" placeholder="ระบุ UID เช่น P_1234 หรือ ชื่อ...">
+                        </div>
+                        <div class="input-group">
+                            <label for="admin-money-amount">จำนวนเงินที่ต้องการเสก</label>
+                            <input type="number" id="admin-money-amount" value="10000" min="1">
+                        </div>
+                        <button class="btn btn-deal" style="width: 100%; background: linear-gradient(135deg, #ff007f, #7209b7); color: #fff; padding: 8px;" onclick="adminGiveMoney()">💰 เสกเงินให้ผู้เล่น</button>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; border: 1px solid #ff4d4d;">
+                        <h4 style="color: #ff4d4d; font-size: 0.75rem; margin-bottom: 6px;">🚫 ระบบแบน / ปลดแบนผู้เล่น</h4>
+                        <div class="input-group">
+                            <label for="admin-ban-uid">UID หรือ ชื่อผู้เล่น</label>
+                            <input type="text" id="admin-ban-uid" placeholder="ระบุ UID หรือ ชื่อผู้เล่น...">
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn" style="flex: 1; background: #b30000; color: #fff; padding: 8px;" onclick="adminSetBanStatus(true)">🔒 แบนผู้เล่น</button>
+                            <button class="btn" style="flex: 1; background: #38b000; color: #fff; padding: 8px;" onclick="adminSetBanStatus(false)">🔓 ปลดแบน</button>
+                        </div>
+                    </div>
+
+                    <div id="admin-action-result" style="font-size: 0.7rem; color: #38b000; text-align: center; min-height: 15px;"></div>
+                    <button class="btn btn-deal" style="width: 100%; padding: 8px; font-size: 0.75rem;" onclick="toggleAdminModal(false)">ปิดหน้าต่าง</button>
+                </div>
+            </div>
+        </div>
+
         <div id="profile-modal" class="modal-overlay">
             <div class="ff-profile-card">
                 <div class="ff-header-banner">
@@ -943,6 +974,7 @@
             </div>
             <h1>LUXURY BACCARAT</h1>
             <div class="header-btn-group">
+                <button class="btn-top-action btn-admin-panel" id="game-admin-btn" onclick="toggleAdminModal(true)">🛡️ แอดมิน</button>
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 เลือกเกม</button>
                 <button class="btn-top-action" onclick="toggleEventModal(true)">🎁 กิจกรรม</button>
                 <button class="btn-top-action" onclick="toggleProfileModal(true)">🛡️ โปรไฟล์</button>
@@ -1043,28 +1075,6 @@
                     <div class="panel-title">🏆 ผู้เล่นออนไลน์ทั้งหมด</div>
                     <div id="leaderboard-list" class="leaderboard-list"></div>
                 </div>
-
-                <div id="admin-panel" class="panel-box">
-                    <div class="panel-title">🛡️ ระบบจัดการแอดมิน</div>
-                    <div class="input-group" style="margin-bottom: 8px;">
-                        <label for="ban-uid-input" style="font-size: 0.65rem;">ระบุ UID (เช่น P_1234):</label>
-                        <input type="text" id="ban-uid-input" placeholder="กรอก UID เช่น P_xxxx" style="font-size: 0.8rem; padding: 6px;">
-                    </div>
-                    <div class="input-group" style="margin-bottom: 8px;">
-                        <label for="ban-duration-select" style="font-size: 0.65rem;">ระยะเวลาการแบน:</label>
-                        <select id="ban-duration-select" style="font-size: 0.8rem; padding: 6px;">
-                            <option value="5_minutes">5 นาที</option>
-                            <option value="24_hours">24 ชั่วโมง</option>
-                            <option value="1_year">1 ปี</option>
-                            <option value="permanent" selected>ถาวร</option>
-                        </select>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 6px;">
-                        <button class="btn btn-loan" style="padding: 8px; font-size: 0.65rem;" onclick="adminExecuteBan()">🚫 แบนผู้เล่น</button>
-                        <button class="btn btn-repay" style="padding: 8px; font-size: 0.65rem;" onclick="adminExecuteUnban()">✅ ปลดแบน</button>
-                    </div>
-                    <div id="admin-msg" style="color: #f3e5ab; font-size: 0.65rem; margin-top: 4px; text-align: center; min-height: 12px;"></div>
-                </div>
             </div>
         </div>
     </div>
@@ -1093,10 +1103,6 @@
         window.addEventListener('orientationchange', checkOrientation);
         window.addEventListener('DOMContentLoaded', checkOrientation);
 
-        const SECRET_ADMIN_USER = "AdminMaster";
-        const SECRET_ADMIN_PASS = "1234";
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1539295216400601171/liLCj7yOJheYbevEJFOXw9d0l2NieLMizR4Q2DLIyqllPHcfzQ7DD7MiB6fGoy78k7g7";
-
         let playerId = "";
         let playerName = "";
         let credit = 1000;
@@ -1104,8 +1110,8 @@
         let currentDay = 1;
         let secondsLeftInDay = 60;
         let gameTimer = null;
+        let userAvatar = "";
         let isAdmin = false;
-        let userAvatar = ""; // เก็บ Base64 รูปโปรไฟล์
 
         let selectedChipValue = 10;
         let bets = { player: 0, tie: 0, banker: 0 };
@@ -1127,217 +1133,6 @@
         let jokerBet = 100;
         let jokerCards = [];
         let jokerGameOver = false;
-
-        function sendDiscordNotification(title, description, colorHex) {
-            if (!DISCORD_WEBHOOK_URL) return;
-            let colorDec = parseInt(colorHex.replace("#", ""), 16);
-            let payload = {
-                embeds: [{
-                    title: title,
-                    description: description,
-                    color: colorDec,
-                    timestamp: new Date().toISOString(),
-                    footer: { text: "Luxury Casino Security System" }
-                }]
-            };
-
-            fetch(DISCORD_WEBHOOK_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            }).catch(err => console.log("Discord Webhook Error:", err));
-        }
-
-        function generateChecksum(val, salt) {
-            return (val * 31 + salt).toString(16);
-        }
-
-        let secureSalt = Math.floor(Math.random() * 1000);
-        let secureChecksum = generateChecksum(credit, secureSalt);
-
-        function verifyAntiCheat() {
-            if (isAdmin) return true;
-            let expected = generateChecksum(credit, secureSalt);
-            if (secureChecksum !== expected || isNaN(credit) || credit > 1000000000) {
-                triggerCheatBan();
-                return false;
-            }
-            return true;
-        }
-
-        function showBannedModal(reason) {
-            let oldOverlay = document.getElementById('banned-modal-overlay');
-            if (oldOverlay) oldOverlay.remove();
-
-            let banMessage = reason || "ID ของคุณถูกแบน หากมีข้อสงสัยกรุณาติดต่อผู้ดูแลระบบ";
-
-            let modalHTML = `
-                <div id="banned-modal-overlay" style="
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    background: rgba(0, 0, 0, 0.95); display: flex; justify-content: center;
-                    align-items: center; z-index: 999999; animation: fadeIn 0.3s ease;
-                ">
-                    <div style="
-                        background: linear-gradient(135deg, #2a0808, #120202);
-                        border: 3px solid #ff0055; padding: 30px; border-radius: 16px;
-                        text-align: center; color: #ffffff; width: 90%; max-width: 380px;
-                        box-shadow: 0 15px 40px rgba(255, 0, 85, 0.6), inset 0 0 15px rgba(255, 0, 85, 0.3);
-                    ">
-                        <div style="font-size: 3rem; margin-bottom: 10px;">🚫</div>
-                        <h3 style="color: #ff3366; font-size: 1.3rem; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase;">บัญชีถูกระงับการใช้งาน</h3>
-                        <p style="font-size: 0.85rem; color: #ffcccc; line-height: 1.5; margin-bottom: 20px;">${banMessage}</p>
-                        <button onclick="localStorage.removeItem('baccarat_active_user'); location.reload();" style="
-                            background: linear-gradient(135deg, #ff0055, #990033); color: #fff;
-                            border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold;
-                            font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
-                            width: 100%; text-transform: uppercase;
-                        ">รับทราบ / กลับหน้าหลัก</button>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
-            
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('lobby-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('uno-screen').style.display = 'none';
-            document.getElementById('joker-screen').style.display = 'none';
-        }
-
-        function triggerCheatBan() {
-            try {
-                let bannedList = JSON.parse(localStorage.getItem('baccarat_banned') || '[]');
-                if (playerId && !bannedList.includes(playerId)) bannedList.push(playerId);
-                localStorage.setItem('baccarat_banned', JSON.stringify(bannedList));
-                localStorage.removeItem('baccarat_active_user');
-            } catch (e) {}
-
-            let banReason = "ตรวจพบความผิดปกติในระบบ (Anti-Cheat Violation)";
-            sendDiscordNotification("🚨 ตรวจพบการโกง / ถูกแบนอัตโนมัติ", `**ชื่อผู้เล่น:** ${playerName || 'Guest'}\n**UID:** ${playerId || 'N/A'}\n**เหตุผล:** ${banReason}`, "#ff0000");
-            showBannedModal("ID ของคุณถูกแบน เนื่องจากตรวจพบความผิดปกติในระบบป้องกันการโกง");
-        }
-
-        function banPlayerWithDuration(adminId, targetUid, reason, durationType) {
-            try {
-                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                if (!users[targetUid]) {
-                    return { success: false, message: `ไม่พบผู้เล่น UID: ${targetUid} ในระบบ` };
-                }
-
-                let now = new Date();
-                let unbanTime = null;
-
-                switch (durationType) {
-                    case '5_minutes':
-                        unbanTime = new Date(now.getTime() + 5 * 60 * 1000);
-                        break;
-                    case '24_hours':
-                        unbanTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-                        break;
-                    case '1_year':
-                        unbanTime = new Date(now.setFullYear(now.getFullYear() + 1));
-                        break;
-                    case 'permanent':
-                        unbanTime = null;
-                        break;
-                    default:
-                        return { success: false, message: 'ระยะเวลาการแบนไม่ถูกต้อง' };
-                }
-
-                let bans = JSON.parse(localStorage.getItem('baccarat_bans_detail') || '{}');
-                bans[targetUid] = {
-                    bannedBy: adminId,
-                    reason: reason,
-                    duration: durationType,
-                    bannedAt: new Date().toISOString(),
-                    unbanAt: unbanTime ? unbanTime.toISOString() : null,
-                    isActive: true
-                };
-                localStorage.setItem('baccarat_bans_detail', JSON.stringify(bans));
-
-                let bannedList = JSON.parse(localStorage.getItem('baccarat_banned') || '[]');
-                if (!bannedList.includes(targetUid)) {
-                    bannedList.push(targetUid);
-                    localStorage.setItem('baccarat_banned', JSON.stringify(bannedList));
-                }
-
-                return { success: true, message: `แบนผู้เล่น UID: ${targetUid} สำเร็จ` };
-            } catch (e) {
-                return { success: false, message: 'เกิดข้อผิดพลาดในการบันทึกข้อมูลการแบน' };
-            }
-        }
-
-        function unbanPlayer(adminId, targetUid, unbanReason) {
-            try {
-                let bans = JSON.parse(localStorage.getItem('baccarat_bans_detail') || '{}');
-                if (bans[targetUid]) {
-                    bans[targetUid].isActive = false;
-                    bans[targetUid].unbannedBy = adminId;
-                    bans[targetUid].unbanReason = unbanReason;
-                    bans[targetUid].unbannedAt = new Date().toISOString();
-                    localStorage.setItem('baccarat_bans_detail', JSON.stringify(bans));
-                }
-
-                let bannedList = JSON.parse(localStorage.getItem('baccarat_banned') || '[]');
-                bannedList = bannedList.filter(id => id !== targetUid);
-                localStorage.setItem('baccarat_banned', JSON.stringify(bannedList));
-
-                return { success: true, message: `ปลดแบนผู้เล่น UID: ${targetUid} สำเร็จ` };
-            } catch (e) {
-                return { success: false, message: 'เกิดข้อผิดพลาดในการปลดแบน' };
-            }
-        }
-
-        window.adminExecuteBan = function() {
-            let targetUID = document.getElementById('ban-uid-input').value.trim();
-            let durationType = document.getElementById('ban-duration-select').value;
-            let adminMsg = document.getElementById('admin-msg');
-            if (!targetUID) {
-                adminMsg.innerText = "กรุณากรอก UID ที่ต้องการแบน!";
-                return;
-            }
-
-            let result = banPlayerWithDuration("Administrator", targetUID, "ฝ่าฝืนกฎระเบียบของคาสิโน", durationType);
-            adminMsg.innerText = result.message;
-            if (result.success) {
-                sendDiscordNotification("🔨 แอดมินแบนผู้เล่น", `**UID ที่ถูกแบน:** ${targetUID}\n**ระยะเวลา:** ${durationType}\n**จัดการโดย:** Administrator`, "#ff0000");
-                document.getElementById('ban-uid-input').value = "";
-            }
-        }
-
-        window.adminExecuteUnban = function() {
-            let targetUID = document.getElementById('ban-uid-input').value.trim();
-            let adminMsg = document.getElementById('admin-msg');
-            if (!targetUID) {
-                adminMsg.innerText = "กรุณากรอก UID ที่ต้องการปลดแบน!";
-                return;
-            }
-
-            let result = unbanPlayer("Administrator", targetUID, "ปลดแบนโดยผู้ดูแลระบบ");
-            adminMsg.innerText = result.message;
-            if (result.success) {
-                sendDiscordNotification("🛡️ แอดมินปลดแบนผู้เล่น", `**UID ที่ปลดแบน:** ${targetUID}\n**จัดการโดย:** Administrator`, "#00ffcc");
-                document.getElementById('ban-uid-input').value = "";
-            }
-        }
-
-        function checkActiveBanStatus(uid) {
-            try {
-                let bans = JSON.parse(localStorage.getItem('baccarat_bans_detail') || '{}');
-                if (bans[uid] && bans[uid].isActive) {
-                    let record = bans[uid];
-                    if (record.unbanAt) {
-                        let unbanDate = new Date(record.unbanAt);
-                        if (new Date() >= unbanDate) {
-                            unbanPlayer("System", uid, "หมดเวลาแบนอัตโนมัติ");
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-            } catch (e) {}
-            return false;
-        }
 
         function safePlaySound(type) {
             try {
@@ -1376,7 +1171,104 @@
             document.getElementById('myCustomAlertModal').style.display = 'none';
         }
 
-        // อัปโหลดรูปโปรไฟล์
+        // ระบบเปิด/ปิดหน้าต่างแอดมิน
+        window.toggleAdminModal = function(show) {
+            let modal = document.getElementById('admin-modal');
+            if (!modal) return;
+            if (show) {
+                if (!isAdmin) {
+                    showCustomAlert("คุณไม่มีสิทธิ์เข้าถึงระบบแอดมิน!");
+                    return;
+                }
+                document.getElementById('admin-action-result').innerText = "";
+                modal.classList.add('show');
+            } else {
+                modal.classList.remove('show');
+            }
+        }
+
+        // 1. ฟังก์ชันเสกเงินให้ผู้เล่นคนอื่น
+        window.adminGiveMoney = function() {
+            let targetKey = document.getElementById('admin-target-uid').value.trim().toLowerCase();
+            let amount = parseInt(document.getElementById('admin-money-amount').value) || 0;
+            let resultBox = document.getElementById('admin-action-result');
+
+            if (!targetKey) {
+                resultBox.style.color = "#ff4d4d";
+                resultBox.innerText = "กรุณากรอก UID หรือ ชื่อผู้เล่น!";
+                return;
+            }
+
+            try {
+                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
+                let foundId = null;
+
+                for (let id in users) {
+                    if (id.toLowerCase() === targetKey || (users[id].name && users[id].name.toLowerCase() === targetKey)) {
+                        foundId = id;
+                        break;
+                    }
+                }
+
+                if (foundId) {
+                    users[foundId].credit = (Number(users[foundId].credit) || 0) + amount;
+                    localStorage.setItem('baccarat_users', JSON.stringify(users));
+
+                    if (foundId === playerId) {
+                        credit = users[foundId].credit;
+                        updateUI();
+                    }
+
+                    resultBox.style.color = "#38b000";
+                    resultBox.innerText = `เสกเงินให้ ${users[foundId].name} (${foundId}) สำเร็จ (+${amount.toLocaleString()})!`;
+                } else {
+                    resultBox.style.color = "#ff4d4d";
+                    resultBox.innerText = "ไม่พบผู้เล่นดังกล่าวในระบบ!";
+                }
+            } catch (e) {
+                resultBox.style.color = "#ff4d4d";
+                resultBox.innerText = "เกิดข้อผิดพลาดในการเสกเงิน";
+            }
+        }
+
+        // 2 & 3. ระบบแบน/ปลดแบนผู้เล่น และ ระบบเงินไม่จำกัด (จัดการในฟังก์ชันนี้)
+        window.adminSetBanStatus = function(isBanned) {
+            let targetKey = document.getElementById('admin-ban-uid').value.trim().toLowerCase();
+            let resultBox = document.getElementById('admin-action-result');
+
+            if (!targetKey) {
+                resultBox.style.color = "#ff4d4d";
+                resultBox.innerText = "กรุณากรอก UID หรือ ชื่อผู้เล่น!";
+                return;
+            }
+
+            try {
+                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
+                let foundId = null;
+
+                for (let id in users) {
+                    if (id.toLowerCase() === targetKey || (users[id].name && users[id].name.toLowerCase() === targetKey)) {
+                        foundId = id;
+                        break;
+                    }
+                }
+
+                if (foundId) {
+                    users[foundId].isBanned = isBanned;
+                    localStorage.setItem('baccarat_users', JSON.stringify(users));
+
+                    resultBox.style.color = isBanned ? "#ff4d4d" : "#38b000";
+                    resultBox.innerText = `${isBanned ? 'แบน' : 'ปลดแบน'} ผู้เล่น ${users[foundId].name} (${foundId}) สำเร็จ!`;
+                } else {
+                    resultBox.style.color = "#ff4d4d";
+                    resultBox.innerText = "ไม่พบผู้เล่นดังกล่าวในระบบ!";
+                }
+            } catch (e) {
+                resultBox.style.color = "#ff4d4d";
+                resultBox.innerText = "เกิดข้อผิดพลาดในการจัดการสถานะแบน";
+            }
+        }
+
         window.uploadCustomAvatar = function(event) {
             let file = event.target.files[0];
             if (!file) return;
@@ -1407,7 +1299,6 @@
             });
         }
 
-        // ระบบค้นหาข้อมูลผู้เล่นด้วย UID หรือ ชื่อ
         window.searchPlayerInfo = function() {
             let keyword = document.getElementById('search-user-input').value.trim().toLowerCase();
             let resultBox = document.getElementById('search-result-box');
@@ -1429,7 +1320,7 @@
 
                 if (foundKey) {
                     let u = users[foundKey];
-                    resultBox.innerHTML = `<span style='color:#38b000;'>พบข้อมูล! ชื่อ: ${u.name} | UID: ${foundKey} | เครดิต: ${(u.credit || 0).toLocaleString()}</span>`;
+                    resultBox.innerHTML = `<span style='color:#38b000;'>พบข้อมูล! ชื่อ: ${u.name} | UID: ${foundKey} | เครดิต: ${(u.credit || 0).toLocaleString()} | สถานะ: ${u.isBanned ? 'ถูกแบน' : 'ปกติ'}</span>`;
                 } else {
                     resultBox.innerHTML = "<span style='color:#ff4d4d;'>ไม่พบผู้เล่นดังกล่าวในระบบ</span>";
                 }
@@ -1442,29 +1333,27 @@
             let modal = document.getElementById('profile-modal');
             if (!modal) return;
             if (show) {
-                if (!verifyAntiCheat()) return;
                 document.getElementById('pf-name').innerText = playerName || "Guest";
                 document.getElementById('pf-uid').innerText = `UID: ${playerId || 'N/A'}`;
-                document.getElementById('pf-badge').innerText = isAdmin ? "👑 ADMINISTRATOR" : "ผู้เล่นคาสิโน";
-                document.getElementById('pf-credit').innerText = isAdmin ? "ไม่จำกัด" : credit.toLocaleString();
+                document.getElementById('pf-badge').innerText = isAdmin ? "ผู้ดูแลระบบ (Admin)" : "ผู้เล่นคาสิโน";
+                document.getElementById('pf-credit').innerText = credit.toLocaleString();
                 document.getElementById('pf-debt').innerText = debt.toLocaleString();
                 document.getElementById('pf-day').innerText = `Day ${currentDay}/30`;
-                document.getElementById('pf-status').innerText = "ปกติ (Active)";
+                document.getElementById('pf-status').innerText = isAdmin ? "แอดมิน (Infinite Money)" : "ปกติ (Active)";
                 
                 let preview = document.getElementById('profile-avatar-preview');
                 if (preview) {
                     preview.innerHTML = userAvatar ? `<img src="${userAvatar}" alt="Avatar">` : '👑';
                 }
 
-                let savedBio = "";
-                if (isAdmin) {
-                    savedBio = localStorage.getItem('admin_bio') || "รวยด้วยคาสิโน หรือหมดตัวในพริบตา!";
-                } else {
-                    try {
-                        let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                        savedBio = (users[playerId] && users[playerId].bio !== undefined) ? users[playerId].bio : "รวยด้วยคาสิโน หรือหมดตัวในพริบตา วัดใจกันที่โต๊ะนี้!";
-                    } catch (e) { savedBio = "รวยด้วยคาสิโน หรือหมดตัวในพริบตา วัดใจกันที่โต๊ะนี้!"; }
-                }
+                let savedBio = "รวยด้วยคาสิโน หรือหมดตัวในพริบตา วัดใจกันที่โต๊ะนี้!";
+                try {
+                    let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
+                    if (users[playerId] && users[playerId].bio !== undefined) {
+                        savedBio = users[playerId].bio;
+                    }
+                } catch (e) {}
+                
                 document.getElementById('pf-bio-input').value = savedBio;
                 document.getElementById('search-user-input').value = "";
                 document.getElementById('search-result-box').innerHTML = "";
@@ -1495,9 +1384,7 @@
             let eventData = { dayClaimed: 0, lastClaimDate: "" };
             try {
                 let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                if (isAdmin) {
-                    eventData = JSON.parse(localStorage.getItem('admin_event') || '{"dayClaimed":0, "lastClaimDate":""}');
-                } else if (users[playerId]) {
+                if (users[playerId]) {
                     eventData = users[playerId].eventData || { dayClaimed: 0, lastClaimDate: "" };
                 }
             } catch (e) {}
@@ -1534,12 +1421,7 @@
                 let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
                 let eventData = { dayClaimed: 0, lastClaimDate: "" };
 
-                if (isAdmin) {
-                    eventData = JSON.parse(localStorage.getItem('admin_event') || '{"dayClaimed":0, "lastClaimDate":""}');
-                    eventData.dayClaimed = dayIndex;
-                    eventData.lastClaimDate = todayStr;
-                    localStorage.setItem('admin_event', JSON.stringify(eventData));
-                } else if (users[playerId]) {
+                if (users[playerId]) {
                     eventData = users[playerId].eventData || { dayClaimed: 0, lastClaimDate: "" };
                     eventData.dayClaimed = dayIndex;
                     eventData.lastClaimDate = todayStr;
@@ -1548,8 +1430,7 @@
                 }
 
                 credit += amount;
-                if (!isAdmin) secureChecksum = generateChecksum(credit, secureSalt);
-                if (!isAdmin) saveGameProgress();
+                saveGameProgress();
 
                 updateUI();
                 renderEventDays();
@@ -1564,11 +1445,6 @@
 
             try {
                 let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                if (isAdmin) {
-                    localStorage.setItem('admin_bio', bioInput);
-                    showCustomAlert("บันทึกสเตตัสแอดมินเรียบร้อย!");
-                    return;
-                }
                 if (users[playerId]) {
                     users[playerId].bio = bioInput;
                     localStorage.setItem('baccarat_users', JSON.stringify(users));
@@ -1628,82 +1504,35 @@
 
         window.handleLogin = function(isAutoLogin = false, savedId = null) {
             let inputName = "";
-            let inputPass = "";
             let errorBox = document.getElementById('login-error');
 
             if (isAutoLogin) {
                 playerId = savedId;
-                if (playerId === "ADMIN_ROOT") {
-                    isAdmin = true;
-                    playerName = "Administrator";
-                    credit = 999999999999;
-                    debt = 0;
-                    currentDay = 1;
-                    secondsLeftInDay = 60;
-                    userAvatar = "";
-                    updateHeaderAvatars();
-                    document.getElementById('player-id-display').innerText = `${playerName} (ADMIN)`;
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('lobby-screen').style.display = 'flex';
-                    document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับผู้ดูแลระบบ: ${playerName} (ADMIN)`;
-                    document.getElementById('admin-panel').style.display = 'block';
-                    
-                    socket.emit('join_game', { name: playerName, credit: 999999999, uid: playerId });
-                    startRealtimeTimer();
-                    return;
-                }
                 try {
                     let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
                     if (users[playerId]) {
                         playerName = users[playerId].name;
-                        credit = Number(users[playerId].credit) || 1000;
+                        credit = users[playerId].isInfinite ? 999999999 : (Number(users[playerId].credit) || 1000);
                         debt = Number(users[playerId].debt) || 0;
                         currentDay = Number(users[playerId].currentDay) || 1;
                         secondsLeftInDay = Number(users[playerId].secondsLeftInDay) || 60;
                         userAvatar = users[playerId].avatar || "";
+                        isAdmin = !!users[playerId].isAdmin;
                     } else { return; }
                 } catch (e) { return; }
             } else {
                 inputName = document.getElementById('username-input').value.trim();
-                inputPass = document.getElementById('password-input').value.trim();
 
                 if (inputName === "") { 
                     errorBox.innerText = "กรุณากรอกชื่อผู้เล่น!"; 
                     return; 
                 }
 
+                // เช็คระบบแอดมินลับ (พิมชื่อ admin หรือ กำหนดสิทธิ์)
+                isAdmin = (inputName.toLowerCase() === 'admin' || inputName.toLowerCase() === 'administrator');
+
                 let users = {};
                 try { users = JSON.parse(localStorage.getItem('baccarat_users') || '{}'); } catch (e) {}
-
-                if (inputName === SECRET_ADMIN_USER || inputName.toLowerCase() === "admin") {
-                    if (inputPass !== SECRET_ADMIN_PASS) {
-                        errorBox.innerText = "รหัสผ่านแอดมินไม่ถูกต้อง!";
-                        return;
-                    }
-
-                    isAdmin = true;
-                    playerId = "ADMIN_ROOT";
-                    playerName = "Administrator";
-                    credit = 999999999999;
-                    debt = 0;
-                    currentDay = 1;
-                    secondsLeftInDay = 60;
-                    userAvatar = "";
-                    
-                    localStorage.setItem('baccarat_active_user', playerId);
-                    updateHeaderAvatars();
-                    document.getElementById('player-id-display').innerText = `${playerName} (ADMIN)`;
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('lobby-screen').style.display = 'flex';
-                    document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับผู้ดูแลระบบ: ${playerName} (ADMIN)`;
-                    document.getElementById('admin-panel').style.display = 'block';
-                    
-                    sendDiscordNotification("👑 แอดมินเข้าสู่ระบบ", `**ผู้ดูแลระบบ:** Administrator เข้าสู่ระบบสำเร็จ`, "#00ffcc");
-                    socket.emit('join_game', { name: playerName, credit: 999999999, uid: playerId });
-
-                    startRealtimeTimer();
-                    return;
-                }
 
                 let existingId = null;
                 for (let id in users) {
@@ -1713,23 +1542,24 @@
                     }
                 }
 
-                if (existingId && checkActiveBanStatus(existingId)) {
-                    showBannedModal("บัญชีของคุณถูกแบนจากระบบผู้ดูแล");
-                    return;
-                }
-
                 if (existingId) {
                     playerId = existingId;
                     playerName = users[existingId].name;
-                    credit = Number(users[existingId].credit) || 1000;
+                    isAdmin = !!users[existingId].isAdmin || isAdmin;
+                    credit = isAdmin ? 999999999 : (Number(users[existingId].credit) || 1000);
                     debt = Number(users[existingId].debt) || 0;
                     currentDay = Number(users[existingId].currentDay) || 1;
                     secondsLeftInDay = Number(users[existingId].secondsLeftInDay) || 60;
                     userAvatar = users[existingId].avatar || "";
+
+                    if (users[existingId].isBanned) {
+                        errorBox.innerText = "บัญชีนี้ถูกแบนจากระบบแอดมิน!";
+                        return;
+                    }
                 } else {
-                    playerId = "P_" + Math.floor(1000 + Math.random() * 9000);
+                    playerId = isAdmin ? "ADMIN_01" : ("P_" + Math.floor(1000 + Math.random() * 9000));
                     playerName = inputName;
-                    credit = 1000;
+                    credit = isAdmin ? 999999999 : 1000;
                     debt = 0;
                     currentDay = 1;
                     secondsLeftInDay = 60;
@@ -1737,32 +1567,33 @@
                     users[playerId] = { 
                         name: playerName, credit, debt, currentDay, secondsLeftInDay, 
                         avatar: "",
-                        bio: "รวยด้วยคาสิโน หรือหมดตัวในพริบตา วัดใจกันที่โต๊ะนี้!",
+                        isAdmin: isAdmin,
+                        isInfinite: isAdmin,
+                        bio: isAdmin ? "ผู้ดูแลระบบสูงสุด (System Administrator)" : "รวยด้วยคาสิโน หรือหมดตัวในพริบตา!",
                         eventData: { dayClaimed: 0, lastClaimDate: "" }
                     };
                     try { localStorage.setItem('baccarat_users', JSON.stringify(users)); } catch (e) {}
                 }
-                
-                if (checkActiveBanStatus(playerId)) {
-                    showBannedModal("บัญชีของคุณถูกแบนจากระบบผู้ดูแล");
+
+                // ตรวจสอบสถานะแบนเพิ่มเติม
+                if (users[playerId] && users[playerId].isBanned) {
+                    errorBox.innerText = "บัญชีนี้ถูกแบนจากระบบแอดมิน!";
                     return;
                 }
 
                 localStorage.setItem('baccarat_active_user', playerId);
             }
-
-            secureChecksum = generateChecksum(credit, secureSalt);
-            isAdmin = (playerId === "ADMIN_ROOT");
             
+            // แสดงปุ่มแอดมินถ้าเป็นแอดมิน
+            if (isAdmin) {
+                document.querySelectorAll('.btn-admin-panel').forEach(btn => btn.style.display = 'inline-block');
+            }
+
             updateHeaderAvatars();
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
-            document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (${playerId}) (เครดิต: ${isAdmin ? '∞' : credit.toLocaleString()})`;
+            document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (${playerId}) (เครดิต: ${isAdmin ? '∞ (ไม่จำกัด)' : credit.toLocaleString()})`;
             document.getElementById('player-id-display').innerText = `${playerName} (${playerId})`;
-
-            if (!isAutoLogin) {
-                sendDiscordNotification("✅ ผู้เล่นเข้าสู่ระบบสำเร็จ", `**ชื่อผู้เล่น:** ${playerName}\n**UID:** ${playerId}\n**เครดิตเริ่มต้น:** ${credit.toLocaleString()}`, "#00ff00");
-            }
 
             socket.emit('join_game', { name: playerName, credit: credit, uid: playerId });
             startRealtimeTimer();
@@ -1787,39 +1618,28 @@
             document.getElementById('uno-screen').style.display = 'none';
             document.getElementById('joker-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
-            document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (${playerId}) (เครดิต: ${isAdmin ? '∞' : credit.toLocaleString()})`;
+            document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (${playerId}) (เครดิต: ${isAdmin ? '∞ (ไม่จำกัด)' : credit.toLocaleString()})`;
         }
 
         function saveGameProgress() {
-            if (!playerId || isAdmin) return;
-            if (!verifyAntiCheat()) return;
+            if (!playerId) return;
             try {
                 let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
                 if (users[playerId]) {
-                    users[playerId].credit = credit;
+                    users[playerId].credit = isAdmin ? 999999999 : credit;
                     users[playerId].debt = debt;
                     users[playerId].currentDay = currentDay;
                     users[playerId].secondsLeftInDay = secondsLeftInDay;
                     users[playerId].avatar = userAvatar;
                     localStorage.setItem('baccarat_users', JSON.stringify(users));
                 }
-                socket.emit('update_user_status', { credit: credit });
+                socket.emit('update_user_status', { credit: isAdmin ? 999999999 : credit });
             } catch (e) {}
         }
 
         function startRealtimeTimer() {
             if (gameTimer) clearInterval(gameTimer);
             gameTimer = setInterval(() => {
-                if (!isAdmin && playerId) {
-                    if (checkActiveBanStatus(playerId)) {
-                        showBannedModal("บัญชีของคุณถูกแบนจากระบบผู้ดูแล");
-                        clearInterval(gameTimer);
-                        return;
-                    }
-                }
-
-                if (!verifyAntiCheat()) return;
-
                 secondsLeftInDay--;
                 let percent = (secondsLeftInDay / 60) * 100;
                 let progressBar = document.getElementById('time-progress-bar');
@@ -1830,7 +1650,7 @@
                     secondsLeftInDay = 60;
                 }
 
-                if (!isAdmin) saveGameProgress();
+                saveGameProgress();
                 updateUI();
             }, 1000);
         }
@@ -1844,44 +1664,38 @@
 
         window.takeLoan = function() {
             if (isPlaying) return;
-            if (!verifyAntiCheat()) return;
             credit += 500;
-            secureChecksum = generateChecksum(credit, secureSalt);
-            if (!isAdmin) debt += 500;
+            debt += 500;
             safePlaySound('chip');
             let msg = document.getElementById('game-message');
             if (msg) msg.innerText = "กู้เงินสำเร็จ +500 เครดิต";
-            if (!isAdmin) saveGameProgress();
+            saveGameProgress();
             updateUI();
         }
 
         window.repayLoan = function() {
             if (isPlaying) return;
-            if (!verifyAntiCheat()) return;
             let msg = document.getElementById('game-message');
             if (debt <= 0) { if (msg) msg.innerText = "คุณไม่มีหนี้สินค้างชำระ!"; return; }
-            if (credit < 500) { if (msg) msg.innerText = "เครดิตไม่พอจ่ายหนี้ 500!"; return; }
+            if (credit < 500 && !isAdmin) { if (msg) msg.innerText = "เครดิตไม่พอจ่ายหนี้ 500!"; return; }
 
-            credit -= 500;
-            secureChecksum = generateChecksum(credit, secureSalt);
+            if (!isAdmin) credit -= 500;
             debt -= 500;
             safePlaySound('chip');
             if (msg) msg.innerText = "ชำระหนี้สำเร็จ -500 เครดิต!";
-            if (!isAdmin) saveGameProgress();
+            saveGameProgress();
             updateUI();
         }
 
         window.placeBet = function(type) {
             if (isPlaying) return;
-            if (!verifyAntiCheat()) return;
             let msg = document.getElementById('game-message');
-            if (!isAdmin && credit < selectedChipValue) {
+            if (credit < selectedChipValue && !isAdmin) {
                 if (msg) msg.innerText = "เครดิตไม่พอ!";
                 return;
             }
 
-            credit -= selectedChipValue;
-            secureChecksum = generateChecksum(credit, secureSalt);
+            if (!isAdmin) credit -= selectedChipValue;
             bets[type] += selectedChipValue;
             totalBet += selectedChipValue;
 
@@ -1891,9 +1705,7 @@
 
         window.clearBets = function() {
             if (isPlaying) return;
-            if (!verifyAntiCheat()) return;
-            credit += totalBet;
-            secureChecksum = generateChecksum(credit, secureSalt);
+            if (!isAdmin) credit += totalBet;
             bets = { player: 0, tie: 0, banker: 0 };
             totalBet = 0;
             safePlaySound('chip');
@@ -1911,7 +1723,7 @@
             let btnClear = document.getElementById('btn-clear');
 
             if (dayVal) dayVal.innerText = `Day ${currentDay}/30 (${secondsLeftInDay}s)`;
-            if (creditVal) creditVal.innerText = isAdmin ? "ไม่จำกัด (∞)" : credit.toLocaleString();
+            if (creditVal) creditVal.innerText = isAdmin ? "∞ (ไม่จำกัด)" : credit.toLocaleString();
             if (debtVal) debtVal.innerText = debt.toLocaleString();
             
             if (betPlayer) betPlayer.innerText = bets.player > 0 ? bets.player.toLocaleString() : '0';
@@ -1922,10 +1734,10 @@
             if (btnClear) btnClear.disabled = totalBet === 0 || isPlaying;
 
             let unoCredit = document.getElementById('uno-credit-val');
-            if (unoCredit) unoCredit.innerText = isAdmin ? "ไม่จำกัด (∞)" : credit.toLocaleString();
+            if (unoCredit) unoCredit.innerText = isAdmin ? "∞" : credit.toLocaleString();
 
             let jokerCredit = document.getElementById('joker-credit-val');
-            if (jokerCredit) jokerCredit.innerText = isAdmin ? "ไม่จำกัด (∞)" : credit.toLocaleString();
+            if (jokerCredit) jokerCredit.innerText = isAdmin ? "∞" : credit.toLocaleString();
         }
 
         function startJokerGame() {
@@ -1939,22 +1751,19 @@
             if (jokerGameOver) return;
             jokerBet += amount;
             if (jokerBet < 50) jokerBet = 50;
-            if (!isAdmin && jokerBet > credit) jokerBet = credit;
+            if (jokerBet > credit && !isAdmin) jokerBet = credit;
             document.getElementById('joker-bet-val').innerText = jokerBet.toLocaleString();
             document.getElementById('joker-current-bet-display').innerText = jokerBet.toLocaleString();
         }
 
         function startJokerRound() {
-            if (!isAdmin && credit < jokerBet) {
+            if (credit < jokerBet && !isAdmin) {
                 showCustomAlert("เครดิตไม่พอสำหรับเดิมพันนี้!");
                 return;
             }
 
-            if (!isAdmin) {
-                credit -= jokerBet;
-                secureChecksum = generateChecksum(credit, secureSalt);
-                saveGameProgress();
-            }
+            if (!isAdmin) credit -= jokerBet;
+            saveGameProgress();
 
             jokerGameOver = false;
             document.getElementById('joker-reset-btn').disabled = true;
@@ -2014,7 +1823,6 @@
             if (card.isJoker) {
                 let prize = jokerBet * 3;
                 credit += prize;
-                if (!isAdmin) secureChecksum = generateChecksum(credit, secureSalt);
                 document.getElementById('joker-status').innerText = "ชนะรางวัล!";
                 document.getElementById('joker-game-message').innerText = `🎉 ยินดีด้วย! เปิดเจอโจ๊กเกอร์ รับรางวัล +${prize.toLocaleString()} เครดิต!`;
             } else {
@@ -2025,7 +1833,7 @@
             jokerCards.forEach(c => c.revealed = true);
             renderJokerCards();
 
-            if (!isAdmin) saveGameProgress();
+            saveGameProgress();
             updateUI();
             safePlaySound('chip');
         }
@@ -2129,8 +1937,7 @@
             if (unoPlayerHand.length === 0) {
                 document.getElementById('uno-game-message').innerText = "🎉 ยินดีด้วย! คุณชนะเกม UNO ได้รับเครดิต +500";
                 credit += 500;
-                secureChecksum = generateChecksum(credit, secureSalt);
-                if (!isAdmin) saveGameProgress();
+                saveGameProgress();
                 updateUI();
                 setTimeout(startUnoGame, 3000);
                 return;
@@ -2169,9 +1976,8 @@
 
             if (unoBotHand.length === 0) {
                 document.getElementById('uno-game-message').innerText = "💀 บอทชนะรอบนี้! คุณเสีย 200 เครดิต";
-                credit = Math.max(0, credit - 200);
-                secureChecksum = generateChecksum(credit, secureSalt);
-                if (!isAdmin) saveGameProgress();
+                if (!isAdmin) credit = Math.max(0, credit - 200);
+                saveGameProgress();
                 updateUI();
                 setTimeout(startUnoGame, 3000);
                 return;
@@ -2223,7 +2029,6 @@
 
         window.startDeal = async function() {
             if (totalBet === 0 || isPlaying) return;
-            if (!verifyAntiCheat()) return;
             isPlaying = true;
             updateUI();
 
@@ -2293,73 +2098,84 @@
                 }
             }
 
-            await sleep(1000);
-            let winner = (pVal > bVal) ? 'player' : ((bVal > pVal) ? 'banker' : 'tie');
-            let winnings = 0;
-            if (winner === 'player') {
-                if (bets.player > 0) winnings += bets.player * 2;
-                if (msg) msg.innerText = "🎉 ฝั่ง PLAYER ชนะ!";
-            } else if (winner === 'banker') {
-                if (bets.banker > 0) winnings += bets.banker + (bets.banker * 0.95);
-                if (msg) msg.innerText = "🏆 ฝั่ง BANKER ชนะ!";
-            } else {
-                if (bets.tie > 0) winnings += bets.tie * 9;
-                winnings += bets.player + bets.banker;
-                if (msg) msg.innerText = "🤝 เสมอ (TIE)!";
-            }
+            determineWinner(pVal, bVal);
+        };
 
-            if (winnings > 0) {
-                credit += winnings;
-                secureChecksum = generateChecksum(credit, secureSalt);
-            }
-
-            if (isAdmin) credit = 999999999999;
-
-            updateHistory(winner);
-            bets = { player: 0, tie: 0, banker: 0 };
-            totalBet = 0;
-
-            if (!isAdmin) {
-                saveGameProgress();
-            }
-
-            isPlaying = false;
-            updateUI();
-        }
-
-        function renderHands(playerHand, bankerHand) {
+        function renderHands(pHand, bHand) {
             let pCards = document.getElementById('player-cards');
             let bCards = document.getElementById('banker-cards');
             let pScore = document.getElementById('player-score');
             let bScore = document.getElementById('banker-score');
 
-            if (pCards) pCards.innerHTML = playerHand.map(card => renderCardHTML(card)).join('');
-            if (bCards) bCards.innerHTML = bankerHand.map(card => renderCardHTML(card)).join('');
-            if (pScore) pScore.innerText = `แต้ม: ${calculateScore(playerHand)}`;
-            if (bScore) bScore.innerText = `แต้ม: ${calculateScore(bankerHand)}`;
+            if (pCards) pCards.innerHTML = pHand.map(c => renderCardHTML(c)).join('');
+            if (bCards) bCards.innerHTML = bHand.map(c => renderCardHTML(c)).join('');
+            if (pScore) pScore.innerText = `แต้ม: ${calculateScore(pHand)}`;
+            if (bScore) bScore.innerText = `แต้ม: ${calculateScore(bHand)}`;
+            safePlaySound('deal');
         }
 
-        function updateHistory(winner) {
-            gameHistory.push(winner);
-            scoreCounts[winner]++;
-            
-            let cp = document.getElementById('count-p');
-            let cb = document.getElementById('count-b');
-            let ct = document.getElementById('count-t');
-            if (cp) cp.innerText = scoreCounts.player;
-            if (cb) cb.innerText = scoreCounts.banker;
-            if (ct) ct.innerText = scoreCounts.tie;
+        function determineWinner(pVal, bVal) {
+            let msg = document.getElementById('game-message');
+            let resultType = '';
 
-            let beadsContainer = document.getElementById('history-beads');
-            if (!beadsContainer) return;
+            if (pVal > bVal) {
+                resultType = 'player';
+                if (msg) msg.innerText = `🎉 PLAYER ชนะ! (${pVal} แต้ม ต่อ ${bVal} แต้ม)`;
+            } else if (bVal > pVal) {
+                resultType = 'banker';
+                if (msg) msg.innerText = `🎉 BANKER ชนะ! (${bVal} แต้ม ต่อ ${pVal} แต้ม)`;
+            } else {
+                resultType = 'tie';
+                if (msg) msg.innerText = `🤝 เสมอ (TIE)! (${pVal} แต้ม เท่ากัน)`;
+            }
 
-            let beadClass = winner === 'player' ? 'bead-p' : (winner === 'banker' ? 'bead-b' : 'bead-t');
-            let beadText = winner === 'player' ? 'P' : (winner === 'banker' ? 'B' : 'T');
+            let winnings = 0;
+            if (resultType === 'player') {
+                winnings += bets.player * 2;
+            } else if (resultType === 'banker') {
+                winnings += bets.banker * 1.95;
+            } else if (resultType === 'tie') {
+                winnings += bets.tie * 9;
+                winnings += bets.player + bets.banker; 
+            } else {
+                if (resultType === 'player' && bets.banker > 0) winnings += bets.banker;
+                if (resultType === 'banker' && bets.player > 0) winnings += bets.player;
+            }
 
-            let beadDiv = document.createElement('div');
-            beadDiv.className = `bead ${beadClass}`;
-            beadDiv.innerText = beadText;
-            beadsContainer.appendChild(beadDiv);
+            if (resultType === 'tie') {
+                winnings += bets.player + bets.banker;
+            }
+
+            credit += Math.floor(winnings);
+            scoreCounts[resultType]++;
+            updateScoreboardCounts();
+            addBead(resultType);
+
+            bets = { player: 0, tie: 0, banker: 0 };
+            totalBet = 0;
+            isPlaying = false;
+
+            saveGameProgress();
+            updateUI();
+        }
+
+        function updateScoreboardCounts() {
+            document.getElementById('count-p').innerText = scoreCounts.player;
+            document.getElementById('count-b').innerText = scoreCounts.banker;
+            document.getElementById('count-t').innerText = scoreCounts.tie;
+        }
+
+        function addBead(type) {
+            let beadContainer = document.getElementById('history-beads');
+            if (!beadContainer) return;
+            let beadClass = type === 'player' ? 'bead-p' : (type === 'banker' ? 'bead-b' : 'bead-t');
+            let letter = type === 'player' ? 'P' : (type === 'banker' ? 'B' : 'T');
+
+            let bead = document.createElement('div');
+            bead.className = `bead ${beadClass}`;
+            bead.innerText = letter;
+            beadContainer.appendChild(bead);
+            beadContainer.scrollLeft = beadContainer.scrollWidth;
         }
 
         function sleep(ms) {
