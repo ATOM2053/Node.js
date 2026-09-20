@@ -1079,6 +1079,128 @@
         </div>
     </div>
 
+    <!-- โค้ดส่วน Modals ส่วนกลางสำหรับหน้า Lobby -->
+    <div id="admin-modal" class="modal-overlay">
+        <div class="ff-profile-card" style="max-width: 480px; border-color: #ff007f;">
+            <div class="ff-header-banner" style="background: linear-gradient(90deg, #ff007f, #7209b7);">
+                <span class="ff-header-title">🛡️ ระบบจัดการแอดมิน (ADMIN PANEL)</span>
+                <button class="ff-close-btn" onclick="toggleAdminModal(false)">✕</button>
+            </div>
+            <div class="ff-body">
+                <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; border: 1px solid #ff007f;">
+                    <h4 style="color: #ff007f; font-size: 0.75rem; margin-bottom: 6px;">⚡ ฟังก์ชันเสกเงินให้ผู้เล่น</h4>
+                    <div class="input-group">
+                        <label for="admin-target-uid">UID หรือ ชื่อผู้เล่น</label>
+                        <input type="text" id="admin-target-uid" placeholder="ระบุ UID เช่น P_1234 หรือ ชื่อ...">
+                    </div>
+                    <div class="input-group">
+                        <label for="admin-money-amount">จำนวนเงินที่ต้องการเสก</label>
+                        <input type="number" id="admin-money-amount" value="10000" min="1">
+                    </div>
+                    <button class="btn btn-deal" style="width: 100%; background: linear-gradient(135deg, #ff007f, #7209b7); color: #fff; padding: 8px;" onclick="adminGiveMoney()">💰 เสกเงินให้ผู้เล่น</button>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; border: 1px solid #ff4d4d;">
+                    <h4 style="color: #ff4d4d; font-size: 0.75rem; margin-bottom: 6px;">🚫 ระบบแบน / ปลดแบนผู้เล่น</h4>
+                    <div class="input-group">
+                        <label for="admin-ban-uid">UID หรือ ชื่อผู้เล่น</label>
+                        <input type="text" id="admin-ban-uid" placeholder="ระบุ UID หรือ ชื่อผู้เล่น...">
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn" style="flex: 1; background: #b30000; color: #fff; padding: 8px;" onclick="adminSetBanStatus(true)">🔒 แบนผู้เล่น</button>
+                        <button class="btn" style="flex: 1; background: #38b000; color: #fff; padding: 8px;" onclick="adminSetBanStatus(false)">🔓 ปลดแบน</button>
+                    </div>
+                </div>
+
+                <div id="admin-action-result" style="font-size: 0.7rem; color: #38b000; text-align: center; min-height: 15px;"></div>
+                <button class="btn btn-deal" style="width: 100%; padding: 8px; font-size: 0.75rem;" onclick="toggleAdminModal(false)">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="modal-overlay">
+        <div class="ff-profile-card">
+            <div class="ff-header-banner">
+                <span class="ff-header-title">📜 ข้อมูลผู้เล่น (PLAYER PROFILE)</span>
+                <button class="ff-close-btn" onclick="toggleProfileModal(false)">✕</button>
+            </div>
+            <div class="ff-body">
+                <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; border: 1px solid var(--gold-dark);">
+                    <label for="search-user-input" style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">🔍 ค้นหาข้อมูลผู้เล่น (ใส่ UID หรือ ชื่อ):</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="search-user-input" placeholder="เช่น P_1234 หรือ ชื่อ..." style="flex: 1; background: rgba(0,0,0,0.6); border: 1px solid var(--gold-dark); border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
+                        <button class="btn btn-deal" style="padding: 6px 10px; font-size: 0.65rem;" onclick="searchPlayerInfo()">ค้นหา</button>
+                    </div>
+                    <div id="search-result-box" style="font-size: 0.65rem; color: #fff; margin-top: 5px; min-height: 12px;"></div>
+                </div>
+
+                <div class="ff-user-row">
+                    <div class="ff-avatar-box" id="profile-avatar-preview">👑</div>
+                    <div class="ff-user-info">
+                        <div id="pf-name" class="ff-nickname">-</div>
+                        <div id="pf-uid" class="ff-uid">UID: -</div>
+                        <div id="pf-badge" class="ff-badge">ผู้เล่นทั่วไป</div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.5); border-radius: 8px; padding: 8px; border: 1px solid rgba(255,170,0,0.2);">
+                    <label style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">📷 อัปโหลดรูปโปรไฟล์ของคุณเอง:</label>
+                    <input type="file" id="avatar-file-input" accept="image/*" onchange="uploadCustomAvatar(event)" style="font-size: 0.65rem; color: #aaa; width: 100%;">
+                </div>
+
+                <div class="ff-stats-grid">
+                    <div class="ff-stat-box">
+                        <div class="ff-stat-label">เครดิตปัจจุบัน</div>
+                        <div id="pf-credit" class="ff-stat-value">0</div>
+                    </div>
+                    <div class="ff-stat-box">
+                        <div class="ff-stat-label">หนี้สินคงค้าง</div>
+                        <div id="pf-debt" class="ff-stat-value" style="color: #ff4d4d;">0</div>
+                    </div>
+                    <div class="ff-stat-box">
+                        <div class="ff-stat-label">วันที่ในเกม</div>
+                        <div id="pf-day" class="ff-stat-value" style="color: #4cc9f0;">Day 1</div>
+                    </div>
+                    <div class="ff-stat-box">
+                        <div class="ff-stat-label">สถานะบัญชี</div>
+                        <div id="pf-status" class="ff-stat-value" style="color: #38b000;">ปกติ</div>
+                    </div>
+                </div>
+
+                <div class="ff-bio-edit-container">
+                    <label for="pf-bio-input" style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">✍️ สเตตัส / คำคมส่วนตัว:</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="pf-bio-input" maxlength="50" placeholder="พิมพ์สเตตัสของคุณที่นี่..." style="flex: 1; background: rgba(0,0,0,0.6); border: 1px solid var(--gold-dark); border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
+                        <button class="btn btn-deal" style="padding: 6px 10px; font-size: 0.65rem;" onclick="savePlayerBio()">บันทึก</button>
+                    </div>
+                </div>
+                
+                <button class="btn btn-deal" style="width: 100%; padding: 8px; font-size: 0.75rem;" onclick="toggleProfileModal(false)">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="event-modal" class="modal-overlay">
+        <div class="ff-profile-card" style="max-width: 450px;">
+            <div class="ff-header-banner" style="background: linear-gradient(90deg, #2b5876, #4e4376);">
+                <span class="ff-header-title">🎁 กิจกรรมล็อกอินรับเครดิตฟรี (7 วัน)</span>
+                <button class="ff-close-btn" onclick="toggleEventModal(false)">✕</button>
+            </div>
+            <div class="ff-body">
+                <p style="font-size: 0.7rem; color: var(--gold-light); text-align: center;">ล็อกอินเข้าเกมทุกวันเพื่อรับเครดิตฟรีไปลุยโต๊ะคาสิโน!</p>
+                <div id="event-days-grid" class="event-grid"></div>
+                <button class="btn btn-deal" style="width: 100%; padding: 8px; font-size: 0.75rem;" onclick="toggleEventModal(false)">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="myCustomAlertModal" class="custom-alert-overlay" style="display: none;">
+        <div class="custom-alert-box">
+            <p id="myCustomAlertMessage">ข้อความแจ้งเตือน</p>
+            <button class="custom-alert-btn" onclick="closeCustomAlert()">ตกลง</button>
+        </div>
+    </div>
+
     <script>
         const socket = io();
 
@@ -1187,7 +1309,7 @@
             }
         }
 
-        // 1. ฟังก์ชันเสกเงินให้ผู้เล่นคนอื่น
+        // ฟังก์ชันเสกเงินให้ผู้เล่น
         window.adminGiveMoney = function() {
             let targetKey = document.getElementById('admin-target-uid').value.trim().toLowerCase();
             let amount = parseInt(document.getElementById('admin-money-amount').value) || 0;
@@ -1231,7 +1353,7 @@
             }
         }
 
-        // 2 & 3. ระบบแบน/ปลดแบนผู้เล่น และ ระบบเงินไม่จำกัด (จัดการในฟังก์ชันนี้)
+        // ระบบแบน/ปลดแบนผู้เล่น
         window.adminSetBanStatus = function(isBanned) {
             let targetKey = document.getElementById('admin-ban-uid').value.trim().toLowerCase();
             let resultBox = document.getElementById('admin-action-result');
@@ -1528,7 +1650,7 @@
                     return; 
                 }
 
-                // เช็คระบบแอดมินลับ (พิมชื่อ admin หรือ กำหนดสิทธิ์)
+                // เช็คระบบแอดมิน (ใส่ชื่อ admin หรือ administrator จะได้รับสิทธิ์ทันทีโดยซ่อนรหัสไว้หลังบ้าน)
                 isAdmin = (inputName.toLowerCase() === 'admin' || inputName.toLowerCase() === 'administrator');
 
                 let users = {};
@@ -1575,7 +1697,6 @@
                     try { localStorage.setItem('baccarat_users', JSON.stringify(users)); } catch (e) {}
                 }
 
-                // ตรวจสอบสถานะแบนเพิ่มเติม
                 if (users[playerId] && users[playerId].isBanned) {
                     errorBox.innerText = "บัญชีนี้ถูกแบนจากระบบแอดมิน!";
                     return;
@@ -1584,7 +1705,6 @@
                 localStorage.setItem('baccarat_active_user', playerId);
             }
             
-            // แสดงปุ่มแอดมินถ้าเป็นแอดมิน
             if (isAdmin) {
                 document.querySelectorAll('.btn-admin-panel').forEach(btn => btn.style.display = 'inline-block');
             }
