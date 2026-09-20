@@ -212,7 +212,28 @@
             letter-spacing: 2px;
         }
 
-        .header-btn-group { display: flex; gap: 6px; }
+        .header-btn-group { display: flex; gap: 6px; align-items: center; }
+
+        /* ส่วนแสดงโปรไฟล์มุมซ้ายบน */
+        .header-profile-mini {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid var(--gold-dark);
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .header-profile-mini:hover { border-color: var(--gold); }
+        .mini-avatar {
+            width: 30px; height: 30px; border-radius: 50%;
+            object-fit: cover; border: 1px solid var(--gold);
+            background: #222; display: flex; justify-content: center; align-items: center;
+            font-size: 0.9rem; overflow: hidden;
+        }
+        .mini-name { font-size: 0.7rem; color: var(--gold-light); font-weight: bold; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
         .btn-top-action {
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
@@ -561,7 +582,7 @@
         .ff-header-title { color: #fff; font-size: 0.8rem; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
         .ff-close-btn { background: none; border: none; color: #fff; font-size: 1rem; cursor: pointer; font-weight: bold; }
 
-        .ff-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .ff-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; max-height: 80vh; overflow-y: auto; }
 
         .ff-user-row {
             display: flex;
@@ -581,7 +602,10 @@
             display: flex; justify-content: center; align-items: center;
             font-size: 1.8rem; flex-shrink: 0;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            overflow: hidden;
+            position: relative;
         }
+        .ff-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
 
         .ff-user-info { display: flex; flex-direction: column; gap: 3px; flex-grow: 1; }
         .ff-nickname { font-size: 1rem; font-weight: bold; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
@@ -699,6 +723,10 @@
                     <p style="font-size: 0.75rem; color: #aaa;" id="lobby-welcome-msg">ยินดีต้อนรับผู้เล่น</p>
                 </div>
                 <div class="header-btn-group">
+                    <div class="header-profile-mini" onclick="toggleProfileModal(true)" title="คลิกดูโปรไฟล์">
+                        <div class="mini-avatar" id="mini-avatar-display">👑</div>
+                        <span class="mini-name" id="mini-name-display">-</span>
+                    </div>
                     <button class="btn-top-action" onclick="toggleEventModal(true)">🎁 กิจกรรม</button>
                     <button class="btn-top-action" onclick="toggleProfileModal(true)">🛡️ โปรไฟล์</button>
                     <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
@@ -734,6 +762,10 @@
     <!-- Main UNO Game Screen -->
     <div id="uno-screen">
         <header>
+            <div class="header-profile-mini" onclick="toggleProfileModal(true)" title="คลิกดูโปรไฟล์">
+                <div class="mini-avatar" id="mini-avatar-display-uno">👑</div>
+                <span class="mini-name" id="mini-name-display-uno">-</span>
+            </div>
             <h1 style="color: #ff5252;">LUXURY UNO</h1>
             <div class="header-btn-group">
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 เลือกเกม</button>
@@ -777,6 +809,10 @@
     <!-- Main JOKER Game Screen -->
     <div id="joker-screen">
         <header>
+            <div class="header-profile-mini" onclick="toggleProfileModal(true)" title="คลิกดูโปรไฟล์">
+                <div class="mini-avatar" id="mini-avatar-display-joker">👑</div>
+                <span class="mini-name" id="mini-name-display-joker">-</span>
+            </div>
             <h1 style="color: #ffaa00;">LUXURY JOKER</h1>
             <div class="header-btn-group">
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 เลือกเกม</button>
@@ -822,13 +858,29 @@
                     <button class="ff-close-btn" onclick="toggleProfileModal(false)">✕</button>
                 </div>
                 <div class="ff-body">
+                    <!-- ระบบค้นหาผู้เล่นโดยใส่ UID หรือชื่อ -->
+                    <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; border: 1px solid var(--gold-dark);">
+                        <label for="search-user-input" style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">🔍 ค้นหาข้อมูลผู้เล่น (ใส่ UID หรือ ชื่อ):</label>
+                        <div style="display: flex; gap: 5px;">
+                            <input type="text" id="search-user-input" placeholder="เช่น P_1234 หรือ ชื่อ..." style="flex: 1; background: rgba(0,0,0,0.6); border: 1px solid var(--gold-dark); border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
+                            <button class="btn btn-deal" style="padding: 6px 10px; font-size: 0.65rem;" onclick="searchPlayerInfo()">ค้นหา</button>
+                        </div>
+                        <div id="search-result-box" style="font-size: 0.65rem; color: #fff; margin-top: 5px; min-height: 12px;"></div>
+                    </div>
+
                     <div class="ff-user-row">
-                        <div class="ff-avatar-box">👑</div>
+                        <div class="ff-avatar-box" id="profile-avatar-preview">👑</div>
                         <div class="ff-user-info">
                             <div id="pf-name" class="ff-nickname">-</div>
                             <div id="pf-uid" class="ff-uid">UID: -</div>
                             <div id="pf-badge" class="ff-badge">ผู้เล่นทั่วไป</div>
                         </div>
+                    </div>
+
+                    <!-- อัปโหลดรูปโปรไฟล์ส่วนตัว -->
+                    <div style="background: rgba(0,0,0,0.5); border-radius: 8px; padding: 8px; border: 1px solid rgba(255,170,0,0.2);">
+                        <label style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">📷 อัปโหลดรูปโปรไฟล์ของคุณเอง:</label>
+                        <input type="file" id="avatar-file-input" accept="image/*" onchange="uploadCustomAvatar(event)" style="font-size: 0.65rem; color: #aaa; width: 100%;">
                     </div>
 
                     <div class="ff-stats-grid">
@@ -885,6 +937,10 @@
         </div>
 
         <header>
+            <div class="header-profile-mini" onclick="toggleProfileModal(true)" title="คลิกดูโปรไฟล์">
+                <div class="mini-avatar" id="mini-avatar-display-game">👑</div>
+                <span class="mini-name" id="mini-name-display-game">-</span>
+            </div>
             <h1>LUXURY BACCARAT</h1>
             <div class="header-btn-group">
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 เลือกเกม</button>
@@ -1049,6 +1105,7 @@
         let secondsLeftInDay = 60;
         let gameTimer = null;
         let isAdmin = false;
+        let userAvatar = ""; // เก็บ Base64 รูปโปรไฟล์
 
         let selectedChipValue = 10;
         let bets = { player: 0, tie: 0, banker: 0 };
@@ -1319,6 +1376,68 @@
             document.getElementById('myCustomAlertModal').style.display = 'none';
         }
 
+        // อัปโหลดรูปโปรไฟล์
+        window.uploadCustomAvatar = function(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                userAvatar = e.target.result;
+                updateHeaderAvatars();
+                let preview = document.getElementById('profile-avatar-preview');
+                if (preview) preview.innerHTML = `<img src="${userAvatar}" alt="Avatar">`;
+                saveGameProgress();
+                showCustomAlert("เปลี่ยนรูปโปรไฟล์สำเร็จ!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateHeaderAvatars() {
+            let avatarHtml = userAvatar ? `<img src="${userAvatar}" alt="Avatar">` : '👑';
+            let nameText = playerName || "Guest";
+
+            ['mini-avatar-display', 'mini-avatar-display-uno', 'mini-avatar-display-joker', 'mini-avatar-display-game'].forEach(id => {
+                let el = document.getElementById(id);
+                if (el) el.innerHTML = avatarHtml;
+            });
+
+            ['mini-name-display', 'mini-name-display-uno', 'mini-name-display-joker', 'mini-name-display-game'].forEach(id => {
+                let el = document.getElementById(id);
+                if (el) el.innerText = nameText;
+            });
+        }
+
+        // ระบบค้นหาข้อมูลผู้เล่นด้วย UID หรือ ชื่อ
+        window.searchPlayerInfo = function() {
+            let keyword = document.getElementById('search-user-input').value.trim().toLowerCase();
+            let resultBox = document.getElementById('search-result-box');
+            if (!keyword) {
+                resultBox.innerHTML = "<span style='color:#ff4d4d;'>กรุณากรอก UID หรือ ชื่อที่ต้องการค้นหา</span>";
+                return;
+            }
+
+            try {
+                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
+                let foundKey = null;
+
+                for (let id in users) {
+                    if (id.toLowerCase() === keyword || (users[id].name && users[id].name.toLowerCase().includes(keyword))) {
+                        foundKey = id;
+                        break;
+                    }
+                }
+
+                if (foundKey) {
+                    let u = users[foundKey];
+                    resultBox.innerHTML = `<span style='color:#38b000;'>พบข้อมูล! ชื่อ: ${u.name} | UID: ${foundKey} | เครดิต: ${(u.credit || 0).toLocaleString()}</span>`;
+                } else {
+                    resultBox.innerHTML = "<span style='color:#ff4d4d;'>ไม่พบผู้เล่นดังกล่าวในระบบ</span>";
+                }
+            } catch (e) {
+                resultBox.innerHTML = "<span style='color:#ff4d4d;'>เกิดข้อผิดพลาดในการค้นหา</span>";
+            }
+        }
+
         window.toggleProfileModal = function(show) {
             let modal = document.getElementById('profile-modal');
             if (!modal) return;
@@ -1332,6 +1451,11 @@
                 document.getElementById('pf-day').innerText = `Day ${currentDay}/30`;
                 document.getElementById('pf-status').innerText = "ปกติ (Active)";
                 
+                let preview = document.getElementById('profile-avatar-preview');
+                if (preview) {
+                    preview.innerHTML = userAvatar ? `<img src="${userAvatar}" alt="Avatar">` : '👑';
+                }
+
                 let savedBio = "";
                 if (isAdmin) {
                     savedBio = localStorage.getItem('admin_bio') || "รวยด้วยคาสิโน หรือหมดตัวในพริบตา!";
@@ -1342,6 +1466,8 @@
                     } catch (e) { savedBio = "รวยด้วยคาสิโน หรือหมดตัวในพริบตา วัดใจกันที่โต๊ะนี้!"; }
                 }
                 document.getElementById('pf-bio-input').value = savedBio;
+                document.getElementById('search-user-input').value = "";
+                document.getElementById('search-result-box').innerHTML = "";
 
                 modal.classList.add('show');
                 safePlaySound('chip');
@@ -1514,6 +1640,8 @@
                     debt = 0;
                     currentDay = 1;
                     secondsLeftInDay = 60;
+                    userAvatar = "";
+                    updateHeaderAvatars();
                     document.getElementById('player-id-display').innerText = `${playerName} (ADMIN)`;
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('lobby-screen').style.display = 'flex';
@@ -1532,6 +1660,7 @@
                         debt = Number(users[playerId].debt) || 0;
                         currentDay = Number(users[playerId].currentDay) || 1;
                         secondsLeftInDay = Number(users[playerId].secondsLeftInDay) || 60;
+                        userAvatar = users[playerId].avatar || "";
                     } else { return; }
                 } catch (e) { return; }
             } else {
@@ -1559,8 +1688,10 @@
                     debt = 0;
                     currentDay = 1;
                     secondsLeftInDay = 60;
+                    userAvatar = "";
                     
                     localStorage.setItem('baccarat_active_user', playerId);
+                    updateHeaderAvatars();
                     document.getElementById('player-id-display').innerText = `${playerName} (ADMIN)`;
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('lobby-screen').style.display = 'flex';
@@ -1594,6 +1725,7 @@
                     debt = Number(users[existingId].debt) || 0;
                     currentDay = Number(users[existingId].currentDay) || 1;
                     secondsLeftInDay = Number(users[existingId].secondsLeftInDay) || 60;
+                    userAvatar = users[existingId].avatar || "";
                 } else {
                     playerId = "P_" + Math.floor(1000 + Math.random() * 9000);
                     playerName = inputName;
@@ -1601,8 +1733,10 @@
                     debt = 0;
                     currentDay = 1;
                     secondsLeftInDay = 60;
+                    userAvatar = "";
                     users[playerId] = { 
                         name: playerName, credit, debt, currentDay, secondsLeftInDay, 
+                        avatar: "",
                         bio: "รวยด้วยคาสิโน หรือหมดตัวในพริบตา วัดใจกันที่โต๊ะนี้!",
                         eventData: { dayClaimed: 0, lastClaimDate: "" }
                     };
@@ -1620,6 +1754,7 @@
             secureChecksum = generateChecksum(credit, secureSalt);
             isAdmin = (playerId === "ADMIN_ROOT");
             
+            updateHeaderAvatars();
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
             document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (${playerId}) (เครดิต: ${isAdmin ? '∞' : credit.toLocaleString()})`;
@@ -1665,6 +1800,7 @@
                     users[playerId].debt = debt;
                     users[playerId].currentDay = currentDay;
                     users[playerId].secondsLeftInDay = secondsLeftInDay;
+                    users[playerId].avatar = userAvatar;
                     localStorage.setItem('baccarat_users', JSON.stringify(users));
                 }
                 socket.emit('update_user_status', { credit: credit });
