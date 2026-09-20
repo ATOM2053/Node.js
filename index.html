@@ -1014,14 +1014,12 @@
     </div>
 
     <script>
-        // เชื่อมต่อ Socket.io กับเซิร์ฟเวอร์ส่วนกลาง
         const socket = io();
 
         socket.on('connect', () => {
             console.log('เชื่อมต่อเซิร์ฟเวอร์ส่วนกลางสำเร็จ:', socket.id);
         });
 
-        // รับข้อมูลอัปเดตผู้เล่นออนไลน์จากเซิร์ฟเวอร์
         socket.on('update_players_list', (onlinePlayers) => {
             updateServerLeaderboard(onlinePlayers);
         });
@@ -1059,7 +1057,6 @@
         let scoreCounts = { player: 0, banker: 0, tie: 0 };
         let isPlaying = false;
 
-        // ตัวแปรสำหรับเกม UNO
         let unoDeck = [];
         let unoPlayerHand = [];
         let unoBotHand = [];
@@ -1070,7 +1067,6 @@
         const unoColors = ['red', 'blue', 'green', 'yellow'];
         const unoValues = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Skip', 'Reverse', 'Draw2'];
 
-        // ตัวแปรสำหรับเกม JOKER
         let jokerBet = 100;
         let jokerCards = [];
         let jokerGameOver = false;
@@ -1671,7 +1667,6 @@
                     users[playerId].secondsLeftInDay = secondsLeftInDay;
                     localStorage.setItem('baccarat_users', JSON.stringify(users));
                 }
-                // ส่งข้อมูลเครดิตล่าสุดไปที่เซิร์ฟเวอร์ Socket.io
                 socket.emit('update_user_status', { credit: credit });
             } catch (e) {}
         }
@@ -1797,7 +1792,6 @@
             if (jokerCredit) jokerCredit.innerText = isAdmin ? "ไม่จำกัด (∞)" : credit.toLocaleString();
         }
 
-        // --- ระบบเกม JOKER ---
         function startJokerGame() {
             let nameEl = document.getElementById('joker-player-name');
             if (nameEl) nameEl.innerText = `${playerName} (${playerId})`;
@@ -1900,7 +1894,6 @@
             safePlaySound('chip');
         }
 
-        // --- ระบบเกม UNO ---
         function createUnoDeck() {
             let deck = [];
             for (let color of unoColors) {
@@ -2057,7 +2050,6 @@
             safePlaySound('chip');
         };
 
-        // --- ระบบ Baccarat เดิม ---
         function createDeck() {
             const suits = ['♠', '♥', '♦', '♣'];
             const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -2232,21 +2224,16 @@
             beadDiv.className = `bead ${beadClass}`;
             beadDiv.innerText = beadText;
             beadsContainer.appendChild(beadDiv);
-            beadsContainer.scrollLeft = beadsContainer.scrollWidth;
         }
 
-        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
         window.onload = function() {
-            checkOrientation();
-            let activeUserId = localStorage.getItem('baccarat_active_user');
-            if (activeUserId) {
-                if (checkActiveBanStatus(activeUserId)) {
-                    showBannedModal("บัญชีของคุณถูกแบนจากระบบผู้ดูแล");
-                    localStorage.removeItem('baccarat_active_user');
-                } else {
-                    handleLogin(true, activeUserId);
-                }
+            let savedUser = localStorage.getItem('baccarat_active_user');
+            if (savedUser) {
+                handleLogin(true, savedUser);
             }
         };
     </script>
