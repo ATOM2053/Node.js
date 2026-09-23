@@ -146,11 +146,12 @@
 
         .lobby-container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
+            position: relative;
         }
 
         .lobby-header {
@@ -163,36 +164,67 @@
             border-radius: 12px;
         }
 
-        .game-grid {
+        .lobby-layout {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
+            grid-template-columns: 280px 1fr;
+            gap: 15px;
+            align-items: start;
+        }
+
+        .lobby-left-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .lobby-main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .game-grid-horizontal {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid var(--gold);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: absolute;
+            bottom: 75px;
+            right: 15px;
+            width: 320px;
+            z-index: 100;
+        }
+
+        .game-grid-horizontal.show {
+            display: flex;
         }
 
         .game-card {
             background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
             border: 2px solid var(--gold-dark);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: left;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
             display: flex;
-            flex-direction: column;
             align-items: center;
             gap: 12px;
         }
 
         .game-card:hover {
-            transform: translateY(-5px);
             border-color: var(--gold);
-            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
         }
 
-        .game-icon { font-size: 3rem; }
-        .game-title { color: var(--gold); font-size: 1.2rem; font-weight: bold; letter-spacing: 1px; }
-        .game-desc { font-size: 0.75rem; color: #aaa; line-height: 1.4; }
+        .game-icon { font-size: 2rem; }
+        .game-info { flex-grow: 1; }
+        .game-title { color: var(--gold); font-size: 0.95rem; font-weight: bold; }
+        .game-desc { font-size: 0.65rem; color: #aaa; }
 
         header {
             text-align: center;
@@ -685,6 +717,7 @@
             .sidebar-column { width: 100%; max-width: 650px; order: 2; }
             .game-container { order: 1; }
             .action-buttons { grid-template-columns: repeat(2, 1fr); }
+            .lobby-layout { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -722,38 +755,94 @@
                     <p style="font-size: 0.75rem; color: #aaa;" id="lobby-welcome-msg">ยินดีต้อนรับผู้เล่น</p>
                 </div>
                 <div class="header-btn-group">
+                    <!-- 3. โปรไฟล์อยู่ที่มุมบนซ้ายของหน้าล็อบบี้ -->
                     <div class="header-profile-mini" onclick="toggleProfileModal(true)" title="คลิกดูโปรไฟล์">
                         <div class="mini-avatar" id="mini-avatar-display">👑</div>
                         <span class="mini-name" id="mini-name-display">-</span>
                     </div>
-                    <button class="btn-top-action" onclick="toggleEventModal(true)">🎁 กิจกรรม</button>
-                    <button class="btn-top-action" onclick="toggleProfileModal(true)">🛡️ โปรไฟล์</button>
+                    <!-- 2. ผู้เล่นออนไลน์อยู่ที่มุมขวาบนของหน้าล็อบบี้ -->
+                    <div style="background: rgba(0, 255, 128, 0.1); border: 1px solid #00ff80; border-radius: 8px; padding: 6px 12px; font-size: 0.7rem; color: #00ff80; font-weight: bold;" id="online-counter-display">
+                        👥 ออนไลน์: 1
+                    </div>
                     <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
                 </div>
             </div>
 
-            <div style="text-align: left; margin-top: 5px;">
-                <h3 style="color: var(--gold-light); font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase;">🎮 เลือกห้องเกมเดิมพัน</h3>
-                <div class="game-grid">
+            <!-- โครงสร้างหน้าหลักแบ่งซ้าย-ขวา -->
+            <div class="lobby-layout">
+                <!-- 3. ระบบกิจกรรมอยู่ด้านซ้าย -->
+                <div class="lobby-left-sidebar">
+                    <div class="panel-box" style="border-color: #4e4376; background: rgba(20, 15, 30, 0.95);">
+                        <div class="panel-title" style="color: #b19cd9; border-bottom-color: #4e4376;">🎁 กิจกรรมล็อกอิน (7 วัน)</div>
+                        <p style="font-size: 0.65rem; color: #ccc; text-align: center; margin-bottom: 8px;">รับเครดิตฟรีทุกวัน!</p>
+                        <div id="lobby-event-days-grid" style="display: grid; grid-template-columns: 1fr; gap: 5px; max-height: 250px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+
+                <!-- ฝั่งขวา: ระบบแอดมิน และพื้นที่หลัก -->
+                <div class="lobby-main-content">
+                    <!-- 2. ระบบแอดมินมาไว้หน้าแรก เหนือปุ่มเลือกเกม -->
+                    <div id="admin-panel" class="panel-box">
+                        <div class="panel-title">🛡️ ระบบจัดการแอดมิน (เซิร์ฟเวอร์กลาง)</div>
+                        <div class="input-group" style="margin-bottom: 8px;">
+                            <label for="ban-uid-input" style="font-size: 0.65rem;">ระบุ UID (เช่น P_1234):</label>
+                            <input type="text" id="ban-uid-input" placeholder="กรอก UID เช่น P_xxxx" style="font-size: 0.8rem; padding: 6px;">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 8px;">
+                            <label for="ban-duration-select" style="font-size: 0.65rem;">ระยะเวลาการแบน:</label>
+                            <select id="ban-duration-select" style="font-size: 0.8rem; padding: 6px;">
+                                <option value="5_minutes">5 นาที</option>
+                                <option value="24_hours">24 ชั่วโมง</option>
+                                <option value="1_year">1 ปี</option>
+                                <option value="permanent" selected>ถาวร</option>
+                            </select>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 6px;">
+                            <button class="btn btn-loan" style="padding: 8px; font-size: 0.65rem;" onclick="adminExecuteBan()">🚫 แบนผู้เล่น</button>
+                            <button class="btn btn-repay" style="padding: 8px; font-size: 0.65rem;" onclick="adminExecuteUnban()">✅ ปลดแบน</button>
+                        </div>
+                        <div id="admin-msg" style="color: #f3e5ab; font-size: 0.65rem; margin-top: 4px; text-align: center; min-height: 12px;"></div>
+                    </div>
+
+                    <!-- รายชื่อผู้เล่นออนไลน์เพิ่มเติม -->
+                    <div class="panel-box">
+                        <div class="panel-title">🏆 ผู้เล่นออนไลน์ทั้งหมด</div>
+                        <div id="leaderboard-list" class="leaderboard-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. ปุ่มเลือกเกมอยู่ที่มุมขวาล่าง และมีปุ่มเริ่มเกมอยู่ข้างใต้ -->
+            <div style="position: fixed; bottom: 20px; right: 20px; z-index: 101; display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                <!-- เมนูเลือกเกมแนวยาว -->
+                <div id="game-selection-menu" class="game-grid-horizontal">
+                    <div style="color: var(--gold); font-size: 0.8rem; font-weight: bold; border-bottom: 1px solid var(--gold-dark); padding-bottom: 4px; text-transform: uppercase;">🎮 เลือกเกมเดิมพัน</div>
                     <div class="game-card" onclick="selectGame('baccarat')">
                         <div class="game-icon">🃏</div>
-                        <div class="game-title">LUXURY BACCARAT</div>
-                        <div class="game-desc">บาคาร่าพรีเมียม ลุ้นไพ่ตื่นเต้น อัตราจ่ายสูง ระบบป้องกันการโกงเต็มรูปแบบ</div>
-                        <button class="btn btn-deal" style="width: 100%; padding: 6px; font-size: 0.7rem;">เข้าสู่ห้องเกม</button>
+                        <div class="game-info">
+                            <div class="game-title">LUXURY BACCARAT</div>
+                            <div class="game-desc">บาคาร่าพรีเมียม อัตราจ่ายสูง</div>
+                        </div>
                     </div>
                     <div class="game-card" onclick="selectGame('uno')">
                         <div class="game-icon">🎴</div>
-                        <div class="game-title">LUXURY UNO</div>
-                        <div class="game-desc">การ์ดเกมสุดฮิต ผลัดกันลงการ์ดตามสีและตัวเลข ลุ้นสนุกชิงรางวัลเครดิต</div>
-                        <button class="btn btn-deal" style="width: 100%; padding: 6px; font-size: 0.7rem;">เข้าสู่ห้องเกม</button>
+                        <div class="game-info">
+                            <div class="game-title">LUXURY UNO</div>
+                            <div class="game-desc">การ์ดเกมสุดฮิต ผลัดกันลงการ์ด</div>
+                        </div>
                     </div>
                     <div class="game-card" onclick="selectGame('joker')">
                         <div class="game-icon">🃏</div>
-                        <div class="game-title">LUXURY JOKER</div>
-                        <div class="game-desc">เกมเปิดไพ่เสี่ยงโชค หาใบโจ๊กเกอร์เพื่อรับรางวัลทวีคูณมหาศาล!</div>
-                        <button class="btn btn-deal" style="width: 100%; padding: 6px; font-size: 0.7rem;">เข้าสู่ห้องเกม</button>
+                        <div class="game-info">
+                            <div class="game-title">LUXURY JOKER</div>
+                            <div class="game-desc">เปิดไพ่เสี่ยงโชค หาใบโจ๊กเกอร์</div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- ปุ่มเลือกเกม และปุ่มเริ่มเกมด้านล่าง -->
+                <button class="btn btn-deal" style="padding: 12px 20px; font-size: 0.85rem; border-radius: 30px; box-shadow: 0 5px 15px rgba(212,175,55,0.4);" onclick="toggleGameMenu()">📋 เลือกเกม</button>
+                <button class="btn btn-deal" style="padding: 10px 20px; font-size: 0.8rem; border-radius: 30px; background: linear-gradient(135deg, #38b000, #2d6a4f); color: #fff; box-shadow: 0 5px 15px rgba(56,176,0,0.4);" onclick="quickStartGame()">🚀 เริ่มเกม</button>
             </div>
         </div>
     </div>
@@ -857,7 +946,6 @@
                     <button class="ff-close-btn" onclick="toggleProfileModal(false)">✕</button>
                 </div>
                 <div class="ff-body">
-                    <!-- ระบบค้นหาผู้เล่นโดยใส่ UID หรือชื่อ -->
                     <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; border: 1px solid var(--gold-dark);">
                         <label for="search-user-input" style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">🔍 ค้นหาข้อมูลผู้เล่นและระบบแอดเพื่อน (ใส่ UID หรือ ชื่อ):</label>
                         <div style="display: flex; gap: 5px;">
@@ -876,7 +964,6 @@
                         </div>
                     </div>
 
-                    <!-- อัปโหลดรูปโปรไฟล์ส่วนตัว -->
                     <div style="background: rgba(0,0,0,0.5); border-radius: 8px; padding: 8px; border: 1px solid rgba(255,170,0,0.2);">
                         <label style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">📷 อัปโหลดรูปโปรไฟล์ของคุณเอง:</label>
                         <input type="file" id="avatar-file-input" accept="image/*" onchange="uploadCustomAvatar(event)" style="font-size: 0.65rem; color: #aaa; width: 100%;">
@@ -914,20 +1001,6 @@
             </div>
         </div>
 
-        <div id="event-modal" class="modal-overlay">
-            <div class="ff-profile-card" style="max-width: 450px;">
-                <div class="ff-header-banner" style="background: linear-gradient(90deg, #2b5876, #4e4376);">
-                    <span class="ff-header-title">🎁 กิจกรรมล็อกอินรับเครดิตฟรี (7 วัน)</span>
-                    <button class="ff-close-btn" onclick="toggleEventModal(false)">✕</button>
-                </div>
-                <div class="ff-body">
-                    <p style="font-size: 0.7rem; color: var(--gold-light); text-align: center;">ล็อกอินเข้าเกมทุกวันเพื่อรับเครดิตฟรีไปลุยโต๊ะคาสิโน!</p>
-                    <div id="event-days-grid" class="event-grid"></div>
-                    <button class="btn btn-deal" style="width: 100%; padding: 8px; font-size: 0.75rem;" onclick="toggleEventModal(false)">ปิดหน้าต่าง</button>
-                </div>
-            </div>
-        </div>
-
         <div id="myCustomAlertModal" class="custom-alert-overlay" style="display: none;">
             <div class="custom-alert-box">
                 <p id="myCustomAlertMessage">ข้อความแจ้งเตือน</p>
@@ -943,14 +1016,13 @@
             <h1>LUXURY BACCARAT</h1>
             <div class="header-btn-group">
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 เลือกเกม</button>
-                <button class="btn-top-action" onclick="toggleEventModal(true)">🎁 กิจกรรม</button>
                 <button class="btn-top-action" onclick="toggleProfileModal(true)">🛡️ โปรไฟล์</button>
                 <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
             </div>
         </header>
 
-        <div class="main-layout">
-            <div class="game-container">
+        <div class="main-layout" style="justify-content: center;">
+            <div class="game-container" style="max-width: 750px;">
                 <div class="time-progress-container">
                     <div id="time-progress-bar" class="time-progress-bar"></div>
                 </div>
@@ -1035,36 +1107,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="sidebar-column">
-                <div class="panel-box">
-                    <div class="online-counter-box" id="online-counter-display">👥 กำลังออนไลน์: 1 คน</div>
-                    <div class="panel-title">🏆 ผู้เล่นออนไลน์ทั้งหมด</div>
-                    <div id="leaderboard-list" class="leaderboard-list"></div>
-                </div>
-
-                <div id="admin-panel" class="panel-box">
-                    <div class="panel-title">🛡️ ระบบจัดการแอดมิน (เซิร์ฟเวอร์กลาง)</div>
-                    <div class="input-group" style="margin-bottom: 8px;">
-                        <label for="ban-uid-input" style="font-size: 0.65rem;">ระบุ UID (เช่น P_1234):</label>
-                        <input type="text" id="ban-uid-input" placeholder="กรอก UID เช่น P_xxxx" style="font-size: 0.8rem; padding: 6px;">
-                    </div>
-                    <div class="input-group" style="margin-bottom: 8px;">
-                        <label for="ban-duration-select" style="font-size: 0.65rem;">ระยะเวลาการแบน:</label>
-                        <select id="ban-duration-select" style="font-size: 0.8rem; padding: 6px;">
-                            <option value="5_minutes">5 นาที</option>
-                            <option value="24_hours">24 ชั่วโมง</option>
-                            <option value="1_year">1 ปี</option>
-                            <option value="permanent" selected>ถาวร</option>
-                        </select>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 6px;">
-                        <button class="btn btn-loan" style="padding: 8px; font-size: 0.65rem;" onclick="adminExecuteBan()">🚫 แบนผู้เล่น</button>
-                        <button class="btn btn-repay" style="padding: 8px; font-size: 0.65rem;" onclick="adminExecuteUnban()">✅ ปลดแบน</button>
-                    </div>
-                    <div id="admin-msg" style="color: #f3e5ab; font-size: 0.65rem; margin-top: 4px; text-align: center; min-height: 12px;"></div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -1126,6 +1168,15 @@
         let jokerBet = 100;
         let jokerCards = [];
         let jokerGameOver = false;
+
+        function toggleGameMenu() {
+            let menu = document.getElementById('game-selection-menu');
+            menu.classList.toggle('show');
+        }
+
+        function quickStartGame() {
+            selectGame('baccarat');
+        }
 
         function sendDiscordNotification(title, description, colorHex) {
             if (!DISCORD_WEBHOOK_URL) return;
@@ -1405,7 +1456,6 @@
             });
         }
 
-        // ระบบค้นหาผู้เล่นและระบบเพิ่มเพื่อน
         window.searchPlayerInfo = function() {
             let keyword = document.getElementById('search-user-input').value.trim().toLowerCase();
             let resultBox = document.getElementById('search-result-box');
@@ -1503,20 +1553,8 @@
             }
         }
 
-        window.toggleEventModal = function(show) {
-            let modal = document.getElementById('event-modal');
-            if (!modal) return;
-            if (show) {
-                renderEventDays();
-                modal.classList.add('show');
-                safePlaySound('chip');
-            } else {
-                modal.classList.remove('show');
-            }
-        }
-
         function renderEventDays() {
-            let grid = document.getElementById('event-days-grid');
+            let grid = document.getElementById('lobby-event-days-grid');
             if (!grid) return;
 
             let eventData = { dayClaimed: 0, lastClaimDate: "" };
@@ -1541,12 +1579,11 @@
                 let boxClass = isClaimed ? "claimed" : (isCurrent ? "current" : "");
 
                 html += `
-                    <div class="event-day-box ${boxClass}">
-                        <div style="font-size: 0.65rem; font-weight: bold; color: var(--gold-light);">วันที่ ${i}</div>
-                        <div style="font-size: 0.75rem; font-weight: bold; color: #fff;">+${rewards[i-1]}</div>
+                    <div class="event-day-box ${boxClass}" style="padding: 6px;">
+                        <div style="font-size: 0.6rem; font-weight: bold; color: var(--gold-light);">วันที่ ${i} (+${rewards[i-1]})</div>
                         <div>
                             ${isClaimed ? '<span style="font-size:0.55rem; color:#38b000; font-weight:bold;">✓ รับแล้ว</span>' : 
-                              (isCurrent ? `<button class="btn btn-deal" style="padding: 2px 6px; font-size: 0.55rem; width:100%;" onclick="claimEventReward(${i}, ${rewards[i-1]})">รับรางวัล</button>` : 
+                              (isCurrent ? `<button class="btn btn-deal" style="padding: 2px 4px; font-size: 0.55rem; width:100%; margin-top:2px;" onclick="claimEventReward(${i}, ${rewards[i-1]})">รับรางวัล</button>` : 
                               '<span style="font-size:0.55rem; color:#777;">รอปลดล็อก</span>')}
                         </div>
                     </div>
@@ -1649,7 +1686,7 @@
             let onlineCount = Math.max(1, userArray.length);
             let onlineDisplay = document.getElementById('online-counter-display');
             if (onlineDisplay) {
-                onlineDisplay.innerText = `👥 กำลังออนไลน์: ${onlineCount} คน`;
+                onlineDisplay.innerText = `👥 ออนไลน์: ${onlineCount}`;
             }
         }
 
@@ -1674,6 +1711,7 @@
                     document.getElementById('lobby-screen').style.display = 'flex';
                     document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับผู้ดูแลระบบ: ${playerName} (ADMIN)`;
                     document.getElementById('admin-panel').style.display = 'block';
+                    renderEventDays();
                     
                     socket.emit('join_game', { name: playerName, credit: 999999999, uid: playerId });
                     startRealtimeTimer();
@@ -1724,6 +1762,7 @@
                     document.getElementById('lobby-screen').style.display = 'flex';
                     document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับผู้ดูแลระบบ: ${playerName} (ADMIN)`;
                     document.getElementById('admin-panel').style.display = 'block';
+                    renderEventDays();
                     
                     sendDiscordNotification("👑 แอดมินเข้าสู่ระบบ", `**ผู้ดูแลระบบ:** Administrator เข้าสู่ระบบสำเร็จ`, "#00ffcc");
                     socket.emit('join_game', { name: playerName, credit: 999999999, uid: playerId });
@@ -1787,6 +1826,7 @@
             document.getElementById('lobby-screen').style.display = 'flex';
             document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (${playerId}) (เครดิต: ${isAdmin ? '∞' : credit.toLocaleString()})`;
             document.getElementById('player-id-display').innerText = `${playerName} (${playerId})`;
+            renderEventDays();
 
             if (!isAutoLogin) {
                 sendDiscordNotification("✅ ผู้เล่นเข้าสู่ระบบสำเร็จ", `**ชื่อผู้เล่น:** ${playerName}\n**UID:** ${playerId}\n**เครดิตเริ่มต้น:** ${credit.toLocaleString()}`, "#00ff00");
@@ -1798,6 +1838,7 @@
 
         window.selectGame = function(gameType) {
             document.getElementById('lobby-screen').style.display = 'none';
+            document.getElementById('game-selection-menu').classList.remove('show');
             if (gameType === 'baccarat') {
                 document.getElementById('game-screen').style.display = 'flex';
                 updateUI();
@@ -1816,6 +1857,7 @@
             document.getElementById('joker-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
             document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (${playerId}) (เครดิต: ${isAdmin ? '∞' : credit.toLocaleString()})`;
+            renderEventDays();
         }
 
         function saveGameProgress() {
