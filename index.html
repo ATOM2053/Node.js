@@ -723,8 +723,8 @@
                 <!-- ฝั่งซ้าย: กล่องกิจกรรมและระบบสัตว์เลี้ยง -->
                 <div class="lobby-left-sidebar">
                     <div class="panel-box" style="border-color: #4e4376; background: rgba(20, 15, 30, 0.95); cursor: pointer; text-align: center; transition: transform 0.2s;" onclick="toggleEventModal(true)">
-                        <div class="panel-title" style="color: #b19cd9; border-bottom-color: #4e4376; margin-bottom: 4px;">🎁 ภารกิจ & โทเคน</div>
-                        <p style="font-size: 0.6rem; color: #aaa;">(ทำภารกิจรับโทเคนแลกสัตว์เลี้ยง)</p>
+                        <div class="panel-title" style="color: #b19cd9; border-bottom-color: #4e4376; margin-bottom: 4px;">🎁 ภารกิจรายวัน & โทเคน</div>
+                        <p style="font-size: 0.6rem; color: #aaa;">(รีเซ็ต 00:00 ทุกวัน ทำภารกิจรับโทเคน)</p>
                     </div>
 
                     <div class="panel-box" style="border-color: #ffaa00; background: rgba(30, 25, 10, 0.95); cursor: pointer; text-align: center;" onclick="openPetSystem()">
@@ -801,16 +801,16 @@
         </div>
     </div>
 
-    <!-- Modal: กิจกรรมทำภารกิจและโทเคน -->
+    <!-- Modal: กิจกรรมทำภารกิจรายวัน (รีเซ็ต 00:00) -->
     <div id="event-modal" class="modal-overlay">
         <div class="ff-profile-card">
             <div class="ff-header-banner" style="background: linear-gradient(90deg, #4e4376, #2b5876);">
-                <span class="ff-header-title">🎁 ภารกิจเก็บโทเคน</span>
+                <span class="ff-header-title">🎁 ภารกิจรายวัน (รีเซ็ตเที่ยงคืน)</span>
                 <button class="ff-close-btn" onclick="toggleEventModal(false)">✕</button>
             </div>
             <div class="ff-body">
-                <p style="font-size: 0.75rem; color: #ccc; text-align: center; margin-bottom: 5px;">ทำภารกิจเพื่อรับโทเคนไปสุ่มสัตว์เลี้ยง!</p>
-                <div id="lobby-event-days-grid" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;"></div>
+                <p style="font-size: 0.75rem; color: #ccc; text-align: center; margin-bottom: 5px;">ทำภารกิจให้สำเร็จเพื่อรับโทเคน!</p>
+                <div id="lobby-event-days-grid" style="display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto;"></div>
                 <button class="btn btn-deal" style="width: 100%; padding: 8px; font-size: 0.75rem; margin-top: 10px;" onclick="toggleEventModal(false)">ปิดหน้าต่าง</button>
             </div>
         </div>
@@ -846,7 +846,7 @@
     </div>
 
     <!-- Screen: ตู้กาชาสุ่มสัตว์เลี้ยง -->
-    <div id="gacha-screen" class="modal-overlay" style="visibility: hidden; opacity: 0;">
+    <div id="gacha-screen" class="modal-overlay">
         <div class="ff-profile-card">
             <div class="ff-header-banner" style="background: linear-gradient(90deg, #ffaa00, #ff5252);">
                 <span class="ff-header-title">🎰 ตู้กาชาสุ่มสัตว์เลี้ยง (5 โทเคน/ครั้ง)</span>
@@ -860,7 +860,7 @@
         </div>
     </div>
 
-    <!-- Screen: PvP สัตว์เลี้ยง -->
+    <!-- Screen: PvP สัตว์เลี้ยง (ระบบเชิญ UID) -->
     <div id="pvp-screen">
         <header>
             <div class="header-profile-mini" onclick="toggleProfileModal(true)">
@@ -875,13 +875,20 @@
         </header>
         <div class="main-layout" style="justify-content: center;">
             <div class="game-container" style="max-width: 650px; text-align: center; padding: 20px; gap: 12px;">
-                <p style="font-size: 0.75rem; color: #ccc;">เลือกสัตว์เลี้ยงของคุณเพื่อส่งเข้าประลองรับเครดิตและโทเคน!</p>
+                <p style="font-size: 0.75rem; color: #ccc;">เลือกสัตว์เลี้ยงและใส่ UID เพื่อส่งคำเชิญท้าดวลเพื่อน!</p>
+                
                 <div class="input-group">
                     <label style="font-size: 0.65rem;">เลือกสัตว์เลี้ยงสำหรับการต่อสู้:</label>
                     <select id="pvp-pet-select" style="font-size: 0.8rem; padding: 8px;"></select>
                 </div>
-                <div id="pvp-result-box" style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; font-size: 0.8rem; min-height: 50px; color: var(--gold-light);">พร้อมประลองแล้ว!</div>
-                <button class="btn btn-loan" style="padding: 10px; font-size: 0.85rem;" onclick="startPetPvp()">⚔️ เริ่มต่อสู้ PVP</button>
+
+                <div class="input-group">
+                    <label style="font-size: 0.65rem;">ใส่ UID ผู้เล่นที่ต้องการท้าดวล (PVP):</label>
+                    <input type="text" id="pvp-target-uid-input" placeholder="กรอก UID เช่น P_xxxx" style="font-size: 0.8rem; padding: 8px;">
+                </div>
+
+                <div id="pvp-result-box" style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; font-size: 0.8rem; min-height: 50px; color: var(--gold-light);">พร้อมส่งคำเชิญประลองแล้ว!</div>
+                <button class="btn btn-loan" style="padding: 10px; font-size: 0.85rem;" onclick="sendPvpInviteToUid()">⚔️ ส่งคำเชิญท้าดวล UID</button>
             </div>
         </div>
     </div>
@@ -947,7 +954,9 @@
         <div id="myCustomAlertModal" class="custom-alert-overlay" style="display: none;">
             <div class="custom-alert-box">
                 <p id="myCustomAlertMessage">ข้อความแจ้งเตือน</p>
-                <button class="custom-alert-btn" onclick="closeCustomAlert()">ตกลง</button>
+                <div id="custom-alert-btn-group" style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="custom-alert-btn" id="custom-alert-ok-btn" onclick="closeCustomAlert()">ตกลง</button>
+                </div>
             </div>
         </div>
 
@@ -1110,6 +1119,23 @@
             updateServerLeaderboard(onlinePlayers);
         });
 
+        // รับคำเชิญ PvP จาก UID อื่น
+        socket.on('receive_pvp_invite', (data) => {
+            let senderName = data.senderName;
+            let senderUid = data.senderUid;
+            let senderPet = data.senderPet;
+
+            let msg = `ผู้เล่น ${senderName} (UID: ${senderUid}) ท้าดวล PvP ด้วยสัตว์เลี้ยง ${senderPet.icon} ${senderPet.name}! คุณต้องการรับคำท้าหรือไม่?`;
+            
+            showCustomAlert(msg, true, () => {
+                // ตอบรับคำท้า
+                let myPet = myPets.length > 0 ? myPets[0] : { name: "สัตว์เลี้ยงเริ่มต้น", icon: "🐾", atk: 50 };
+                let winner = myPet.atk >= senderPet.atk ? "คุณ" : senderName;
+                showCustomAlert(`⚔️ ผลการประลอง PvP กับ ${senderName}: ผู้ชนะคือ ${winner}!`);
+                closeCustomAlert();
+            });
+        });
+
         function checkOrientation() {
             let warningBox = document.getElementById('orientation-warning');
             if (window.innerHeight > window.innerWidth) {
@@ -1177,15 +1203,28 @@
             let modal = document.getElementById('event-modal');
             if (!modal) return;
             if (show) {
-                renderEventDays();
+                renderEventMissions();
                 modal.classList.add('show');
             } else {
                 modal.classList.remove('show');
             }
         }
 
-        function showCustomAlert(message) {
+        function showCustomAlert(message, isConfirm = false, onConfirm = null) {
             document.getElementById('myCustomAlertMessage').innerText = message;
+            let btnGroup = document.getElementById('custom-alert-btn-group');
+            
+            if (isConfirm) {
+                btnGroup.innerHTML = `
+                    <button class="custom-alert-btn" id="confirm-yes-btn" style="background:#38b000; color:#fff;">ยอมรับ</button>
+                    <button class="custom-alert-btn" id="confirm-no-btn" style="background:#d90429; color:#fff;" onclick="closeCustomAlert()">ปฏิเสธ</button>
+                `;
+                document.getElementById('confirm-yes-btn').onclick = () => {
+                    if (onConfirm) onConfirm();
+                };
+            } else {
+                btnGroup.innerHTML = `<button class="custom-alert-btn" onclick="closeCustomAlert()">ตกลง</button>`;
+            }
             document.getElementById('myCustomAlertModal').style.display = 'flex';
         }
 
@@ -1321,32 +1360,61 @@
             }
         }
 
-        function renderEventDays() {
+        // ระบบภารกิจรายวัน พร้อมรีเซ็ตอัตโนมัติเมื่อถึง 00:00
+        function renderEventMissions() {
             let grid = document.getElementById('lobby-event-days-grid');
             if (!grid) return;
 
-            let todayStr = new Date().toDateString();
-            let eventData = JSON.parse(localStorage.getItem(`event_${playerId}`) || '{"claimed":false,"date":""}');
-            let claimedToday = eventData.date === todayStr && eventData.claimed;
+            let todayDateStr = new Date().toDateString(); // เช่น "Wed Sep 23 2026"
+            let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || '{}');
+
+            // ถ้ารันคนละวันกับข้อมูลเดิม ให้รีเซ็ตสถานะภารกิจใหม่ทั้งหมด (รีเซ็ตตอน 00:00)
+            if (missionData.date !== todayDateStr) {
+                missionData = {
+                    date: todayDateStr,
+                    loginClaimed: false,
+                    playBaccaratClaimed: false,
+                    spinGachaClaimed: false
+                };
+                localStorage.setItem(`missions_${playerId}`, JSON.stringify(missionData));
+            }
 
             grid.innerHTML = `
-                <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <div style="font-size:0.75rem; color:var(--gold);">ภารกิจเข้าสู่ระบบประจำวัน</div>
-                        <div style="font-size:0.65rem; color:#aaa;">รับทันที 5 โทเคนฟรี</div>
+                        <div style="font-size:0.7rem; color:var(--gold);">1. ล็อกอินเข้าเกมประจำวัน</div>
+                        <div style="font-size:0.6rem; color:#aaa;">รับรางวัล +5 โทเคน</div>
                     </div>
-                    ${claimedToday ? '<span style="color:#38b000; font-size:0.7rem;">✓ รับแล้ว</span>' : '<button class="btn btn-deal" style="padding:6px 12px; font-size:0.65rem;" onclick="claimDailyToken()">รับโทเคน</button>'}
+                    ${missionData.loginClaimed ? '<span style="color:#38b000; font-size:0.65rem;">✓ รับแล้ว</span>' : '<button class="btn btn-deal" style="padding:4px 10px; font-size:0.6rem;" onclick="claimMissionReward(\'loginClaimed\', 5)">รับโทเคน</button>'}
+                </div>
+                <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-size:0.7rem; color:var(--gold);">2. เล่นบาคาร่าครบ 1 รอบ</div>
+                        <div style="font-size:0.6rem; color:#aaa;">รับรางวัล +3 โทเคน</div>
+                    </div>
+                    ${missionData.playBaccaratClaimed ? '<span style="color:#38b000; font-size:0.65rem;">✓ รับแล้ว</span>' : '<button class="btn btn-deal" style="padding:4px 10px; font-size:0.6rem;" onclick="claimMissionReward(\'playBaccaratClaimed\', 3)">รับโทเคน</button>'}
+                </div>
+                <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-size:0.7rem; color:var(--gold);">3. สุ่มกาชาสัตว์เลี้ยง 1 ครั้ง</div>
+                        <div style="font-size:0.6rem; color:#aaa;">รับรางวัล +4 โทเคน</div>
+                    </div>
+                    ${missionData.spinGachaClaimed ? '<span style="color:#38b000; font-size:0.65rem;">✓ รับแล้ว</span>' : '<button class="btn btn-deal" style="padding:4px 10px; font-size:0.6rem;" onclick="claimMissionReward(\'spinGachaClaimed\', 4)">รับโทเคน</button>'}
                 </div>
             `;
         }
 
-        window.claimDailyToken = function() {
-            let todayStr = new Date().toDateString();
-            tokens += 5;
-            localStorage.setItem(`event_${playerId}`, JSON.stringify({ claimed: true, date: todayStr }));
+        window.claimMissionReward = function(missionKey, tokenAmount) {
+            let todayDateStr = new Date().toDateString();
+            let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || `{"date":"${todayDateStr}"}`);
+            
+            missionData[missionKey] = true;
+            localStorage.setItem(`missions_${playerId}`, JSON.stringify(missionData));
+
+            tokens += tokenAmount;
             saveGameProgress();
-            renderEventDays();
-            showCustomAlert("🎉 รับ 5 โทเคนสำเร็จ!");
+            renderEventMissions();
+            showCustomAlert(`🎉 สำเร็จภารกิจ! คุณได้รับ +${tokenAmount} โทเคน`);
         }
 
         window.openPetSystem = function() {
@@ -1374,22 +1442,33 @@
         }
 
         window.openGachaScreen = function() {
-            document.getElementById('gacha-screen').style.visibility = 'visible';
-            document.getElementById('gacha-screen').style.opacity = '1';
+            let modal = document.getElementById('gacha-screen');
+            if (modal) {
+                modal.classList.add('show');
+            }
         }
 
         window.closeGachaScreen = function() {
-            document.getElementById('gacha-screen').style.visibility = 'hidden';
-            document.getElementById('gacha-screen').style.opacity = '0';
+            let modal = document.getElementById('gacha-screen');
+            if (modal) {
+                modal.classList.remove('show');
+            }
             openPetSystem();
         }
 
         window.spinGacha = function() {
             if (tokens < 5) {
-                showCustomAlert("โทเคนของคุณไม่พอ! ทำภารกิจเพื่อรับโทเคนเพิ่ม");
+                showCustomAlert("โทเคนของคุณไม่พอ! ทำภารกิจรายวันเพื่อรับโทเคนเพิ่ม");
                 return;
             }
             tokens -= 5;
+            
+            // อัปเดตเควสสุ่มกาชาอัตโนมัติ
+            let todayDateStr = new Date().toDateString();
+            let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || `{"date":"${todayDateStr}"}`);
+            missionData.spinGachaClaimed = true;
+            localStorage.setItem(`missions_${playerId}`, JSON.stringify(missionData));
+
             saveGameProgress();
 
             const possiblePets = [
@@ -1423,20 +1502,32 @@
             select.innerHTML = html;
         }
 
-        window.startPetPvp = function() {
+        // ระบบส่งคำเชิญ PvP ไปยัง UID ที่กำหนด
+        window.sendPvpInviteToUid = function() {
+            let targetUid = document.getElementById('pvp-target-uid-input').value.trim();
             let idx = document.getElementById('pvp-pet-select').value;
-            let pet = myPets[idx];
-            let enemyAtk = Math.floor(40 + Math.random() * 100);
-
             let resultBox = document.getElementById('pvp-result-box');
-            if (pet.atk >= enemyAtk) {
-                credit += 200;
-                tokens += 2;
-                saveGameProgress();
-                resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">🎉 ชนะการประลอง!</span> สัตว์เลี้ยง ${pet.name} เอาชนะศัตรู (พลัง ${enemyAtk}) ได้รับ +200 เครดิต และ +2 โทเคน!`;
-            } else {
-                resultBox.innerHTML = `<span style="color:#ff4d4d; font-weight:bold;">❌ แพ้การประลอง!</span> ศัตรูมีพลัง ${enemyAtk} สูงเกินไป ลองใหม่อีกครั้ง`;
+
+            if (!targetUid) {
+                showCustomAlert("กรุณากรอก UID ผู้เล่นที่ต้องการท้าดวล!");
+                return;
             }
+            if (targetUid === playerId) {
+                showCustomAlert("ไม่สามารถท้าดวลตัวเองได้!");
+                return;
+            }
+
+            let myPet = myPets[idx];
+
+            // ส่งข้อมูลผ่าน socket ไปยังเป้าหมาย
+            socket.emit('send_pvp_invite', {
+                targetUid: targetUid,
+                senderUid: playerId,
+                senderName: playerName,
+                senderPet: myPet
+            });
+
+            resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">📤 ส่งคำเชิญไปยัง UID: ${targetUid} สำเร็จ!</span> รอการตอบรับจากคู่ต่อสู้...`;
         }
 
         window.handleLogout = function() {
@@ -1705,6 +1796,12 @@
             document.getElementById('btn-clear').disabled = true;
             document.getElementById('game-message').innerText = "กำลังแจกไพ่...";
 
+            // อัปเดตเควสเล่นบาคาร่าอัตโนมัติ
+            let todayDateStr = new Date().toDateString();
+            let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || `{"date":"${todayDateStr}"}`);
+            missionData.playBaccaratClaimed = true;
+            localStorage.setItem(`missions_${playerId}`, JSON.stringify(missionData));
+
             let pCardsContainer = document.getElementById('player-cards');
             let bCardsContainer = document.getElementById('banker-cards');
             pCardsContainer.innerHTML = '';
@@ -1782,3 +1879,4 @@
     </script>
 </body>
 </html>
+
