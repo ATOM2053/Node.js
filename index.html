@@ -664,6 +664,16 @@
             box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
         }
 
+        @keyframes gachaSpinAnim {
+            0% { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); filter: hue-rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); filter: hue-rotate(360deg); }
+        }
+
+        .gacha-animating {
+            animation: gachaSpinAnim 0.5s infinite linear;
+        }
+
         @media (max-width: 768px) {
             .main-layout { flex-direction: column; align-items: center; }
             .sidebar-column { width: 100%; max-width: 650px; order: 2; }
@@ -718,9 +728,7 @@
                 </div>
             </div>
 
-            <!-- ระบบหน้าหลักแบ่งซ้าย-ขวา และ แอดมินตรงกลางข้างบน -->
             <div class="lobby-layout">
-                <!-- ฝั่งซ้าย: กล่องกิจกรรมและระบบสัตว์เลี้ยง -->
                 <div class="lobby-left-sidebar">
                     <div class="panel-box" style="border-color: #4e4376; background: rgba(20, 15, 30, 0.95); cursor: pointer; text-align: center; transition: transform 0.2s;" onclick="toggleEventModal(true)">
                         <div class="panel-title" style="color: #b19cd9; border-bottom-color: #4e4376; margin-bottom: 4px;">🎁 ภารกิจรายวัน & โทเคน</div>
@@ -729,11 +737,10 @@
 
                     <div class="panel-box" style="border-color: #ffaa00; background: rgba(30, 25, 10, 0.95); cursor: pointer; text-align: center;" onclick="openPetSystem()">
                         <div class="panel-title" style="color: #ffaa00; border-bottom-color: #ffaa00; margin-bottom: 4px;">🐾 ระบบเลี้ยงสัตว์</div>
-                        <p style="font-size: 0.6rem; color: #aaa;">(ดูสัตว์เลี้ยง & ตู้กาชา & PvP)</p>
+                        <p style="font-size: 0.6rem; color: #aaa;">(ดูสัตว์เลี้ยง & PvP)</p>
                     </div>
                 </div>
 
-                <!-- ฝั่งขวา: หมวดหมู่แอดมินตรงกลางข้างบน และ ตารางผู้เล่นออนไลน์ที่ย่อขนาดลง -->
                 <div class="lobby-main-content">
                     <div id="admin-panel" class="panel-box">
                         <div class="panel-title">🛡️ หมวดหมู่แอดมิน (จัดการระบบ)</div>
@@ -769,7 +776,6 @@
                 </div>
             </div>
 
-            <!-- เมนูเลือกเกม อยู่มุมขวาล่าง -->
             <div style="position: fixed; bottom: 20px; right: 20px; z-index: 101; display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
                 <div id="game-selection-menu" class="game-grid-horizontal">
                     <div style="color: var(--gold); font-size: 0.8rem; font-weight: bold; border-bottom: 1px solid var(--gold-dark); padding-bottom: 4px; text-transform: uppercase;">🎮 เลือกโหมดเกม</div>
@@ -801,7 +807,7 @@
         </div>
     </div>
 
-    <!-- Modal: กิจกรรมทำภารกิจรายวัน (รีเซ็ต 00:00) -->
+    <!-- Modal: กิจกรรมทำภารกิจรายวัน -->
     <div id="event-modal" class="modal-overlay">
         <div class="ff-profile-card">
             <div class="ff-header-banner" style="background: linear-gradient(90deg, #4e4376, #2b5876);">
@@ -816,14 +822,14 @@
         </div>
     </div>
 
-    <!-- Screen: ระบบเลี้ยงสัตว์และตู้กาชา -->
+    <!-- Screen: ระบบเลี้ยงสัตว์และตู้กาชา (รวมตู้สุ่มอยู่ด้านล่าง) -->
     <div id="pet-screen">
         <header>
             <div class="header-profile-mini" onclick="toggleProfileModal(true)">
                 <div class="mini-avatar" id="mini-avatar-display-pet">👑</div>
                 <span class="mini-name" id="mini-name-display-pet">-</span>
             </div>
-            <h1 style="color: #ffaa00;">🐾 ระบบเลี้ยงสัตว์เลี้ยง</h1>
+            <h1 style="color: #ffaa00;">🐾 ระบบเลี้ยงสัตว์เลี้ยง & ตู้สุ่ม</h1>
             <div class="header-btn-group">
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 หน้าหลัก</button>
                 <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
@@ -834,33 +840,27 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px;">
                     <div>โทเคนของคุณ: <b id="pet-token-val" style="color: var(--gold);">0</b> 🪙</div>
                     <div style="display: flex; gap: 6px;">
-                        <button class="btn btn-deal" onclick="openGachaScreen()">🎰 ตู้กาชาสัตว์เลี้ยง</button>
                         <button class="btn btn-repay" onclick="openPvpScreen()">⚔️ PVP สัตว์เลี้ยง</button>
                     </div>
                 </div>
+
                 <div class="panel-title">สัตว์เลี้ยงของคุณ</div>
-                <div id="my-pets-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 300px; overflow-y: auto;"></div>
-                <button class="btn btn-deal" onclick="returnToLobby()">กลับหน้าหลัก</button>
+                <div id="my-pets-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 220px; overflow-y: auto;"></div>
+
+                <!-- ตู้สุ่มสัตว์เลี้ยง (Gacha) อยู่ด้านล่างของระบบเลี้ยงสัตว์ตามต้องการ -->
+                <div class="panel-box" style="border-color: #ffaa00; background: rgba(25, 20, 10, 0.95); margin-top: 10px;">
+                    <div class="panel-title" style="color: #ffaa00;">🎰 ตู้กาชาสุ่มสัตว์เลี้ยง (5 โทเคน/ครั้ง)</div>
+                    <div style="font-size: 3rem; margin: 10px 0;" id="gacha-result-icon">🎁</div>
+                    <div id="gacha-result-text" style="font-size: 0.8rem; color: var(--gold); font-weight: bold; min-height: 25px; margin-bottom: 8px;">ลุ้นรับสัตว์เลี้ยงในตำนาน (โอกาสออกสูงสุด 0.008%)</div>
+                    <button class="btn btn-deal" id="gacha-spin-btn" style="width: 100%; padding: 10px; font-size: 0.85rem;" onclick="spinGacha()">🎲 สุ่มสัตว์เลี้ยง (5 🪙)</button>
+                </div>
+
+                <button class="btn btn-deal" style="margin-top: 5px;" onclick="returnToLobby()">กลับหน้าหลัก</button>
             </div>
         </div>
     </div>
 
-    <!-- Screen: ตู้กาชาสุ่มสัตว์เลี้ยง -->
-    <div id="gacha-screen" class="modal-overlay">
-        <div class="ff-profile-card">
-            <div class="ff-header-banner" style="background: linear-gradient(90deg, #ffaa00, #ff5252);">
-                <span class="ff-header-title">🎰 ตู้กาชาสุ่มสัตว์เลี้ยง (5 โทเคน/ครั้ง)</span>
-                <button class="ff-close-btn" onclick="closeGachaScreen()">✕</button>
-            </div>
-            <div class="ff-body" style="text-align: center;">
-                <div style="font-size: 3rem; margin: 10px 0;" id="gacha-result-icon">🎁</div>
-                <div id="gacha-result-text" style="font-size: 0.9rem; color: var(--gold); font-weight: bold; min-height: 30px;">กดปุ่มสุ่มด้านล่างเพื่อลุ้นรับสัตว์เลี้ยง!</div>
-                <button class="btn btn-deal" style="width: 100%; padding: 10px; font-size: 0.85rem;" onclick="spinGacha()">🎲 สุ่มสัตว์เลี้ยง (5 🪙)</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Screen: PvP สัตว์เลี้ยง (ระบบเชิญ UID) -->
+    <!-- Screen: PvP สัตว์เลี้ยง -->
     <div id="pvp-screen">
         <header>
             <div class="header-profile-mini" onclick="toggleProfileModal(true)">
@@ -1119,7 +1119,6 @@
             updateServerLeaderboard(onlinePlayers);
         });
 
-        // รับคำเชิญ PvP จาก UID อื่น
         socket.on('receive_pvp_invite', (data) => {
             let senderName = data.senderName;
             let senderUid = data.senderUid;
@@ -1128,7 +1127,6 @@
             let msg = `ผู้เล่น ${senderName} (UID: ${senderUid}) ท้าดวล PvP ด้วยสัตว์เลี้ยง ${senderPet.icon} ${senderPet.name}! คุณต้องการรับคำท้าหรือไม่?`;
             
             showCustomAlert(msg, true, () => {
-                // ตอบรับคำท้า
                 let myPet = myPets.length > 0 ? myPets[0] : { name: "สัตว์เลี้ยงเริ่มต้น", icon: "🐾", atk: 50 };
                 let winner = myPet.atk >= senderPet.atk ? "คุณ" : senderName;
                 showCustomAlert(`⚔️ ผลการประลอง PvP กับ ${senderName}: ผู้ชนะคือ ${winner}!`);
@@ -1360,15 +1358,13 @@
             }
         }
 
-        // ระบบภารกิจรายวัน พร้อมรีเซ็ตอัตโนมัติเมื่อถึง 00:00
         function renderEventMissions() {
             let grid = document.getElementById('lobby-event-days-grid');
             if (!grid) return;
 
-            let todayDateStr = new Date().toDateString(); // เช่น "Wed Sep 23 2026"
+            let todayDateStr = new Date().toDateString();
             let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || '{}');
 
-            // ถ้ารันคนละวันกับข้อมูลเดิม ให้รีเซ็ตสถานะภารกิจใหม่ทั้งหมด (รีเซ็ตตอน 00:00)
             if (missionData.date !== todayDateStr) {
                 missionData = {
                     date: todayDateStr,
@@ -1421,69 +1417,80 @@
             document.getElementById('lobby-screen').style.display = 'none';
             document.getElementById('pet-screen').style.display = 'flex';
             document.getElementById('pet-token-val').innerText = tokens;
-            
+            renderPetsList();
+        }
+
+        function renderPetsList() {
             let list = document.getElementById('my-pets-list');
             if (myPets.length === 0) {
-                list.innerHTML = `<div style="grid-column: span 2; font-size:0.7rem; color:#777; padding:20px;">คุณยังไม่มีสัตว์เลี้ยง ไปสุ่มที่ตู้กาชาได้เลย!</div>`;
+                list.innerHTML = `<div style="grid-column: span 2; font-size:0.7rem; color:#777; padding:10px;">คุณยังไม่มีสัตว์เลี้ยง ไปสุ่มที่ตู้กาชาด้านล่างได้เลย!</div>`;
                 return;
             }
 
             let html = "";
-            myPets.forEach((pet, index) => {
+            myPets.forEach((pet) => {
+                let isLegend = pet.atk >= 1000;
+                let borderCol = isLegend ? "#ff006e" : "var(--gold-dark)";
                 html += `
-                    <div style="background: rgba(0,0,0,0.5); border:1px solid var(--gold-dark); border-radius:8px; padding:8px; text-align:center;">
-                        <div style="font-size:2rem;">${pet.icon}</div>
-                        <div style="font-size:0.75rem; color:var(--gold); font-weight:bold;">${pet.name}</div>
-                        <div style="font-size:0.6rem; color:#aaa;">พลังโจมตี: ${pet.atk}</div>
+                    <div style="background: rgba(0,0,0,0.5); border:1px solid ${borderCol}; border-radius:8px; padding:6px; text-align:center;">
+                        <div style="font-size:1.8rem;">${pet.icon}</div>
+                        <div style="font-size:0.7rem; color:${isLegend ? '#ff006e' : 'var(--gold)'}; font-weight:bold;">${pet.name}</div>
+                        <div style="font-size:0.55rem; color:#aaa;">พลังโจมตี: ${pet.atk.toLocaleString()}</div>
                     </div>
                 `;
             });
             list.innerHTML = html;
         }
 
-        window.openGachaScreen = function() {
-            let modal = document.getElementById('gacha-screen');
-            if (modal) {
-                modal.classList.add('show');
-            }
-        }
-
-        window.closeGachaScreen = function() {
-            let modal = document.getElementById('gacha-screen');
-            if (modal) {
-                modal.classList.remove('show');
-            }
-            openPetSystem();
-        }
-
+        // ระบบสุ่มกาชาพร้อมอนิเมชัน และ อัตราออกสัตว์ในตำนาน 0.008%
         window.spinGacha = function() {
             if (tokens < 5) {
                 showCustomAlert("โทเคนของคุณไม่พอ! ทำภารกิจรายวันเพื่อรับโทเคนเพิ่ม");
                 return;
             }
             tokens -= 5;
-            
-            // อัปเดตเควสสุ่มกาชาอัตโนมัติ
+            document.getElementById('pet-token-val').innerText = tokens;
+
             let todayDateStr = new Date().toDateString();
             let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || `{"date":"${todayDateStr}"}`);
             missionData.spinGachaClaimed = true;
             localStorage.setItem(`missions_${playerId}`, JSON.stringify(missionData));
-
             saveGameProgress();
 
-            const possiblePets = [
-                { name: "แมวเหมียวทองคำ", icon: "🐱", atk: 50 },
-                { name: "สุนัขพิทักษ์", icon: "🐶", atk: 75 },
-                { name: "มังกรไฟโบราณ", icon: "🐲", atk: 150 },
-                { name: "ยูนิคอร์นศักดิ์สิทธิ์", icon: "🦄", atk: 120 }
-            ];
+            let iconEl = document.getElementById('gacha-result-icon');
+            let textEl = document.getElementById('gacha-result-text');
+            let spinBtn = document.getElementById('gacha-spin-btn');
 
-            let wonPet = possiblePets[Math.floor(Math.random() * possiblePets.length)];
-            myPets.push(wonPet);
-            saveGameProgress();
+            spinBtn.disabled = true;
+            iconEl.classList.add('gacha-animating');
+            textEl.innerText = "🌀 กำลังสุ่มสัตว์เลี้ยง...";
 
-            document.getElementById('gacha-result-icon').innerText = wonPet.icon;
-            document.getElementById('gacha-result-text').innerText = `ยินดีด้วย! คุณได้รับ ${wonPet.name} (พลัง ${wonPet.atk})!`;
+            setTimeout(() => {
+                iconEl.classList.remove('gacha-animating');
+                spinBtn.disabled = false;
+
+                // สุ่มอัตราความน่าจะเป็น (0 ถึง 100)
+                let rand = Math.random() * 100;
+                let wonPet;
+
+                // สัตว์ในตำนาน โอกาสออก 0.008% (ค่า <= 0.008)
+                if (rand <= 0.008) {
+                    wonPet = { name: "มังกรทองคำอมตะ (ตำนาน)", icon: "🐲✨", atk: 9999 };
+                } else if (rand <= 5.0) {
+                    wonPet = { name: "ยูนิคอร์นศักดิ์สิทธิ์ (หายาก)", icon: "🦄", atk: 500 };
+                } else if (rand <= 30.0) {
+                    wonPet = { name: "สุนัขพิทักษ์", icon: "🐶", atk: 150 };
+                } else {
+                    wonPet = { name: "แมวเหมียวทองคำ", icon: "🐱", atk: 50 };
+                }
+
+                myPets.push(wonPet);
+                saveGameProgress();
+                renderPetsList();
+
+                iconEl.innerText = wonPet.icon;
+                textEl.innerText = `🎉 ยินดีด้วย! คุณได้รับ ${wonPet.name} (พลัง ${wonPet.atk})!`;
+            }, 1200);
         }
 
         window.openPvpScreen = function() {
@@ -1502,7 +1509,6 @@
             select.innerHTML = html;
         }
 
-        // ระบบส่งคำเชิญ PvP ไปยัง UID ที่กำหนด
         window.sendPvpInviteToUid = function() {
             let targetUid = document.getElementById('pvp-target-uid-input').value.trim();
             let idx = document.getElementById('pvp-pet-select').value;
@@ -1519,7 +1525,6 @@
 
             let myPet = myPets[idx];
 
-            // ส่งข้อมูลผ่าน socket ไปยังเป้าหมาย
             socket.emit('send_pvp_invite', {
                 targetUid: targetUid,
                 senderUid: playerId,
@@ -1796,7 +1801,6 @@
             document.getElementById('btn-clear').disabled = true;
             document.getElementById('game-message').innerText = "กำลังแจกไพ่...";
 
-            // อัปเดตเควสเล่นบาคาร่าอัตโนมัติ
             let todayDateStr = new Date().toDateString();
             let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || `{"date":"${todayDateStr}"}`);
             missionData.playBaccaratClaimed = true;
