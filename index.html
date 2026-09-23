@@ -214,7 +214,6 @@
 
         .header-btn-group { display: flex; gap: 6px; align-items: center; }
 
-        /* ส่วนแสดงโปรไฟล์มุมซ้ายบน */
         .header-profile-mini {
             display: flex;
             align-items: center;
@@ -854,13 +853,13 @@
         <div id="profile-modal" class="modal-overlay">
             <div class="ff-profile-card">
                 <div class="ff-header-banner">
-                    <span class="ff-header-title">📜 ข้อมูลผู้เล่น (PLAYER PROFILE)</span>
+                    <span class="ff-header-title">📜 ข้อมูลผู้เล่น & ระบบเพื่อน (PROFILE & FRIENDS)</span>
                     <button class="ff-close-btn" onclick="toggleProfileModal(false)">✕</button>
                 </div>
                 <div class="ff-body">
                     <!-- ระบบค้นหาผู้เล่นโดยใส่ UID หรือชื่อ -->
                     <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; border: 1px solid var(--gold-dark);">
-                        <label for="search-user-input" style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">🔍 ค้นหาข้อมูลผู้เล่น (ใส่ UID หรือ ชื่อ):</label>
+                        <label for="search-user-input" style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">🔍 ค้นหาข้อมูลผู้เล่นและระบบแอดเพื่อน (ใส่ UID หรือ ชื่อ):</label>
                         <div style="display: flex; gap: 5px;">
                             <input type="text" id="search-user-input" placeholder="เช่น P_1234 หรือ ชื่อ..." style="flex: 1; background: rgba(0,0,0,0.6); border: 1px solid var(--gold-dark); border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
                             <button class="btn btn-deal" style="padding: 6px 10px; font-size: 0.65rem;" onclick="searchPlayerInfo()">ค้นหา</button>
@@ -1045,7 +1044,7 @@
                 </div>
 
                 <div id="admin-panel" class="panel-box">
-                    <div class="panel-title">🛡️ ระบบจัดการแอดมิน</div>
+                    <div class="panel-title">🛡️ ระบบจัดการแอดมิน (เซิร์ฟเวอร์กลาง)</div>
                     <div class="input-group" style="margin-bottom: 8px;">
                         <label for="ban-uid-input" style="font-size: 0.65rem;">ระบุ UID (เช่น P_1234):</label>
                         <input type="text" id="ban-uid-input" placeholder="กรอก UID เช่น P_xxxx" style="font-size: 0.8rem; padding: 6px;">
@@ -1105,7 +1104,7 @@
         let secondsLeftInDay = 60;
         let gameTimer = null;
         let isAdmin = false;
-        let userAvatar = ""; // เก็บ Base64 รูปโปรไฟล์
+        let userAvatar = "";
 
         let selectedChipValue = 10;
         let bets = { player: 0, tie: 0, banker: 0 };
@@ -1221,7 +1220,7 @@
             try {
                 let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
                 if (!users[targetUid]) {
-                    return { success: false, message: `ไม่พบผู้เล่น UID: ${targetUid} ในระบบ` };
+                    return { success: false, message: `ไม่พบผู้เล่น UID: ${targetUid} ในระบบเซิร์ฟเวอร์กลาง` };
                 }
 
                 let now = new Date();
@@ -1376,7 +1375,6 @@
             document.getElementById('myCustomAlertModal').style.display = 'none';
         }
 
-        // อัปโหลดรูปโปรไฟล์
         window.uploadCustomAvatar = function(event) {
             let file = event.target.files[0];
             if (!file) return;
@@ -1407,7 +1405,7 @@
             });
         }
 
-        // ระบบค้นหาข้อมูลผู้เล่นด้วย UID หรือ ชื่อ
+        // ระบบค้นหาผู้เล่นและระบบเพิ่มเพื่อน
         window.searchPlayerInfo = function() {
             let keyword = document.getElementById('search-user-input').value.trim().toLowerCase();
             let resultBox = document.getElementById('search-result-box');
@@ -1429,12 +1427,41 @@
 
                 if (foundKey) {
                     let u = users[foundKey];
-                    resultBox.innerHTML = `<span style='color:#38b000;'>พบข้อมูล! ชื่อ: ${u.name} | UID: ${foundKey} | เครดิต: ${(u.credit || 0).toLocaleString()}</span>`;
+                    let avatarTag = u.avatar ? `<img src="${u.avatar}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:4px;">` : '👑';
+                    resultBox.innerHTML = `
+                        <div style="background: rgba(0,0,0,0.6); padding: 8px; border-radius: 6px; border: 1px solid var(--gold);">
+                            <div>${avatarTag} <b>${u.name}</b> (UID: ${foundKey})</div>
+                            <div style="color:var(--gold);">เครดิต: ${(u.credit || 0).toLocaleString()} | สเตตัส: "${u.bio || '-'}"</div>
+                            <button class="btn btn-deal" style="padding: 3px 8px; font-size: 0.6rem; margin-top: 5px;" onclick="addFriend('${foundKey}', '${u.name}')">➕ เพิ่มเพื่อน</button>
+                        </div>
+                    `;
                 } else {
                     resultBox.innerHTML = "<span style='color:#ff4d4d;'>ไม่พบผู้เล่นดังกล่าวในระบบ</span>";
                 }
             } catch (e) {
                 resultBox.innerHTML = "<span style='color:#ff4d4d;'>เกิดข้อผิดพลาดในการค้นหา</span>";
+            }
+        }
+
+        window.addFriend = function(targetUid, targetName) {
+            if (targetUid === playerId) {
+                showCustomAlert("ไม่สามารถเพิ่มตัวเองเป็นเพื่อนได้!");
+                return;
+            }
+            try {
+                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
+                if (users[playerId]) {
+                    if (!users[playerId].friends) users[playerId].friends = [];
+                    if (users[playerId].friends.includes(targetUid)) {
+                        showCustomAlert(`คุณเป็นเพื่อนกับ ${targetName} อยู่แล้ว!`);
+                        return;
+                    }
+                    users[playerId].friends.push(targetUid);
+                    localStorage.setItem('baccarat_users', JSON.stringify(users));
+                    showCustomAlert(`🎉 ส่งคำขอและเพิ่มเพื่อนกับ ${targetName} สำเร็จ!`);
+                }
+            } catch (e) {
+                showCustomAlert("เกิดข้อผิดพลาดในการเพิ่มเพื่อน");
             }
         }
 
@@ -1738,6 +1765,7 @@
                         name: playerName, credit, debt, currentDay, secondsLeftInDay, 
                         avatar: "",
                         bio: "รวยด้วยคาสิโน หรือหมดตัวในพริบตา วัดใจกันที่โต๊ะนี้!",
+                        friends: [],
                         eventData: { dayClaimed: 0, lastClaimDate: "" }
                     };
                     try { localStorage.setItem('baccarat_users', JSON.stringify(users)); } catch (e) {}
@@ -2220,158 +2248,6 @@
                 </div>
             `;
         }
-
-        window.startDeal = async function() {
-            if (totalBet === 0 || isPlaying) return;
-            if (!verifyAntiCheat()) return;
-            isPlaying = true;
-            updateUI();
-
-            if (deck.length < 10) deck = createDeck();
-
-            let msg = document.getElementById('game-message');
-            if (msg) msg.innerText = "🎴 เริ่มแจกไพ่บาคาร่า... กำลังลุ้นระทึก";
-            
-            let pCards = document.getElementById('player-cards');
-            let bCards = document.getElementById('banker-cards');
-            let pScore = document.getElementById('player-score');
-            let bScore = document.getElementById('banker-score');
-
-            if (pCards) pCards.innerHTML = '';
-            if (bCards) bCards.innerHTML = '';
-            if (pScore) pScore.innerText = 'แต้ม: 0';
-            if (bScore) bScore.innerText = 'แต้ม: 0';
-
-            let playerHand = [], bankerHand = [];
-
-            await sleep(800); 
-            playerHand.push(deck.pop()); 
-            renderHands(playerHand, bankerHand);
-
-            await sleep(800); 
-            bankerHand.push(deck.pop()); 
-            renderHands(playerHand, bankerHand);
-
-            await sleep(800); 
-            playerHand.push(deck.pop()); 
-            renderHands(playerHand, bankerHand);
-
-            await sleep(900); 
-            bankerHand.push(deck.pop()); 
-            renderHands(playerHand, bankerHand);
-
-            let pVal = calculateScore(playerHand);
-            let bVal = calculateScore(bankerHand);
-            let pThirdCard = null;
-
-            if (pVal < 8 && bVal < 8) {
-                if (pVal <= 5) {
-                    await sleep(1200);
-                    pThirdCard = deck.pop();
-                    playerHand.push(pThirdCard);
-                    renderHands(playerHand, bankerHand);
-                    pVal = calculateScore(playerHand);
-                }
-
-                let bDraw = false;
-                let pw = pThirdCard ? pThirdCard.weight : -1;
-                if (pThirdCard === null) {
-                    if (bVal <= 5) bDraw = true;
-                } else {
-                    if (bVal <= 2) bDraw = true;
-                    else if (bVal === 3 && pw !== 8) bDraw = true;
-                    else if (bVal === 4 && [2,3,4,5,6,7].includes(pw)) bDraw = true;
-                    else if (bVal === 5 && [4,5,6,7].includes(pw)) bDraw = true;
-                    else if (bVal === 6 && [6,7].includes(pw)) bDraw = true;
-                }
-
-                if (bDraw) {
-                    await sleep(1200);
-                    bankerHand.push(deck.pop());
-                    renderHands(playerHand, bankerHand);
-                    bVal = calculateScore(bankerHand);
-                }
-            }
-
-            await sleep(1000);
-            let winner = (pVal > bVal) ? 'player' : ((bVal > pVal) ? 'banker' : 'tie');
-            let winnings = 0;
-            if (winner === 'player') {
-                if (bets.player > 0) winnings += bets.player * 2;
-                if (msg) msg.innerText = "🎉 ฝั่ง PLAYER ชนะ!";
-            } else if (winner === 'banker') {
-                if (bets.banker > 0) winnings += bets.banker + (bets.banker * 0.95);
-                if (msg) msg.innerText = "🏆 ฝั่ง BANKER ชนะ!";
-            } else {
-                if (bets.tie > 0) winnings += bets.tie * 9;
-                winnings += bets.player + bets.banker;
-                if (msg) msg.innerText = "🤝 เสมอ (TIE)!";
-            }
-
-            if (winnings > 0) {
-                credit += winnings;
-                secureChecksum = generateChecksum(credit, secureSalt);
-            }
-
-            if (isAdmin) credit = 999999999999;
-
-            updateHistory(winner);
-            bets = { player: 0, tie: 0, banker: 0 };
-            totalBet = 0;
-
-            if (!isAdmin) {
-                saveGameProgress();
-            }
-
-            isPlaying = false;
-            updateUI();
-        }
-
-        function renderHands(playerHand, bankerHand) {
-            let pCards = document.getElementById('player-cards');
-            let bCards = document.getElementById('banker-cards');
-            let pScore = document.getElementById('player-score');
-            let bScore = document.getElementById('banker-score');
-
-            if (pCards) pCards.innerHTML = playerHand.map(card => renderCardHTML(card)).join('');
-            if (bCards) bCards.innerHTML = bankerHand.map(card => renderCardHTML(card)).join('');
-            if (pScore) pScore.innerText = `แต้ม: ${calculateScore(playerHand)}`;
-            if (bScore) bScore.innerText = `แต้ม: ${calculateScore(bankerHand)}`;
-        }
-
-        function updateHistory(winner) {
-            gameHistory.push(winner);
-            scoreCounts[winner]++;
-            
-            let cp = document.getElementById('count-p');
-            let cb = document.getElementById('count-b');
-            let ct = document.getElementById('count-t');
-            if (cp) cp.innerText = scoreCounts.player;
-            if (cb) cb.innerText = scoreCounts.banker;
-            if (ct) ct.innerText = scoreCounts.tie;
-
-            let beadsContainer = document.getElementById('history-beads');
-            if (!beadsContainer) return;
-
-            let beadClass = winner === 'player' ? 'bead-p' : (winner === 'banker' ? 'bead-b' : 'bead-t');
-            let beadText = winner === 'player' ? 'P' : (winner === 'banker' ? 'B' : 'T');
-
-            let beadDiv = document.createElement('div');
-            beadDiv.className = `bead ${beadClass}`;
-            beadDiv.innerText = beadText;
-            beadsContainer.appendChild(beadDiv);
-        }
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-        window.onload = function() {
-            let savedUser = localStorage.getItem('baccarat_active_user');
-            if (savedUser) {
-                handleLogin(true, savedUser);
-            }
-        };
     </script>
 </body>
 </html>
