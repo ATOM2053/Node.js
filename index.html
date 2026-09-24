@@ -1146,6 +1146,22 @@
             showCustomAlert(`🌐 แอดมินแจกเงินให้ทุกคนในเซิร์ฟเวอร์! คุณได้รับ ${amount.toLocaleString()} เครดิต`);
         });
 
+        // รับผลการค้นหาเพื่อนจาก Server
+        socket.on('search_player_response', (u) => {
+            let resultBox = document.getElementById('search-result-box');
+            if (u) {
+                let avatarTag = u.avatar ? `<img src="${u.avatar}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:4px;">` : '👑';
+                resultBox.innerHTML = `
+                    <div style="background: rgba(0,0,0,0.6); padding: 8px; border-radius: 6px; border: 1px solid var(--gold); margin-top:5px;">
+                        <div>${avatarTag} <b>${u.name}</b> (UID: ${u.uid})</div>
+                        <div style="color:var(--gold);">เครดิต: ${Number(u.credit).toLocaleString()}</div>
+                    </div>
+                `;
+            } else {
+                resultBox.innerHTML = "<span style='color:#ff4d4d;'>ไม่พบผู้เล่นดังกล่าวในเซิร์ฟเวอร์ (ต้องออนไลน์อยู่)</span>";
+            }
+        });
+
         function checkOrientation() {
             let warningBox = document.getElementById('orientation-warning');
             if (window.innerHeight > window.innerWidth) {
@@ -1297,40 +1313,20 @@
             });
         }
 
+        // เปลี่ยนฟังก์ชันค้นหาเพื่อนให้ค้นหาจากเซิร์ฟเวอร์ส่วนกลาง
         window.searchPlayerInfo = function() {
-            let keyword = document.getElementById('search-user-input').value.trim().toLowerCase();
+            let keyword = document.getElementById('search-user-input').value.trim();
             let resultBox = document.getElementById('search-result-box');
+            
             if (!keyword) {
-                resultBox.innerHTML = "<span style='color:#ff4d4d;'>กรุณากรอกชื่อหรือ UID</span>";
+                resultBox.innerHTML = "<span style='color:#ff4d4d;'>กรุณากรอกชื่อหรือ UID เพื่อน</span>";
                 return;
             }
 
-            try {
-                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                let foundKey = null;
-
-                for (let id in users) {
-                    if (id.toLowerCase() === keyword || (users[id].name && users[id].name.toLowerCase().includes(keyword))) {
-                        foundKey = id;
-                        break;
-                    }
-                }
-
-                if (foundKey) {
-                    let u = users[foundKey];
-                    let avatarTag = u.avatar ? `<img src="${u.avatar}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:4px;">` : '👑';
-                    resultBox.innerHTML = `
-                        <div style="background: rgba(0,0,0,0.6); padding: 8px; border-radius: 6px; border: 1px solid var(--gold);">
-                            <div>${avatarTag} <b>${u.name}</b> (UID: ${foundKey})</div>
-                            <div style="color:var(--gold);">เครดิต: ${(u.credit || 0).toLocaleString()}</div>
-                        </div>
-                    `;
-                } else {
-                    resultBox.innerHTML = "<span style='color:#ff4d4d;'>ไม่พบผู้เล่นดังกล่าว</span>";
-                }
-            } catch (e) {
-                resultBox.innerHTML = "<span style='color:#ff4d4d;'>เกิดข้อผิดพลาด</span>";
-            }
+            resultBox.innerHTML = "<span style='color:#f3e5ab;'>กำลังค้นหาผู้เล่นในเซิร์ฟเวอร์...</span>";
+            
+            // ส่งคำขอค้นหาไปที่ Server
+            socket.emit('search_player_request', keyword);
         }
 
         // ระบบโอนเงินให้ผู้เล่นรายบุคคลโดยใส่ UID และจำนวนเงิน
@@ -1758,7 +1754,15 @@
                 credit = 999999999999;
             }
 
-            socket.emit('join_game', { name: playerName, credit: credit, uid: playerId });
+            // ส่งข้อมูลอัปเดตไปที่เซิร์ฟเวอร์ตอนล็อกอิน (รวมถึง debt, tokens, uid และ avatar)
+            socket.emit('join_game', { 
+                name: playerName, 
+                credit: credit, 
+                debt: debt,
+                tokens: tokens,
+                uid: playerId,
+                avatar: userAvatar 
+            });
         }
 
         // ระบบแอดมินใช้งานได้จริงผ่าน Backend Server Socket.io
