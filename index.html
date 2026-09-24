@@ -1137,26 +1137,51 @@
             updateServerLeaderboard(onlinePlayers);
         });
 
-        // หากโดนแบนจากแอดมินหรือถูกยกเซิร์ฟ
+        // [ข้อ 2] แก้ไขกล่องข้อความเมื่อโดนแบน พร้อมแสดงเวลานับถอยหลัง
         socket.on('force_logout', (data) => {
-            alert("⚠️ " + (data.reason || "คุณถูกออกจากเซิร์ฟเวอร์โดยแอดมิน"));
-            localStorage.removeItem('baccarat_active_user');
-            location.reload();
+            let remainingText = "";
+            if (data.expireTime) {
+                let timeLeft = Math.max(0, Math.floor((data.expireTime - Date.now()) / 1000));
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                remainingText = ` (เหลือเวลาแบนอีก: ${minutes} นาที ${seconds} วินาที)`;
+            }
+            
+            showCustomAlert("⚠️ " + (data.reason || "คุณถูกออกจากเซิร์ฟเวอร์") + remainingText, false, () => {
+                localStorage.removeItem('baccarat_active_user');
+                location.reload();
+            });
         });
 
+        // [ข้อ 1] รับคำเชิญ PvP และเด้งไปห้องประลองเฉพาะเมื่อกดรับ
         socket.on('receive_pvp_invite', (data) => {
             let senderName = data.senderName;
             let senderUid = data.senderUid;
-            let senderPet = data.senderPet;
+            let senderPets = data.senderPets;
 
-            let msg = `ผู้เล่น ${senderName} (UID: ${senderUid}) ส่งคำเชิญท้าดวล PvP ด้วยสัตว์เลี้ยง ${senderPet.icon} ${senderPet.name}! คุณต้องการรับคำท้าหรือไม่?`;
+            let msg = `ผู้เล่น ${senderName} (UID: ${senderUid}) ส่งคำเชิญท้าดวล PvP! คุณต้องการรับคำท้าและเข้าสู่ห้องประลองหรือไม่?`;
             
             showCustomAlert(msg, true, () => {
-                let myPet = myPets.length > 0 ? myPets[0] : { name: "สัตว์เลี้ยงเริ่มต้น", icon: "🐾", atk: 50 };
-                let winner = myPet.atk >= senderPet.atk ? "คุณ" : senderName;
-                showCustomAlert(`⚔️ ผลการประลอง PvP กับ ${senderName}: ผู้ชนะคือ ${winner}!`);
+                // เมื่อกดยอมรับ ส่งสัญญาณไปเปิดห้อง PvP เฉพาะ
+                socket.emit('accept_pvp_invite', {
+                    targetUid: senderUid,
+                    myUid: playerId,
+                    myPets: myPets
+                });
                 closeCustomAlert();
             });
+        });
+
+        // [ข้อ 1] เด้งไปห้อง PvP ที่จัดไว้เฉพาะเมื่อเริ่มแมตช์
+        socket.on('start_pvp_match', (matchData) => {
+            document.getElementById('lobby-screen').style.display = 'none';
+            document.getElementById('pet-screen').style.display = 'none';
+            document.getElementById('gacha-screen').style.display = 'none';
+            document.getElementById('pvp-screen').style.display = 'flex';
+            
+            let resultBox = document.getElementById('pvp-result-box');
+            resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">⚔️ เข้าสู่ห้องประลอง PvP สำเร็จ! กำลังเริ่มการต่อสู้...</span>`;
+            // สามารถเพิ่มฟังก์ชันแสดงผลการต่อสู้ในห้อง PvP ตรงนี้ได้ทันที
         });
 
         socket.on('receive_broadcast_money', (data) => {
@@ -1283,6 +1308,7 @@
             }
         }
 
+        // ฟังก์ชันโมเดลแจ้งเตือน Custom ของตัวเอง
         function showCustomAlert(message, isConfirm = false, onConfirm = null) {
             document.getElementById('myCustomAlertMessage').innerText = message;
             let btnGroup = document.getElementById('custom-alert-btn-group');
@@ -1444,7 +1470,7 @@
             let html = "";
             for (let i = 1; i <= 100; i++) {
                 let isClaimed = missionData.claimed && missionData.claimed[i];
-                let rewardToken = i % 10 === 0 ? 50 : 5; // ภารกิจทุกๆ ข้อ 10 ได้รับ 50 โทเคน นอกนั้นได้ 5 โทเคน
+                let rewardToken = i % 10 === 0 ? 50 : 5;
                 html += `
                     <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; display:flex; justify-content:space-between; align-items:center;">
                         <div>
@@ -1608,7 +1634,7 @@
                 targetUid: targetUid,
                 senderUid: playerId,
                 senderName: playerName,
-                senderPet: myPet
+                senderPets: myPet
             });
 
             resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">📤 ส่งคำเชิญไปยัง UID: ${targetUid} สำเร็จ!</span> รอคู่ต่อสู้ตอบรับ...`;
@@ -1761,7 +1787,6 @@
             });
         }
 
-        // [ข้อ 1] ระบบแอดมินรองรับการแบนทั้ง UID / ชื่อ / เบอร์โทรศัพท์ไอดี และแจกสัตว์เลี้ยง/โทเคน พร้อมยกเซิร์ฟ
         window.adminExecuteBan = function() {
             let target = document.getElementById('ban-uid-input').value.trim();
             let adminMsg = document.getElementById('admin-msg');
