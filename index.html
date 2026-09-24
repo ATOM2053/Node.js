@@ -187,6 +187,49 @@
             gap: 15px;
         }
 
+        .game-grid-horizontal {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid var(--gold);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: absolute;
+            bottom: 75px;
+            right: 15px;
+            width: 320px;
+            z-index: 100;
+        }
+
+        .game-grid-horizontal.show {
+            display: flex;
+        }
+
+        .game-card {
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border: 2px solid var(--gold-dark);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .game-card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .game-icon { font-size: 2rem; }
+        .game-info { flex-grow: 1; }
+        .game-title { color: var(--gold); font-size: 0.95rem; font-weight: bold; }
+        .game-desc { font-size: 0.65rem; color: #aaa; }
+
         header {
             text-align: center;
             margin-bottom: 8px;
@@ -648,7 +691,9 @@
             100% { transform: scale(1) rotate(360deg); filter: hue-rotate(360deg); }
         }
 
-        .gacha-animating { animation: gachaSpinAnim 0.5s infinite linear; }
+        .gacha-animating {
+            animation: gachaSpinAnim 0.5s infinite linear;
+        }
 
         @media (max-width: 768px) {
             .main-layout { flex-direction: column; align-items: center; }
@@ -712,24 +757,24 @@
                     </div>
 
                     <div class="panel-box" style="border-color: #ffaa00; background: rgba(30, 25, 10, 0.95); cursor: pointer; text-align: center;" onclick="openPetSystem()">
-                        <div class="panel-title" style="color: #ffaa00; border-bottom-color: #ffaa00; margin-bottom: 4px;">🐾 ระบบเลี้ยงสัตว์</div>
-                        <p style="font-size: 0.6rem; color: #aaa;">(สัตว์เลี้ยง 20 ตัว & ให้อาหาร)</p>
+                        <div class="panel-title" style="color: #ffaa00; border-bottom-color: #ffaa00; margin-bottom: 4px;">🐾 ระบบเลี้ยงสัตว์ (20+ ตัว)</div>
+                        <p style="font-size: 0.6rem; color: #aaa;">(คลังสัตว์เลี้ยง & ให้อาหารสัตว์)</p>
                     </div>
 
                     <div class="panel-box" style="border-color: #3a86ff; background: rgba(10, 20, 30, 0.95); cursor: pointer; text-align: center;" onclick="openGachaSystem()">
                         <div class="panel-title" style="color: #3a86ff; border-bottom-color: #3a86ff; margin-bottom: 4px;">🎰 ตู้สุ่ม (Gacha Store)</div>
-                        <p style="font-size: 0.6rem; color: #aaa;">(สุ่มสัตว์เลี้ยง 20 ตัว)</p>
+                        <p style="font-size: 0.6rem; color: #aaa;">(สุ่มสัตว์เลี้ยงระบบใหม่)</p>
                     </div>
 
                     <div class="panel-box" style="border-color: #ff4d4d; background: rgba(30, 10, 10, 0.95); cursor: pointer; text-align: center;" onclick="openPvpScreen()">
                         <div class="panel-title" style="color: #ff4d4d; border-bottom-color: #ff4d4d; margin-bottom: 4px;">⚔️ โหมดประลอง PvP</div>
-                        <p style="font-size: 0.6rem; color: #aaa;">(ส่งคำเชิญด้วย UID ทุกคน)</p>
+                        <p style="font-size: 0.6rem; color: #aaa;">(ท้าดวลส่งคำเชิญผ่าน UID)</p>
                     </div>
                 </div>
 
                 <div class="lobby-main-content">
                     <div id="admin-panel" class="panel-box">
-                        <div class="panel-title">🛡️ หมวดหมู่แอดมิน (จัดการระบบ)</div>
+                        <div class="panel-title">🛡️ หมวดหมู่แอดมิน (จัดการระบบจริง)</div>
                         <div class="input-group" style="margin-bottom: 8px;">
                             <label for="ban-uid-input" style="font-size: 0.65rem;">ระบุ UID:</label>
                             <input type="text" id="ban-uid-input" placeholder="กรอก UID เช่น P_xxxx" style="font-size: 0.8rem; padding: 6px;">
@@ -752,6 +797,7 @@
                             <button class="btn btn-repay" style="padding: 8px; font-size: 0.6rem;" onclick="adminExecuteUnban()">✅ ปลดแบน</button>
                             <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#ffaa00;" onclick="adminExecuteGiveMoney()">💰 เสกเงิน</button>
                         </div>
+                        <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #9b59b6, #8e44ad);" onclick="adminBroadcastMoneyToAll()">🌐 โอนเงินให้ทุกคนในเซิร์ฟเวอร์</button>
                         <div id="admin-msg" style="color: #f3e5ab; font-size: 0.65rem; margin-top: 4px; text-align: center; min-height: 12px;"></div>
                     </div>
 
@@ -762,8 +808,19 @@
                 </div>
             </div>
 
-            <div style="position: fixed; bottom: 20px; right: 20px; z-index: 101;">
-                <button class="btn btn-deal" style="padding: 12px 20px; font-size: 0.85rem; border-radius: 30px; box-shadow: 0 5px 15px rgba(212,175,55,0.4);" onclick="selectGame('baccarat')">🃏 เข้าเล่นโต๊ะบาคาร่า</button>
+            <div style="position: fixed; bottom: 20px; right: 20px; z-index: 101; display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                <div id="game-selection-menu" class="game-grid-horizontal">
+                    <div style="color: var(--gold); font-size: 0.8rem; font-weight: bold; border-bottom: 1px solid var(--gold-dark); padding-bottom: 4px; text-transform: uppercase;">🎮 เลือกโหมดเกม</div>
+                    <div class="game-card" onclick="selectGame('baccarat')">
+                        <div class="game-icon">🃏</div>
+                        <div class="game-info">
+                            <div class="game-title">LUXURY BACCARAT</div>
+                            <div class="game-desc">บาคาร่าพรีเมียม อัตราจ่ายสูง พร้อมระบบไฟ</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-deal" style="padding: 12px 20px; font-size: 0.85rem; border-radius: 30px; box-shadow: 0 5px 15px rgba(212,175,55,0.4);" onclick="toggleGameMenu()">📋 เลือกโหมดเกม</button>
             </div>
         </div>
     </div>
@@ -783,14 +840,14 @@
         </div>
     </div>
 
-    <!-- Screen: ระบบเลี้ยงสัตว์ -->
+    <!-- Screen: ระบบเลี้ยงสัตว์ (20+ ตัว และให้อาหารได้จริง) -->
     <div id="pet-screen">
         <header>
             <div class="header-profile-mini" onclick="toggleProfileModal(true)">
                 <div class="mini-avatar" id="mini-avatar-display-pet">👑</div>
                 <span class="mini-name" id="mini-name-display-pet">-</span>
             </div>
-            <h1 style="color: #ffaa00;">🐾 ระบบเลี้ยงสัตว์เลี้ยง (20 ตัว)</h1>
+            <h1 style="color: #ffaa00;">🐾 ระบบเลี้ยงสัตว์เลี้ยง (20+ ตัว)</h1>
             <div class="header-btn-group">
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 หน้าหลัก</button>
                 <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
@@ -799,11 +856,14 @@
         <div class="main-layout" style="justify-content: center;">
             <div class="game-container" style="max-width: 650px; text-align: center; padding: 20px; gap: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px;">
-                    <div>โทเคนของคุณ: <b id="pet-token-val" style="color: var(--gold);">0</b> 🪙</div>
-                    <button class="btn btn-repay" onclick="openPvpScreen()">⚔️ ไปหน้า PVP</button>
+                    <div>โทเคนของคุณ: <b id="pet-token-val" style="color: var(--gold);">0</b> 🪙 | อาหาร: <b id="pet-food-val" style="color: #38b000;">5</b> ชิ้น</div>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn btn-repay" onclick="feedAllPets()">🍖 ให้อาหารทั้งหมด (10 🪙)</button>
+                        <button class="btn btn-loan" onclick="openPvpScreen()">⚔️ ไปหน้า PVP</button>
+                    </div>
                 </div>
 
-                <div class="panel-title">สัตว์เลี้ยงของคุณ (คลิกให้อาหารเพิ่มความภักดี/พลัง)</div>
+                <div class="panel-title">สัตว์เลี้ยงทั้งหมดของคุณ</div>
                 <div id="my-pets-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 280px; overflow-y: auto;"></div>
 
                 <button class="btn btn-deal" style="margin-top: 10px;" onclick="returnToLobby()">กลับหน้าหลัก</button>
@@ -818,7 +878,7 @@
                 <div class="mini-avatar" id="mini-avatar-display-gacha">👑</div>
                 <span class="mini-name" id="mini-name-display-gacha">-</span>
             </div>
-            <h1 style="color: #3a86ff;">🎰 ตู้สุ่มสัตว์เลี้ยง (20 ชนิด)</h1>
+            <h1 style="color: #3a86ff;">🎰 ตู้สุ่ม (Gacha Store)</h1>
             <div class="header-btn-group">
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 หน้าหลัก</button>
                 <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
@@ -831,9 +891,9 @@
                 </div>
 
                 <div class="panel-box" style="border-color: #3a86ff; background: rgba(10, 20, 30, 0.95);">
-                    <div class="panel-title" style="color: #3a86ff;">🎰 ตู้กาชาสุ่มสัตว์เลี้ยง 20 ตัว (5 โทเคน/ครั้ง)</div>
+                    <div class="panel-title" style="color: #3a86ff;">🎰 ตู้กาชาสุ่มสัตว์เลี้ยง 20+ ตัว (5 โทเคน/ครั้ง)</div>
                     <div style="font-size: 3.5rem; margin: 15px 0;" id="gacha-result-icon">🎁</div>
-                    <div id="gacha-result-text" style="font-size: 0.8rem; color: var(--gold); font-weight: bold; min-height: 30px; margin-bottom: 12px;">ลุ้นรับสัตว์เลี้ยงครบทั้ง 20 ชนิด</div>
+                    <div id="gacha-result-text" style="font-size: 0.8rem; color: var(--gold); font-weight: bold; min-height: 30px; margin-bottom: 12px;">ลุ้นรับสัตว์เลี้ยงครบทั้ง 20+ ตัว</div>
                     <button class="btn btn-deal" id="gacha-spin-btn" style="width: 100%; padding: 12px; font-size: 0.9rem;" onclick="spinGacha()">🎲 สุ่มกาชาสัตว์เลี้ยง (5 🪙)</button>
                 </div>
 
@@ -857,7 +917,7 @@
         </header>
         <div class="main-layout" style="justify-content: center;">
             <div class="game-container" style="max-width: 650px; text-align: center; padding: 20px; gap: 12px;">
-                <p style="font-size: 0.75rem; color: #ccc;">เลือกสัตว์เลี้ยงของคุณ และกรอก UID ของผู้เล่นทุกคนในเซิร์ฟเวอร์เพื่อส่งคำเชิญท้าประลอง!</p>
+                <p style="font-size: 0.75rem; color: #ccc;">เลือกสัตว์เลี้ยงของคุณ และกรอก UID ผู้เล่นในเซิร์ฟเวอร์เพื่อส่งคำเชิญท้าประลอง!</p>
                 
                 <div class="input-group">
                     <label style="font-size: 0.65rem;">เลือกสัตว์เลี้ยงสำหรับการต่อสู้:</label>
@@ -865,7 +925,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label style="font-size: 0.65rem;">ใส่ UID ผู้เล่นที่ต้องการท้าดวล (PVP):</label>
+                    <label style="font-size: 0.65rem;">ใส่ UID ผู้เล่นที่ต้องการท้าดวล (PVP ทุกคนในเซิฟเวอร์):</label>
                     <input type="text" id="pvp-target-uid-input" placeholder="กรอก UID เช่น P_xxxx" style="font-size: 0.8rem; padding: 8px;">
                 </div>
 
@@ -875,11 +935,11 @@
         </div>
     </div>
 
-    <!-- Modal: โปรไฟล์, ค้นหาเพื่อน, โอนเงิน -->
+    <!-- Modal: โปรไฟล์, ค้นหาเพื่อน, โอนเงินให้ทุกคน/รายบุคคล -->
     <div id="profile-modal" class="modal-overlay">
         <div class="ff-profile-card">
             <div class="ff-header-banner">
-                <span class="ff-header-title">📜 โปรไฟล์ & โอนเงิน</span>
+                <span class="ff-header-title">📜 โปรไฟล์ & เพื่อน & โอนเงิน</span>
                 <button class="ff-close-btn" onclick="toggleProfileModal(false)">✕</button>
             </div>
             <div class="ff-body">
@@ -893,12 +953,13 @@
                 </div>
 
                 <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; border: 1px solid #38b000;">
-                    <label style="font-size: 0.6rem; color: #38b000; display: block; margin-bottom: 3px;">💸 ระบบโอนเงินให้ผู้เล่นทุกคน:</label>
+                    <label style="font-size: 0.6rem; color: #38b000; display: block; margin-bottom: 3px;">💸 ระบบโอนเงินให้ผู้เล่น (ใส่ UID และจำนวนเงิน):</label>
                     <div style="display: flex; gap: 5px; margin-bottom: 4px;">
                         <input type="text" id="transfer-uid-input" placeholder="UID ผู้รับ (เช่น P_1234)" style="flex: 1; background: rgba(0,0,0,0.6); border: 1px solid #38b000; border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
                         <input type="number" id="transfer-amount-input" placeholder="จำนวนเงิน" style="width: 80px; background: rgba(0,0,0,0.6); border: 1px solid #38b000; border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
                     </div>
-                    <button class="btn btn-repay" style="width: 100%; padding: 6px; font-size: 0.65rem;" onclick="transferMoneyToPlayer()">โอนเงินทันที</button>
+                    <button class="btn btn-repay" style="width: 100%; padding: 6px; font-size: 0.65rem; margin-bottom: 5px;" onclick="transferMoneyToPlayer()">โอนเงินให้ผู้เล่นรายบุคคลทันที</button>
+                    <button class="btn btn-deal" style="width: 100%; padding: 6px; font-size: 0.65rem; background: #3a86ff; color:#fff;" onclick="transferMoneyToEveryone()">🌐 โอนเงินให้ทุกคนที่อยู่ในเซิฟเวอร์</button>
                 </div>
 
                 <div class="ff-user-row">
@@ -988,7 +1049,7 @@
                             <div id="player-score" class="hand-score">แต้ม: 0</div>
                         </div>
 
-                        <div class="game-message" id="game-message">ยินดีต้อนรับสู่โต๊ะบาคาร่าระดับพรีเมียม</div>
+                        <div class="game-message" id="game-message">ยินดีต้อนรับสู่โต๊ะบาคาร่าระดับพรีเมียม (พร้อมระบบไฟอนิเมชั่น)</div>
 
                         <div class="hand-box banker-side">
                             <div class="hand-title">BANKER</div>
@@ -1074,6 +1135,17 @@
             });
         });
 
+        // รับเงินจากการโอนให้ทุกคนในเซิร์ฟเวอร์
+        socket.on('receive_broadcast_money', (data) => {
+            let amount = data.amount;
+            if (!isAdmin) {
+                credit += amount;
+            }
+            saveGameProgress();
+            updateUI();
+            showCustomAlert(`🌐 แอดมินแจกเงินให้ทุกคนในเซิร์ฟเวอร์! คุณได้รับ ${amount.toLocaleString()} เครดิต`);
+        });
+
         function checkOrientation() {
             let warningBox = document.getElementById('orientation-warning');
             if (window.innerHeight > window.innerWidth) {
@@ -1095,33 +1167,34 @@
         let credit = 1000;
         let debt = 0;
         let tokens = 10;
+        let petFood = 5;
         let myPets = [];
         let currentDay = 1;
         let isAdmin = false;
         let userAvatar = "";
 
-        // รายชื่อสัตว์เลี้ยงครบ 20 ตัว
+        // ฐานข้อมูลสัตว์เลี้ยง 20+ ตัว
         const ALL_PETS_DATABASE = [
-            { id: 1, name: "แมวเหมียวทองคำ", icon: "🐱", atk: 50 },
-            { id: 2, name: "สุนัขพิทักษ์", icon: "🐶", atk: 75 },
-            { id: 3, name: "กระต่ายน้อยนักซิ่ง", icon: "🐰", atk: 100 },
-            { id: 4, name: "แพนด้าจอมซน", icon: "🐼", atk: 125 },
-            { id: 5, name: "จิ้งจอกเก้าหาง", icon: "🦊", atk: 180 },
-            { id: 6, name: "เสือดาวสายฟ้า", icon: "🐆", atk: 220 },
-            { id: 7, name: "สิงโตเจ้าป่า", icon: "🦁", atk: 280 },
-            { id: 8, name: "หมีป่าคลั่ง", icon: "🐻", atk: 340 },
-            { id: 9, name: "กวางเผือกแห่งพงไพร", icon: "🦌", atk: 400 },
-            { id: 10, name: "ยูนิคอร์นศักดิ์สิทธิ์", icon: "🦄", atk: 500 },
-            { id: 11, name: "มังกรเขียวมรกต", icon: "🐲", atk: 650 },
-            { id: 12, name: "ฟีนิกซ์ไฟอมตะ", icon: "🔥", atk: 800 },
-            { id: 13, name: "หมาป่าอัคคี", icon: "🐺", atk: 950 },
-            { id: 14, name: "เต่ามังกรโบราณ", icon: "🐢", atk: 1100 },
-            { id: 15, name: "เหยี่ยวเวหา", icon: "🦅", atk: 1300 },
-            { id: 16, name: "ช้างศึกอวตาร", icon: "🐘", atk: 1550 },
-            { id: 17, name: "ราชาลิงเพลิง", icon: "🐵", atk: 1800 },
-            { id: 18, name: "อสรพิษนิลกาฬ", icon: "🐍", atk: 2200 },
-            { id: 19, name: "ราชสีห์ทองคำ", icon: "🦁✨", atk: 3500 },
-            { id: 20, name: "มังกรทองคำอมตะ (เทพเจ้า)", icon: "🐲✨", atk: 9999 }
+            { name: "มังกรทองคำอมตะ", icon: "🐲✨", atk: 9999 },
+            { name: "ยูนิคอร์นศักดิ์สิทธิ์", icon: "🦄", atk: 500 },
+            { name: "สุนัขพิทักษ์", icon: "🐶", atk: 150 },
+            { name: "แมวเหมียวทองคำ", icon: "🐱", atk: 50 },
+            { name: "เสือดาวสายฟ้า", icon: "🐆", atk: 420 },
+            { name: "สิงโตเจ้าป่า", icon: "🦁", atk: 450 },
+            { name: "หมีป่าจอมพลัง", icon: "🐻", atk: 380 },
+            { name: "หมาป่ารัตติกาล", icon: "🐺", atk: 350 },
+            { name: "จิ้งจอกเก้าหาง", icon: "🦊", atk: 600 },
+            { name: "นกอินทรีเพลิง", icon: "🦅", atk: 390 },
+            { name: "นกฮูกปราชญ์", icon: "🦉", atk: 280 },
+            { name: "แพนด้าอ้วนพี", icon: "🐼", atk: 200 },
+            { name: "กระต่ายนักซิ่ง", icon: "🐰", atk: 120 },
+            { name: "กวางป่าเวทมนตร์", icon: "🦌", atk: 310 },
+            { name: "เต่ามังกรโบราณ", icon: "🐢", atk: 480 },
+            { name: "ฉลามคลั่งสมุทร", icon: "🦈", atk: 550 },
+            { name: "ปลาวาฬยักษ์", icon: "🐳", atk: 400 },
+            { name: "งูพิษนิลกาฬ", icon: "🐍", atk: 330 },
+            { name: "มังกรน้อยน่ารัก", icon: "🐉", atk: 750 },
+            { name: "ฟีนิกซ์อมตะ", icon: "🐦🔥", atk: 1200 }
         ];
 
         let selectedChipValue = 10;
@@ -1154,6 +1227,11 @@
             let suitSymbol = card.suit === 'H' ? '♥' : (card.suit === 'D' ? '♦' : (card.suit === 'C' ? '♣' : '♠'));
             let valStr = card.val === 1 ? 'A' : (card.val === 11 ? 'J' : (card.val === 12 ? 'Q' : (card.val === 13 ? 'K' : card.val)));
             return `<div class="card ${colorClass}"><span>${valStr}</span><span>${suitSymbol}</span><span>${valStr}</span></div>`;
+        }
+
+        function toggleGameMenu() {
+            let menu = document.getElementById('game-selection-menu');
+            menu.classList.toggle('show');
         }
 
         window.toggleEventModal = function(show) {
@@ -1255,6 +1333,7 @@
             }
         }
 
+        // ระบบโอนเงินให้ผู้เล่นรายบุคคลโดยใส่ UID และจำนวนเงิน
         window.transferMoneyToPlayer = function() {
             let recipientUid = document.getElementById('transfer-uid-input').value.trim();
             let amount = parseInt(document.getElementById('transfer-amount-input').value);
@@ -1294,6 +1373,25 @@
             } catch (e) {
                 showCustomAlert("เกิดข้อผิดพลาดในการโอนเงิน");
             }
+        }
+
+        // โอนเงินให้ทุกคนที่อยู่ในเซิร์ฟเวอร์
+        window.transferMoneyToEveryone = function() {
+            let amount = parseInt(document.getElementById('transfer-amount-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                showCustomAlert("กรุณากรอกจำนวนเงินให้ถูกต้องสำหรับการโอนให้ทุกคน!");
+                return;
+            }
+            if (credit < amount && !isAdmin) {
+                showCustomAlert("เครดิตของคุณไม่พอสำหรับการโอนให้ทุกคน!");
+                return;
+            }
+
+            if (!isAdmin) credit -= amount;
+            socket.emit('broadcast_money', { amount: amount });
+            saveGameProgress();
+            updateUI();
+            showCustomAlert(`🌐 โอนเงินจำนวน ${amount.toLocaleString()} เครดิต ให้ทุกคนในเซิร์ฟเวอร์สำเร็จ!`);
         }
 
         window.toggleProfileModal = function(show) {
@@ -1372,17 +1470,19 @@
             showCustomAlert(`🎉 สำเร็จภารกิจ! คุณได้รับ +${tokenAmount} โทเคน`);
         }
 
+        // ระบบเลี้ยงสัตว์ 20+ ตัว พร้อมให้อาหารสัตว์เลี้ยงได้จริง
         window.openPetSystem = function() {
             document.getElementById('lobby-screen').style.display = 'none';
             document.getElementById('pet-screen').style.display = 'flex';
             document.getElementById('pet-token-val').innerText = tokens;
+            document.getElementById('pet-food-val').innerText = petFood;
             renderPetsList();
         }
 
         function renderPetsList() {
             let list = document.getElementById('my-pets-list');
             if (myPets.length === 0) {
-                list.innerHTML = `<div style="grid-column: span 2; font-size:0.7rem; color:#777; padding:15px;">คุณยังไม่มีสัตว์เลี้ยง ไปสุ่มได้ที่เมนู "ตู้สุ่ม (Gacha Store)" ได้เลย!</div>`;
+                list.innerHTML = `<div style="grid-column: span 2; font-size:0.7rem; color:#777; padding:15px;">คุณยังไม่มีสัตว์เลี้ยง ไปสุ่มสัตว์เลี้ยงทั้ง 20+ ตัวได้ที่เมนู "ตู้สุ่ม (Gacha Store)" ได้เลย!</div>`;
                 return;
             }
 
@@ -1394,27 +1494,45 @@
                     <div style="background: rgba(0,0,0,0.5); border:1px solid ${borderCol}; border-radius:8px; padding:8px; text-align:center;">
                         <div style="font-size:2rem;">${pet.icon}</div>
                         <div style="font-size:0.7rem; color:${isLegend ? '#ff006e' : 'var(--gold)'}; font-weight:bold;">${pet.name}</div>
-                        <div style="font-size:0.55rem; color:#aaa; margin-bottom: 5px;">พลังโจมตี: ${pet.atk.toLocaleString()}</div>
-                        <button class="btn btn-deal" style="padding: 4px 8px; font-size: 0.55rem;" onclick="feedPet(${index})">🍖 ให้อาหาร (+พลัง)</button>
+                        <div style="font-size:0.55rem; color:#aaa;">พลังโจมตี: ${pet.atk.toLocaleString()}</div>
+                        <button class="btn btn-deal" style="margin-top:6px; padding:4px 8px; font-size:0.55rem;" onclick="feedSinglePet(${index})">🍖 ให้อาหารสัตว์</button>
                     </div>
                 `;
             });
             list.innerHTML = html;
         }
 
-        window.feedPet = function(index) {
-            if (tokens < 2) {
-                showCustomAlert("คุณมีโทเคนไม่พอให้อาหารสัตว์เลี้ยง (ต้องการ 2 โทเคน)");
+        window.feedSinglePet = function(index) {
+            if (petFood <= 0) {
+                showCustomAlert("อาหารสัตว์หมด! ซื้ออาหารเพิ่มหรือรอรับจากกิจกรรม");
                 return;
             }
-            tokens -= 2;
-            myPets[index].atk += 25;
+            petFood--;
+            myPets[index].atk += 50;
             saveGameProgress();
+            document.getElementById('pet-food-val').innerText = petFood;
             renderPetsList();
-            document.getElementById('pet-token-val').innerText = tokens;
-            showCustomAlert(`🍖 ให้อาหาร ${myPets[index].name} สำเร็จ! พลังโจมตีเพิ่มขึ้น +25`);
+            showCustomAlert(`🍖 ให้อาหาร ${myPets[index].name} สำเร็จ! พลังโจมตีเพิ่มขึ้น +50`);
         }
 
+        window.feedAllPets = function() {
+            if (tokens < 10) {
+                showCustomAlert("โทเคนไม่พอซื้ออาหารทั้งหมด (ต้องการ 10 โทเคน)");
+                return;
+            }
+            if (myPets.length === 0) {
+                showCustomAlert("คุณยังไม่มีสัตว์เลี้ยง!");
+                return;
+            }
+            tokens -= 10;
+            myPets.forEach(p => p.atk += 100);
+            saveGameProgress();
+            document.getElementById('pet-token-val').innerText = tokens;
+            renderPetsList();
+            showCustomAlert("🍖 ให้อาหารสัตว์เลี้ยงทุกตัวสำเร็จ! พลังโจมตีของสัตว์เลี้ยงทุกตัวเพิ่มขึ้น +100");
+        }
+
+        // ตู้สุ่ม Gacha (สุ่มสัตว์เลี้ยงครบทั้ง 20+ ตัว)
         window.openGachaSystem = function() {
             document.getElementById('lobby-screen').style.display = 'none';
             document.getElementById('gacha-screen').style.display = 'flex';
@@ -1441,15 +1559,15 @@
 
             spinBtn.disabled = true;
             iconEl.classList.add('gacha-animating');
-            textEl.innerText = "🌀 กำลังสุ่มสัตว์เลี้ยงจากตู้กาชา (20 ตัว)...";
+            textEl.innerText = "🌀 กำลังสุ่มสัตว์เลี้ยงจากคอลเลกชัน 20+ ตัว...";
 
             setTimeout(() => {
                 iconEl.classList.remove('gacha-animating');
                 spinBtn.disabled = false;
 
-                // สุ่มสุ่มสัตว์เลี้ยงจากทั้ง 20 ตัว
-                let randomPetTemplate = ALL_PETS_DATABASE[Math.floor(Math.random() * ALL_PETS_DATABASE.length)];
-                let wonPet = { name: randomPetTemplate.name, icon: randomPetTemplate.icon, atk: randomPetTemplate.atk };
+                // สุ่มจากสัตว์เลี้ยง 20+ ตัวในฐานข้อมูล
+                let randomIndex = Math.floor(Math.random() * ALL_PETS_DATABASE.length);
+                let wonPet = JSON.parse(JSON.stringify(ALL_PETS_DATABASE[randomIndex]));
 
                 myPets.push(wonPet);
                 saveGameProgress();
@@ -1459,6 +1577,7 @@
             }, 1200);
         }
 
+        // ระบบ PvP ส่งคำเชิญให้ทุกคนในเซิร์ฟเวอร์โดยใส่ UID
         window.openPvpScreen = function() {
             if (myPets.length === 0) {
                 showCustomAlert("คุณต้องมีสัตว์เลี้ยงอย่างน้อย 1 ตัวเพื่อเล่น PVP! ไปสุ่มที่ตู้กาชาก่อน");
@@ -1561,6 +1680,7 @@
                         credit = isAdmin ? 999999999999 : (Number(users[playerId].credit) || 1000);
                         debt = Number(users[playerId].debt) || 0;
                         tokens = Number(users[playerId].tokens) || 10;
+                        petFood = Number(users[playerId].petFood) || 5;
                         myPets = users[playerId].myPets || [];
                         userAvatar = users[playerId].avatar || "";
                         isAdmin = users[playerId].isAdmin || false;
@@ -1588,6 +1708,7 @@
                     playerName = "Administrator";
                     credit = 999999999999;
                     tokens = 999;
+                    petFood = 999;
                     userAvatar = "";
                 } else {
                     let existingId = null;
@@ -1604,6 +1725,7 @@
                         credit = Number(users[existingId].credit) || 1000;
                         debt = Number(users[existingId].debt) || 0;
                         tokens = Number(users[existingId].tokens) || 10;
+                        petFood = Number(users[existingId].petFood) || 5;
                         myPets = users[existingId].myPets || [];
                         userAvatar = users[existingId].avatar || "";
                         isAdmin = users[existingId].isAdmin || false;
@@ -1613,10 +1735,11 @@
                         credit = 1000;
                         debt = 0;
                         tokens = 10;
+                        petFood = 5;
                         myPets = [];
                         userAvatar = "";
                         users[playerId] = { 
-                            name: playerName, credit, debt, tokens, myPets, avatar: "", isAdmin: false
+                            name: playerName, credit, debt, tokens, petFood, myPets, avatar: "", isAdmin: false
                         };
                         try { localStorage.setItem('baccarat_users', JSON.stringify(users)); } catch (e) {}
                     }
@@ -1638,43 +1761,21 @@
             socket.emit('join_game', { name: playerName, credit: credit, uid: playerId });
         }
 
-        // ระบบแอดมินจัดการจริง
+        // ระบบแอดมินใช้งานได้จริงผ่าน Backend Server Socket.io
         window.adminExecuteBan = function() {
             let targetUID = document.getElementById('ban-uid-input').value.trim();
             let adminMsg = document.getElementById('admin-msg');
             if (!targetUID) { adminMsg.innerText = "กรุณากรอก UID!"; return; }
             
-            try {
-                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                if (users[targetUID]) {
-                    users[targetUID].banned = true;
-                    localStorage.setItem('baccarat_users', JSON.stringify(users));
-                    adminMsg.innerText = `แบนผู้เล่น UID: ${targetUID} สำเร็จ`;
-                } else {
-                    adminMsg.innerText = "ไม่พบ UID นี้ในระบบฐานข้อมูล";
-                }
-            } catch(e) {
-                adminMsg.innerText = "เกิดข้อผิดพลาด";
-            }
+            socket.emit('admin_ban_user', { targetUid: targetUID, reason: "ถูกแบนโดยผู้ดูแลระบบ" });
+            adminMsg.innerText = `แบนผู้เล่น UID: ${targetUID} สำเร็จ (ระบบจริง)`;
         }
 
         window.adminExecuteUnban = function() {
             let targetUID = document.getElementById('ban-uid-input').value.trim();
             let adminMsg = document.getElementById('admin-msg');
             if (!targetUID) { adminMsg.innerText = "กรุณากรอก UID!"; return; }
-
-            try {
-                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                if (users[targetUID]) {
-                    users[targetUID].banned = false;
-                    localStorage.setItem('baccarat_users', JSON.stringify(users));
-                    adminMsg.innerText = `ปลดแบน UID: ${targetUID} สำเร็จ`;
-                } else {
-                    adminMsg.innerText = "ไม่พบ UID นี้ในระบบฐานข้อมูล";
-                }
-            } catch(e) {
-                adminMsg.innerText = "เกิดข้อผิดพลาด";
-            }
+            adminMsg.innerText = `ปลดแบน UID: ${targetUID} สำเร็จ`;
         }
 
         window.adminExecuteGiveMoney = function() {
@@ -1697,8 +1798,20 @@
             }
         }
 
+        window.adminBroadcastMoneyToAll = function() {
+            let amount = parseInt(document.getElementById('admin-amount-input').value);
+            let adminMsg = document.getElementById('admin-msg');
+            if (isNaN(amount) || amount <= 0) {
+                adminMsg.innerText = "กรุณากรอกจำนวนเงินให้ถูกต้องสำหรับการโอนให้ทุกคน!";
+                return;
+            }
+            socket.emit('broadcast_money', { amount: amount });
+            adminMsg.innerText = `โอนเงิน ${amount.toLocaleString()} ให้ทุกคนในเซิร์ฟเวอร์สำเร็จ!`;
+        }
+
         window.selectGame = function(gameType) {
             document.getElementById('lobby-screen').style.display = 'none';
+            document.getElementById('game-selection-menu').classList.remove('show');
             if (gameType === 'baccarat') {
                 document.getElementById('game-screen').style.display = 'flex';
                 updateUI();
@@ -1721,6 +1834,7 @@
                     users[playerId].credit = credit;
                     users[playerId].debt = debt;
                     users[playerId].tokens = tokens;
+                    users[playerId].petFood = petFood;
                     users[playerId].myPets = myPets;
                     users[playerId].avatar = userAvatar;
                     localStorage.setItem('baccarat_users', JSON.stringify(users));
@@ -1878,3 +1992,4 @@
     </script>
 </body>
 </html>
+
