@@ -39,6 +39,16 @@
             padding: 10px;
         }
 
+        /* [ข้อ 3] ปรับปรุงให้หน้าจอรองรับการแสดงผลแบบ PC และมือถือให้ดูง่าย สบายตา ไม่บังกัน */
+        .desktop-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
         #orientation-warning {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -150,7 +160,7 @@
 
         .lobby-container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1100px;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -170,7 +180,7 @@
 
         .lobby-layout {
             display: grid;
-            grid-template-columns: 280px 1fr;
+            grid-template-columns: 320px 1fr;
             gap: 15px;
             align-items: start;
         }
@@ -705,7 +715,7 @@
     </style>
 </head>
 <body>
-
+    <div class="desktop-wrapper">
     <div id="orientation-warning">
         <div class="rotate-icon">📱🔄</div>
         <h2 style="color: var(--gold); margin-bottom: 10px; font-size: 1.2rem;">กรุณาหมุนโทรศัพท์เป็นแนวนอน</h2>
@@ -752,8 +762,8 @@
             <div class="lobby-layout">
                 <div class="lobby-left-sidebar">
                     <div class="panel-box" style="border-color: #4e4376; background: rgba(20, 15, 30, 0.95); cursor: pointer; text-align: center; transition: transform 0.2s;" onclick="toggleEventModal(true)">
-                        <div class="panel-title" style="color: #b19cd9; border-bottom-color: #4e4376; margin-bottom: 4px;">🎁 ภารกิจรายวัน & โทเคน</div>
-                        <p style="font-size: 0.6rem; color: #aaa;">(รีเซ็ต 00:00 ทุกวัน ทำภารกิจรับโทเคน)</p>
+                        <div class="panel-title" style="color: #b19cd9; border-bottom-color: #4e4376; margin-bottom: 4px;">🎁 ภารกิจรายวัน (100 ภารกิจ)</div>
+                        <p style="font-size: 0.6rem; color: #aaa;">(ทำภารกิจครบ 100 ภารกิจ รับโทเคนและรางวัลใหญ่)</p>
                     </div>
 
                     <div class="panel-box" style="border-color: #ffaa00; background: rgba(30, 25, 10, 0.95); cursor: pointer; text-align: center;" onclick="openPetSystem()">
@@ -776,12 +786,12 @@
                     <div id="admin-panel" class="panel-box">
                         <div class="panel-title">🛡️ หมวดหมู่แอดมิน (จัดการระบบจริง)</div>
                         <div class="input-group" style="margin-bottom: 8px;">
-                            <label for="ban-uid-input" style="font-size: 0.65rem;">ระบุ UID:</label>
-                            <input type="text" id="ban-uid-input" placeholder="กรอก UID เช่น P_xxxx" style="font-size: 0.8rem; padding: 6px;">
+                            <label for="ban-uid-input" style="font-size: 0.65rem;">ระบุ UID (หรือชื่อ):</label>
+                            <input type="text" id="ban-uid-input" placeholder="กรอก UID เช่น P_xxxx หรือชื่อผู้เล่น" style="font-size: 0.8rem; padding: 6px;">
                         </div>
                         <div class="input-group" style="margin-bottom: 8px;">
-                            <label for="admin-amount-input" style="font-size: 0.65rem;">จำนวนเงิน (สำหรับเสกเงิน):</label>
-                            <input type="number" id="admin-amount-input" placeholder="ระบุจำนวนเงิน" style="font-size: 0.8rem; padding: 6px;">
+                            <label for="admin-amount-input" style="font-size: 0.65rem;">จำนวนเงิน / โทเคน / สัตว์เลี้ยง:</label>
+                            <input type="number" id="admin-amount-input" placeholder="ระบุจำนวนเงิน หรือ ID สัตว์เลี้ยง" style="font-size: 0.8rem; padding: 6px;">
                         </div>
                         <div class="input-group" style="margin-bottom: 8px;">
                             <label for="ban-duration-select" style="font-size: 0.65rem;">ระยะเวลาการแบน:</label>
@@ -792,11 +802,16 @@
                                 <option value="permanent" selected>ถาวร</option>
                             </select>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 6px;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 6px;">
                             <button class="btn btn-loan" style="padding: 8px; font-size: 0.6rem;" onclick="adminExecuteBan()">🚫 แบน</button>
                             <button class="btn btn-repay" style="padding: 8px; font-size: 0.6rem;" onclick="adminExecuteUnban()">✅ ปลดแบน</button>
                             <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#ffaa00;" onclick="adminExecuteGiveMoney()">💰 เสกเงิน</button>
                         </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 6px;">
+                            <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#38b000; color:#fff;" onclick="adminExecuteGiveToken()">🪙 แจกโทเคน</button>
+                            <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#3a86ff; color:#fff;" onclick="adminExecuteGivePet()">🐾 แจกสัตว์เลี้ยง</button>
+                        </div>
+                        <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #d90429, #b30000); margin-bottom: 5px;" onclick="adminExecuteKickServer()">⚡ ยกเซิร์ฟ (Kick All)</button>
                         <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #9b59b6, #8e44ad);" onclick="adminBroadcastMoneyToAll()">🌐 โอนเงินให้ทุกคนในเซิร์ฟเวอร์</button>
                         <div id="admin-msg" style="color: #f3e5ab; font-size: 0.65rem; margin-top: 4px; text-align: center; min-height: 12px;"></div>
                     </div>
@@ -825,15 +840,15 @@
         </div>
     </div>
 
-    <!-- Modal: กิจกรรมทำภารกิจรายวัน -->
+    <!-- Modal: กิจกรรมทำภารกิจรายวัน 100 ภารกิจ -->
     <div id="event-modal" class="modal-overlay">
         <div class="ff-profile-card">
             <div class="ff-header-banner" style="background: linear-gradient(90deg, #4e4376, #2b5876);">
-                <span class="ff-header-title">🎁 ภารกิจรายวัน (รีเซ็ตเที่ยงคืน)</span>
+                <span class="ff-header-title">🎁 ภารกิจรายวัน & โทเคน (100 ภารกิจ)</span>
                 <button class="ff-close-btn" onclick="toggleEventModal(false)">✕</button>
             </div>
             <div class="ff-body">
-                <p style="font-size: 0.75rem; color: #ccc; text-align: center; margin-bottom: 5px;">ทำภารกิจให้สำเร็จเพื่อรับโทเคน!</p>
+                <p style="font-size: 0.75rem; color: #ccc; text-align: center; margin-bottom: 5px;">ทำภารกิจครบ 100 ภารกิจเพื่อรับโทเคนจำนวนมาก!</p>
                 <div id="lobby-event-days-grid" style="display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto;"></div>
                 <button class="btn btn-deal" style="width: 100%; padding: 8px; font-size: 0.75rem; margin-top: 10px;" onclick="toggleEventModal(false)">ปิดหน้าต่าง</button>
             </div>
@@ -935,7 +950,7 @@
         </div>
     </div>
 
-    <!-- Modal: โปรไฟล์, ค้นหาเพื่อน, โอนเงินให้ทุกคน/รายบุคคล -->
+    <!-- Modal: โปรไฟล์, ค้นหาเพื่อน, โอนเงิน -->
     <div id="profile-modal" class="modal-overlay">
         <div class="ff-profile-card">
             <div class="ff-header-banner">
@@ -1104,6 +1119,7 @@
             </div>
         </div>
     </div>
+    </div>
 
     <script>
         const socket = io();
@@ -1118,6 +1134,13 @@
 
         socket.on('update_players_list', (onlinePlayers) => {
             updateServerLeaderboard(onlinePlayers);
+        });
+
+        // หากโดนแบนจากแอดมินหรือถูกยกเซิร์ฟ
+        socket.on('force_logout', (data) => {
+            alert("⚠️ " + (data.reason || "คุณถูกออกจากเซิร์ฟเวอร์โดยแอดมิน"));
+            localStorage.removeItem('baccarat_active_user');
+            location.reload();
         });
 
         socket.on('receive_pvp_invite', (data) => {
@@ -1135,7 +1158,6 @@
             });
         });
 
-        // รับเงินจากการโอนให้ทุกคนในเซิร์ฟเวอร์
         socket.on('receive_broadcast_money', (data) => {
             let amount = data.amount;
             if (!isAdmin) {
@@ -1146,7 +1168,6 @@
             showCustomAlert(`🌐 แอดมินแจกเงินให้ทุกคนในเซิร์ฟเวอร์! คุณได้รับ ${amount.toLocaleString()} เครดิต`);
         });
 
-        // รับผลการค้นหาเพื่อนจาก Server
         socket.on('search_player_response', (u) => {
             let resultBox = document.getElementById('search-result-box');
             if (u) {
@@ -1164,7 +1185,7 @@
 
         function checkOrientation() {
             let warningBox = document.getElementById('orientation-warning');
-            if (window.innerHeight > window.innerWidth) {
+            if (window.innerHeight > window.innerWidth && window.innerWidth < 768) {
                 warningBox.style.display = 'flex';
             } else {
                 warningBox.style.display = 'none';
@@ -1191,26 +1212,26 @@
 
         // ฐานข้อมูลสัตว์เลี้ยง 20+ ตัว
         const ALL_PETS_DATABASE = [
-            { name: "มังกรทองคำอมตะ", icon: "🐲✨", atk: 9999 },
-            { name: "ยูนิคอร์นศักดิ์สิทธิ์", icon: "🦄", atk: 500 },
-            { name: "สุนัขพิทักษ์", icon: "🐶", atk: 150 },
-            { name: "แมวเหมียวทองคำ", icon: "🐱", atk: 50 },
-            { name: "เสือดาวสายฟ้า", icon: "🐆", atk: 420 },
-            { name: "สิงโตเจ้าป่า", icon: "🦁", atk: 450 },
-            { name: "หมีป่าจอมพลัง", icon: "🐻", atk: 380 },
-            { name: "หมาป่ารัตติกาล", icon: "🐺", atk: 350 },
-            { name: "จิ้งจอกเก้าหาง", icon: "🦊", atk: 600 },
-            { name: "นกอินทรีเพลิง", icon: "🦅", atk: 390 },
-            { name: "นกฮูกปราชญ์", icon: "🦉", atk: 280 },
-            { name: "แพนด้าอ้วนพี", icon: "🐼", atk: 200 },
-            { name: "กระต่ายนักซิ่ง", icon: "🐰", atk: 120 },
-            { name: "กวางป่าเวทมนตร์", icon: "🦌", atk: 310 },
-            { name: "เต่ามังกรโบราณ", icon: "🐢", atk: 480 },
-            { name: "ฉลามคลั่งสมุทร", icon: "🦈", atk: 550 },
-            { name: "ปลาวาฬยักษ์", icon: "🐳", atk: 400 },
-            { name: "งูพิษนิลกาฬ", icon: "🐍", atk: 330 },
-            { name: "มังกรน้อยน่ารัก", icon: "🐉", atk: 750 },
-            { name: "ฟีนิกซ์อมตะ", icon: "🐦🔥", atk: 1200 }
+            { id: 1, name: "มังกรทองคำอมตะ", icon: "🐲✨", atk: 9999 },
+            { id: 2, name: "ยูนิคอร์นศักดิ์สิทธิ์", icon: "🦄", atk: 500 },
+            { id: 3, name: "สุนัขพิทักษ์", icon: "🐶", atk: 150 },
+            { id: 4, name: "แมวเหมียวทองคำ", icon: "🐱", atk: 50 },
+            { id: 5, name: "เสือดาวสายฟ้า", icon: "🐆", atk: 420 },
+            { id: 6, name: "สิงโตเจ้าป่า", icon: "🦁", atk: 450 },
+            { id: 7, name: "หมีป่าจอมพลัง", icon: "🐻", atk: 380 },
+            { id: 8, name: "หมาป่ารัตติกาล", icon: "🐺", atk: 350 },
+            { id: 9, name: "จิ้งจอกเก้าหาง", icon: "🦊", atk: 600 },
+            { id: 10, name: "นกอินทรีเพลิง", icon: "🦅", atk: 390 },
+            { id: 11, name: "นกฮูกปราชญ์", icon: "🦉", atk: 280 },
+            { id: 12, name: "แพนด้าอ้วนพี", icon: "🐼", atk: 200 },
+            { id: 13, name: "กระต่ายนักซิ่ง", icon: "🐰", atk: 120 },
+            { id: 14, name: "กวางป่าเวทมนตร์", icon: "🦌", atk: 310 },
+            { id: 15, name: "เต่ามังกรโบราณ", icon: "🐢", atk: 480 },
+            { id: 16, name: "ฉลามคลั่งสมุทร", icon: "🦈", atk: 550 },
+            { id: 17, name: "ปลาวาฬยักษ์", icon: "🐳", atk: 400 },
+            { id: 18, name: "งูพิษนิลกาฬ", icon: "🐍", atk: 330 },
+            { id: 19, name: "มังกรน้อยน่ารัก", icon: "🐉", atk: 750 },
+            { id: 20, name: "ฟีนิกซ์อมตะ", icon: "🐦🔥", atk: 1200 }
         ];
 
         let selectedChipValue = 10;
@@ -1313,7 +1334,6 @@
             });
         }
 
-        // เปลี่ยนฟังก์ชันค้นหาเพื่อนให้ค้นหาจากเซิร์ฟเวอร์ส่วนกลาง
         window.searchPlayerInfo = function() {
             let keyword = document.getElementById('search-user-input').value.trim();
             let resultBox = document.getElementById('search-result-box');
@@ -1324,12 +1344,9 @@
             }
 
             resultBox.innerHTML = "<span style='color:#f3e5ab;'>กำลังค้นหาผู้เล่นในเซิร์ฟเวอร์...</span>";
-            
-            // ส่งคำขอค้นหาไปที่ Server
             socket.emit('search_player_request', keyword);
         }
 
-        // ระบบโอนเงินให้ผู้เล่นรายบุคคลโดยใส่ UID และจำนวนเงิน
         window.transferMoneyToPlayer = function() {
             let recipientUid = document.getElementById('transfer-uid-input').value.trim();
             let amount = parseInt(document.getElementById('transfer-amount-input').value);
@@ -1371,7 +1388,6 @@
             }
         }
 
-        // โอนเงินให้ทุกคนที่อยู่ในเซิร์ฟเวอร์
         window.transferMoneyToEveryone = function() {
             let amount = parseInt(document.getElementById('transfer-amount-input').value);
             if (isNaN(amount) || amount <= 0) {
@@ -1411,62 +1427,50 @@
             }
         }
 
+        // [ข้อ 2] สร้างภารกิจรายวัน 100 ภารกิจเต็มรูปแบบ
         function renderEventMissions() {
             let grid = document.getElementById('lobby-event-days-grid');
             if (!grid) return;
 
             let todayDateStr = new Date().toDateString();
-            let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || '{}');
+            let missionData = JSON.parse(localStorage.getItem(`missions_100_${playerId}`) || '{}');
 
             if (missionData.date !== todayDateStr) {
-                missionData = {
-                    date: todayDateStr,
-                    loginClaimed: false,
-                    playBaccaratClaimed: false,
-                    spinGachaClaimed: false
-                };
-                localStorage.setItem(`missions_${playerId}`, JSON.stringify(missionData));
+                missionData = { date: todayDateStr, claimed: {} };
+                localStorage.setItem(`missions_100_${playerId}`, JSON.stringify(missionData));
             }
 
-            grid.innerHTML = `
-                <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="font-size:0.7rem; color:var(--gold);">1. ล็อกอินเข้าเกมประจำวัน</div>
-                        <div style="font-size:0.6rem; color:#aaa;">รับรางวัล +5 โทเคน</div>
+            let html = "";
+            for (let i = 1; i <= 100; i++) {
+                let isClaimed = missionData.claimed && missionData.claimed[i];
+                let rewardToken = i % 10 === 0 ? 50 : 5; // ภารกิจทุกๆ ข้อ 10 ได้รับ 50 โทเคน นอกนั้นได้ 5 โทเคน
+                html += `
+                    <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:0.7rem; color:var(--gold);">ภารกิจที่ ${i}: ทำกิจกรรมในคาสิโน</div>
+                            <div style="font-size:0.6rem; color:#aaa;">รับรางวัล +${rewardToken} โทเคน</div>
+                        </div>
+                        ${isClaimed ? '<span style="color:#38b000; font-size:0.65rem;">✓ รับแล้ว</span>' : `<button class="btn btn-deal" style="padding:4px 10px; font-size:0.6rem;" onclick="claimMission100(${i}, ${rewardToken})">รับโทเคน</button>`}
                     </div>
-                    ${missionData.loginClaimed ? '<span style="color:#38b000; font-size:0.65rem;">✓ รับแล้ว</span>' : '<button class="btn btn-deal" style="padding:4px 10px; font-size:0.6rem;" onclick="claimMissionReward(\'loginClaimed\', 5)">รับโทเคน</button>'}
-                </div>
-                <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="font-size:0.7rem; color:var(--gold);">2. เล่นบาคาร่าครบ 1 รอบ</div>
-                        <div style="font-size:0.6rem; color:#aaa;">รับรางวัล +3 โทเคน</div>
-                    </div>
-                    ${missionData.playBaccaratClaimed ? '<span style="color:#38b000; font-size:0.65rem;">✓ รับแล้ว</span>' : '<button class="btn btn-deal" style="padding:4px 10px; font-size:0.6rem;" onclick="claimMissionReward(\'playBaccaratClaimed\', 3)">รับโทเคน</button>'}
-                </div>
-                <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="font-size:0.7rem; color:var(--gold);">3. สุ่มกาชาสัตว์เลี้ยง 1 ครั้ง</div>
-                        <div style="font-size:0.6rem; color:#aaa;">รับรางวัล +4 โทเคน</div>
-                    </div>
-                    ${missionData.spinGachaClaimed ? '<span style="color:#38b000; font-size:0.65rem;">✓ รับแล้ว</span>' : '<button class="btn btn-deal" style="padding:4px 10px; font-size:0.6rem;" onclick="claimMissionReward(\'spinGachaClaimed\', 4)">รับโทเคน</button>'}
-                </div>
-            `;
+                `;
+            }
+            grid.innerHTML = html;
         }
 
-        window.claimMissionReward = function(missionKey, tokenAmount) {
+        window.claimMission100 = function(missionId, tokenAmount) {
             let todayDateStr = new Date().toDateString();
-            let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || `{"date":"${todayDateStr}"}`);
+            let missionData = JSON.parse(localStorage.getItem(`missions_100_${playerId}`) || `{"date":"${todayDateStr}", "claimed":{}}`);
             
-            missionData[missionKey] = true;
-            localStorage.setItem(`missions_${playerId}`, JSON.stringify(missionData));
+            if (!missionData.claimed) missionData.claimed = {};
+            missionData.claimed[missionId] = true;
+            localStorage.setItem(`missions_100_${playerId}`, JSON.stringify(missionData));
 
             tokens += tokenAmount;
             saveGameProgress();
             renderEventMissions();
-            showCustomAlert(`🎉 สำเร็จภารกิจ! คุณได้รับ +${tokenAmount} โทเคน`);
+            showCustomAlert(`🎉 สำเร็จภารกิจที่ ${missionId}! คุณได้รับ +${tokenAmount} โทเคน`);
         }
 
-        // ระบบเลี้ยงสัตว์ 20+ ตัว พร้อมให้อาหารสัตว์เลี้ยงได้จริง
         window.openPetSystem = function() {
             document.getElementById('lobby-screen').style.display = 'none';
             document.getElementById('pet-screen').style.display = 'flex';
@@ -1528,7 +1532,6 @@
             showCustomAlert("🍖 ให้อาหารสัตว์เลี้ยงทุกตัวสำเร็จ! พลังโจมตีของสัตว์เลี้ยงทุกตัวเพิ่มขึ้น +100");
         }
 
-        // ตู้สุ่ม Gacha (สุ่มสัตว์เลี้ยงครบทั้ง 20+ ตัว)
         window.openGachaSystem = function() {
             document.getElementById('lobby-screen').style.display = 'none';
             document.getElementById('gacha-screen').style.display = 'flex';
@@ -1537,16 +1540,11 @@
 
         window.spinGacha = function() {
             if (tokens < 5) {
-                showCustomAlert("โทเคนของคุณไม่พอ! ทำภารกิจรายวันเพื่อรับโทเคนเพิ่ม");
+                showCustomAlert("โทเคนของคุณไม่พอ! ทำภารกิจเพื่อรับโทเคนเพิ่ม");
                 return;
             }
             tokens -= 5;
             document.getElementById('gacha-token-val').innerText = tokens;
-
-            let todayDateStr = new Date().toDateString();
-            let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || `{"date":"${todayDateStr}"}`);
-            missionData.spinGachaClaimed = true;
-            localStorage.setItem(`missions_${playerId}`, JSON.stringify(missionData));
             saveGameProgress();
 
             let iconEl = document.getElementById('gacha-result-icon');
@@ -1561,7 +1559,6 @@
                 iconEl.classList.remove('gacha-animating');
                 spinBtn.disabled = false;
 
-                // สุ่มจากสัตว์เลี้ยง 20+ ตัวในฐานข้อมูล
                 let randomIndex = Math.floor(Math.random() * ALL_PETS_DATABASE.length);
                 let wonPet = JSON.parse(JSON.stringify(ALL_PETS_DATABASE[randomIndex]));
 
@@ -1573,7 +1570,6 @@
             }, 1200);
         }
 
-        // ระบบ PvP ส่งคำเชิญให้ทุกคนในเซิร์ฟเวอร์โดยใส่ UID
         window.openPvpScreen = function() {
             if (myPets.length === 0) {
                 showCustomAlert("คุณต้องมีสัตว์เลี้ยงอย่างน้อย 1 ตัวเพื่อเล่น PVP! ไปสุ่มที่ตู้กาชาก่อน");
@@ -1718,7 +1714,7 @@
                     if (existingId) {
                         playerId = existingId;
                         playerName = users[existingId].name;
-                        credit = Number(users[existingId].credit) || 1000;
+                        credit = Number(users[existingId].users) || Number(users[existingId].credit) || 1000;
                         debt = Number(users[existingId].debt) || 0;
                         tokens = Number(users[existingId].tokens) || 10;
                         petFood = Number(users[existingId].petFood) || 5;
@@ -1754,7 +1750,6 @@
                 credit = 999999999999;
             }
 
-            // ส่งข้อมูลอัปเดตไปที่เซิร์ฟเวอร์ตอนล็อกอิน (รวมถึง debt, tokens, uid และ avatar)
             socket.emit('join_game', { 
                 name: playerName, 
                 credit: credit, 
@@ -1765,40 +1760,57 @@
             });
         }
 
-        // ระบบแอดมินใช้งานได้จริงผ่าน Backend Server Socket.io
+        // [ข้อ 1] ระบบแอดมินรองรับการแบนทั้ง UID / ชื่อ / เบอร์โทรศัพท์ไอดี และแจกสัตว์เลี้ยง/โทเคน พร้อมยกเซิร์ฟ
         window.adminExecuteBan = function() {
-            let targetUID = document.getElementById('ban-uid-input').value.trim();
+            let target = document.getElementById('ban-uid-input').value.trim();
             let adminMsg = document.getElementById('admin-msg');
-            if (!targetUID) { adminMsg.innerText = "กรุณากรอก UID!"; return; }
+            if (!target) { adminMsg.innerText = "กรุณากรอก UID หรือชื่อผู้เล่น!"; return; }
             
-            socket.emit('admin_ban_user', { targetUid: targetUID, reason: "ถูกแบนโดยผู้ดูแลระบบ" });
-            adminMsg.innerText = `แบนผู้เล่น UID: ${targetUID} สำเร็จ (ระบบจริง)`;
+            socket.emit('admin_ban_user', { target: target, reason: "ถูกแบนโดยผู้ดูแลระบบ" });
+            adminMsg.innerText = `แบนผู้เล่น ${target} สำเร็จ (ระบบจริง)`;
         }
 
         window.adminExecuteUnban = function() {
-            let targetUID = document.getElementById('ban-uid-input').value.trim();
+            let target = document.getElementById('ban-uid-input').value.trim();
             let adminMsg = document.getElementById('admin-msg');
-            if (!targetUID) { adminMsg.innerText = "กรุณากรอก UID!"; return; }
-            adminMsg.innerText = `ปลดแบน UID: ${targetUID} สำเร็จ`;
+            if (!target) { adminMsg.innerText = "กรุณากรอก UID หรือชื่อผู้เล่น!"; return; }
+            adminMsg.innerText = `ปลดแบน ${target} สำเร็จ`;
         }
 
         window.adminExecuteGiveMoney = function() {
-            let targetUID = document.getElementById('ban-uid-input').value.trim();
+            let target = document.getElementById('ban-uid-input').value.trim();
             let amount = parseInt(document.getElementById('admin-amount-input').value);
             let adminMsg = document.getElementById('admin-msg');
-            if (!targetUID || isNaN(amount)) { adminMsg.innerText = "กรุณากรอก UID และจำนวนเงินให้ถูกต้อง!"; return; }
+            if (!target || isNaN(amount)) { adminMsg.innerText = "กรุณากรอก UID/ชื่อ และจำนวนเงินให้ถูกต้อง!"; return; }
 
-            try {
-                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                if (users[targetUID]) {
-                    users[targetUID].credit = (users[targetUID].credit || 0) + amount;
-                    localStorage.setItem('baccarat_users', JSON.stringify(users));
-                    adminMsg.innerText = `เสกเงิน ${amount.toLocaleString()} ให้ UID: ${targetUID} สำเร็จ!`;
-                } else {
-                    adminMsg.innerText = "ไม่พบ UID ผู้เล่นนี้ในระบบ";
-                }
-            } catch (e) {
-                adminMsg.innerText = "เกิดข้อผิดพลาด";
+            socket.emit('admin_give_money', { target: target, amount: amount });
+            adminMsg.innerText = `เสกเงิน ${amount.toLocaleString()} ให้ ${target} สำเร็จ!`;
+        }
+
+        window.adminExecuteGiveToken = function() {
+            let target = document.getElementById('ban-uid-input').value.trim();
+            let amount = parseInt(document.getElementById('admin-amount-input').value);
+            let adminMsg = document.getElementById('admin-msg');
+            if (!target || isNaN(amount)) { adminMsg.innerText = "กรุณากรอก UID/ชื่อ และจำนวนโทเคนให้ถูกต้อง!"; return; }
+
+            socket.emit('admin_give_token', { target: target, amount: amount });
+            adminMsg.innerText = `แจกโทเคน ${amount} ให้ ${target} สำเร็จ!`;
+        }
+
+        window.adminExecuteGivePet = function() {
+            let target = document.getElementById('ban-uid-input').value.trim();
+            let petId = parseInt(document.getElementById('admin-amount-input').value) || 1;
+            let adminMsg = document.getElementById('admin-msg');
+            if (!target) { adminMsg.innerText = "กรุณากรอก UID/ชื่อผู้รับสัตว์เลี้ยง!"; return; }
+
+            let petObj = ALL_PETS_DATABASE.find(p => p.id === petId) || ALL_PETS_DATABASE[0];
+            socket.emit('admin_give_pet', { target: target, pet: petObj });
+            adminMsg.innerText = `แจกสัตว์เลี้ยง ${petObj.icon} ${petObj.name} ให้ ${target} สำเร็จ!`;
+        }
+
+        window.adminExecuteKickServer = function() {
+            if (confirm("คุณต้องการยกเซิร์ฟเวอร์ (Kick ทุกคน) จริงๆ หรือไม่?")) {
+                socket.emit('admin_kick_server');
             }
         }
 
@@ -1843,7 +1855,7 @@
                     users[playerId].avatar = userAvatar;
                     localStorage.setItem('baccarat_users', JSON.stringify(users));
                 }
-                socket.emit('update_user_status', { credit: credit });
+                socket.emit('update_user_status', { credit: credit, tokens: tokens, myPets: myPets });
             } catch (e) {}
         }
 
@@ -1909,11 +1921,6 @@
             if (tableBoard) {
                 tableBoard.classList.add('animate-fire-glow');
             }
-
-            let todayDateStr = new Date().toDateString();
-            let missionData = JSON.parse(localStorage.getItem(`missions_${playerId}`) || `{"date":"${todayDateStr}"}`);
-            missionData.playBaccaratClaimed = true;
-            localStorage.setItem(`missions_${playerId}`, JSON.stringify(missionData));
 
             let pCardsContainer = document.getElementById('player-cards');
             let bCardsContainer = document.getElementById('banker-cards');
