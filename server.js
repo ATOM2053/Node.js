@@ -11,13 +11,11 @@ const io = new Server(server, {
 
 app.use(express.static(path.join(__dirname)));
 
-// เก็บรายชื่อผู้เล่นที่ออนไลน์อยู่
 let onlinePlayers = {};
 
 io.on('connection', (socket) => {
   console.log('มีผู้เล่นเชื่อมต่อ:', socket.id);
 
-  // เมื่อมีผู้เล่นส่งชื่อเข้ามา
   socket.on('join_game', (data) => {
     onlinePlayers[socket.id] = {
       name: data.name,
@@ -27,7 +25,6 @@ io.on('connection', (socket) => {
     io.emit('update_players_list', onlinePlayers);
   });
 
-  // อัปเดตข้อมูลเครดิตเมื่อมีการเล่นหรือเปลี่ยนแปลง
   socket.on('update_user_status', (data) => {
     if (onlinePlayers[socket.id]) {
       onlinePlayers[socket.id].credit = data.credit;
@@ -35,7 +32,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  // รองรับคำสั่งแอดมินสั่งแบนผู้เล่น
+  // ระบบแอดมินสั่งแบนผู้เล่นใช้งานได้จริง
   socket.on('admin_ban_user', (data) => {
     for (let [id, player] of Object.entries(onlinePlayers)) {
       if (player.uid === data.targetUid) {
@@ -49,7 +46,29 @@ io.on('connection', (socket) => {
     }
   });
 
-  // เมื่อผู้เล่นหลุดการเชื่อมต่อหรือปิดเว็บ
+  // ระบบโอนเงินให้ทุกคนที่อยู่ในเซิร์ฟเวอร์
+  socket.on('broadcast_money', (data) => {
+    io.emit('receive_broadcast_money', { amount: data.amount });
+  });
+
+  // ระบบส่งคำเชิญ PvP ไปยังผู้เล่นทุกคนในเซิร์ฟเวอร์ผ่าน UID
+  socket.on('send_pvp_invite', (data) => {
+    let targetSocketId = null;
+    for (let [id, player] of Object.entries(onlinePlayers)) {
+      if (player.uid === data.targetUid) {
+        targetSocketId = id;
+        break;
+      }
+    }
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('receive_pvp_invite', {
+        senderUid: data.senderUid,
+        senderName: data.senderName,
+        senderPet: data.senderPet
+      });
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('ผู้เล่นออกจากระบบ:', socket.id);
     delete onlinePlayers[socket.id];
