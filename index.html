@@ -706,10 +706,10 @@
             animation: gachaSpinAnim 0.5s infinite linear;
         }
 
-        /* สไตล์สำหรับระบบแชทโลก (Global Chat) ลอยอยู่มุมขวาล่าง */
+        /* สไตล์สำหรับระบบแชทโลก (Global Chat) ลอยอยู่มุมซ้ายบนสุด */
         .global-chat-widget {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             left: 20px;
             width: 300px;
             background: rgba(18, 18, 18, 0.95);
@@ -780,7 +780,7 @@
             .game-container { order: 1; }
             .action-buttons { grid-template-columns: repeat(2, 1fr); }
             .lobby-layout { grid-template-columns: 1fr; }
-            .global-chat-widget { width: 90%; left: 5%; bottom: 10px; }
+            .global-chat-widget { width: 90%; left: 5%; top: 10px; }
         }
     </style>
 </head>
@@ -910,7 +910,7 @@
         </div>
     </div>
 
-    <!-- Widget แชทโลก (Global Chat) ลอยแสดงผลทุกหน้า -->
+    <!-- Widget แชทโลก (Global Chat) ลอยแสดงผลมุมซ้ายบน -->
     <div class="global-chat-widget" id="global-chat-widget">
         <div class="chat-header" onclick="toggleGlobalChat()">
             <span>🌐 แชทโลก (Global Chat)</span>
