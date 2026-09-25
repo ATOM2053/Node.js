@@ -39,7 +39,6 @@
             padding: 10px;
         }
 
-        /* [ข้อ 3] ปรับปรุงให้หน้าจอรองรับการแสดงผลแบบ PC และมือถือให้ดูง่าย สบายตา ไม่บังกัน */
         .desktop-wrapper {
             width: 100%;
             max-width: 1200px;
@@ -88,7 +87,6 @@
             overflow-y: auto;
         }
 
-        /* เปลี่ยนรูปพื้นหลังในหน้าหลักตามที่ต้องการ */
         #lobby-screen {
             background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQk5_xkDlw5n-E8yXoqrUr6ROSylJJX4hnAAxI-9V6t5A&s=10') no-repeat center center fixed;
             background-size: cover;
@@ -706,12 +704,81 @@
             animation: gachaSpinAnim 0.5s infinite linear;
         }
 
+        /* [ข้อ 5] สไตล์สำหรับระบบแชทโลก (Global Chat) ลอยอยู่มุมขวาล่าง */
+        .global-chat-widget {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            background: rgba(18, 18, 18, 0.95);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+        .chat-header {
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+            color: #121212;
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .chat-body {
+            height: 150px;
+            overflow-y: auto;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.65rem;
+        }
+        .chat-msg {
+            word-break: break-all;
+            line-height: 1.3;
+        }
+        .chat-msg span.sender {
+            color: var(--gold);
+            font-weight: bold;
+        }
+        .chat-footer {
+            display: flex;
+            border-top: 1px solid var(--gold-dark);
+            padding: 4px;
+            background: rgba(0,0,0,0.8);
+        }
+        .chat-footer input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 4px;
+            font-size: 0.65rem;
+            outline: none;
+        }
+        .chat-footer button {
+            background: var(--gold);
+            border: none;
+            padding: 4px 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
         @media (max-width: 768px) {
             .main-layout { flex-direction: column; align-items: center; }
             .sidebar-column { width: 100%; max-width: 650px; order: 2; }
             .game-container { order: 1; }
             .action-buttons { grid-template-columns: repeat(2, 1fr); }
             .lobby-layout { grid-template-columns: 1fr; }
+            .global-chat-widget { width: 90%; left: 5%; bottom: 10px; }
         }
     </style>
 </head>
@@ -791,8 +858,8 @@
                             <input type="text" id="ban-uid-input" placeholder="กรอก UID เช่น P_xxxx หรือชื่อผู้เล่น" style="font-size: 0.8rem; padding: 6px;">
                         </div>
                         <div class="input-group" style="margin-bottom: 8px;">
-                            <label for="admin-amount-input" style="font-size: 0.65rem;">จำนวนเงิน / โทเคน / สัตว์เลี้ยง:</label>
-                            <input type="number" id="admin-amount-input" placeholder="ระบุจำนวนเงิน หรือ ID สัตว์เลี้ยง" style="font-size: 0.8rem; padding: 6px;">
+                            <label for="admin-amount-input" style="font-size: 0.65rem;">จำนวนเงิน / โทเคน / สัตว์เลี้ยง / สาเหตุแบน:</label>
+                            <input type="text" id="admin-amount-input" placeholder="ระบุจำนวนเงิน หรือ สาเหตุการแบน" style="font-size: 0.8rem; padding: 6px;">
                         </div>
                         <div class="input-group" style="margin-bottom: 8px;">
                             <label for="ban-duration-select" style="font-size: 0.65rem;">ระยะเวลาการแบน:</label>
@@ -812,7 +879,7 @@
                             <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#38b000; color:#fff;" onclick="adminExecuteGiveToken()">🪙 แจกโทเคน</button>
                             <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#3a86ff; color:#fff;" onclick="adminExecuteGivePet()">🐾 แจกสัตว์เลี้ยง</button>
                         </div>
-                        <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #d90429, #b30000); margin-bottom: 5px;" onclick="adminExecuteKickServer()">⚡ ยกเซิร์ฟ (Kick All)</button>
+                        <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #d90429, #b30000); margin-bottom: 5px;" onclick="adminExecuteKickServer()">⚡ รีเซิร์ฟเวอร์ (แจ้งเตือน & เด้งออกทุกคน)</button>
                         <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #9b59b6, #8e44ad);" onclick="adminBroadcastMoneyToAll()">🌐 โอนเงินให้ทุกคนในเซิร์ฟเวอร์</button>
                         <div id="admin-msg" style="color: #f3e5ab; font-size: 0.65rem; margin-top: 4px; text-align: center; min-height: 12px;"></div>
                     </div>
@@ -841,6 +908,19 @@
         </div>
     </div>
 
+    <!-- [ข้อ 5] Widget แชทโลก (Global Chat) ลอยแสดงผลทุกหน้า -->
+    <div class="global-chat-widget" id="global-chat-widget">
+        <div class="chat-header" onclick="toggleGlobalChat()">
+            <span>🌐 แชทโลก (Global Chat)</span>
+            <span id="chat-toggle-icon">▲</span>
+        </div>
+        <div class="chat-body" id="chat-messages-container"></div>
+        <div class="chat-footer">
+            <input type="text" id="chat-input-box" placeholder="พิมพ์ข้อความคุยกับทุกคน..." onkeypress="handleChatKeyPress(event)">
+            <button onclick="sendGlobalChatMessage()">ส่ง</button>
+        </div>
+    </div>
+
     <!-- Modal: กิจกรรมทำภารกิจรายวัน 100 ภารกิจ -->
     <div id="event-modal" class="modal-overlay">
         <div class="ff-profile-card">
@@ -856,7 +936,7 @@
         </div>
     </div>
 
-    <!-- Screen: ระบบเลี้ยงสัตว์ (20+ ตัว และให้อาหารได้จริง) -->
+    <!-- Screen: ระบบเลี้ยงสัตว์ -->
     <div id="pet-screen">
         <header>
             <div class="header-profile-mini" onclick="toggleProfileModal(true)">
@@ -941,7 +1021,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label style="font-size: 0.65rem;">ใส่ UID ผู้เล่นที่ต้องการท้าดวล (PVP ทุกคนในเซิฟเวอร์):</label>
+                    <label style="font-size: 0.65rem;">ใส่ UID ผู้เล่นที่ต้องการท้าดวล:</label>
                     <input type="text" id="pvp-target-uid-input" placeholder="กรอก UID เช่น P_xxxx" style="font-size: 0.8rem; padding: 8px;">
                 </div>
 
@@ -960,7 +1040,7 @@
             </div>
             <div class="ff-body">
                 <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; border: 1px solid var(--gold-dark);">
-                    <label for="search-user-input" style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">🔍 ค้นหาชื่อเพื่อน (มุมบนขวา):</label>
+                    <label for="search-user-input" style="font-size: 0.6rem; color: var(--gold-light); display: block; margin-bottom: 3px;">🔍 ค้นหาชื่อเพื่อน (คนละโทรศัพท์โอนได้ทันที):</label>
                     <div style="display: flex; gap: 5px;">
                         <input type="text" id="search-user-input" placeholder="พิมพ์ชื่อหรือ UID เพื่อน..." style="flex: 1; background: rgba(0,0,0,0.6); border: 1px solid var(--gold-dark); border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
                         <button class="btn btn-deal" style="padding: 6px 10px; font-size: 0.65rem;" onclick="searchPlayerInfo()">ค้นหา</button>
@@ -969,7 +1049,7 @@
                 </div>
 
                 <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; border: 1px solid #38b000;">
-                    <label style="font-size: 0.6rem; color: #38b000; display: block; margin-bottom: 3px;">💸 ระบบโอนเงินให้ผู้เล่น (ใส่ UID และจำนวนเงิน):</label>
+                    <label style="font-size: 0.6rem; color: #38b000; display: block; margin-bottom: 3px;">💸 ระบบโอนเงินให้ผู้เล่น (คนละโทรศัพท์ก็โอนได้):</label>
                     <div style="display: flex; gap: 5px; margin-bottom: 4px;">
                         <input type="text" id="transfer-uid-input" placeholder="UID ผู้รับ (เช่น P_1234)" style="flex: 1; background: rgba(0,0,0,0.6); border: 1px solid #38b000; border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
                         <input type="number" id="transfer-amount-input" placeholder="จำนวนเงิน" style="width: 80px; background: rgba(0,0,0,0.6); border: 1px solid #38b000; border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
@@ -1137,7 +1217,7 @@
             updateServerLeaderboard(onlinePlayers);
         });
 
-        // [ข้อ 2] แก้ไขกล่องข้อความเมื่อโดนแบน พร้อมแสดงเวลานับถอยหลัง
+        // [ข้อ 2] โมเดลแจ้งเตือนแบน พร้อมเวลานับถอยหลังและสาเหตุ
         socket.on('force_logout', (data) => {
             let remainingText = "";
             if (data.expireTime) {
@@ -1147,22 +1227,39 @@
                 remainingText = ` (เหลือเวลาแบนอีก: ${minutes} นาที ${seconds} วินาที)`;
             }
             
-            showCustomAlert("⚠️ " + (data.reason || "คุณถูกออกจากเซิร์ฟเวอร์") + remainingText, false, () => {
+            let alertMsg = `⚠️ บัญชีของคุณถูกแบน!\nสาเหตุ: ${data.reason || 'ละเมิดกฎของเซิร์ฟเวอร์'}${remainingText}`;
+            showCustomAlert(alertMsg, false, () => {
                 localStorage.removeItem('baccarat_active_user');
                 location.reload();
             });
         });
 
-        // [ข้อ 1] รับคำเชิญ PvP และเด้งไปห้องประลองเฉพาะเมื่อกดรับ
+        // [ข้อ 3] ระบบรีเซิร์ฟเวอร์ (แจ้งเตือนทุกคนทันที และเตะออกจากเซิร์ฟ)
+        socket.on('server_restart_kick', (data) => {
+            showCustomAlert(`⚡ ${data.message || 'เซิร์ฟเวอร์กำลังรีเซ็ตระบบ! กำลังเตะทุกคนออกทันที...'}`, false, () => {
+                localStorage.removeItem('baccarat_active_user');
+                location.reload();
+            });
+        });
+
+        // [ข้อ 1] โอนเงินหากันระหว่างคนละโทรศัพท์ (ผ่านเซิร์ฟเวอร์กลาง)
+        socket.on('receive_money_transfer', (data) => {
+            let amount = data.amount;
+            let senderName = data.senderName;
+            credit += amount;
+            saveGameProgress();
+            updateUI();
+            showCustomAlert(`💰 คุณได้รับเงินโอนจำนวน ${amount.toLocaleString()} เครดิต จากผู้เล่น ${senderName}`);
+        });
+
+        // [ข้อ 4] แจ้งเตือนท้า PvP ทุกที่ ไม่ว่าจะทำอะไรอยู่
         socket.on('receive_pvp_invite', (data) => {
             let senderName = data.senderName;
             let senderUid = data.senderUid;
-            let senderPets = data.senderPets;
 
-            let msg = `ผู้เล่น ${senderName} (UID: ${senderUid}) ส่งคำเชิญท้าดวล PvP! คุณต้องการรับคำท้าและเข้าสู่ห้องประลองหรือไม่?`;
+            let msg = `⚔️ ผู้เล่น ${senderName} (UID: ${senderUid}) ส่งคำเชิญท้าดวล PvP หาคุณ! ต้องการรับคำท้าหรือไม่?`;
             
             showCustomAlert(msg, true, () => {
-                // เมื่อกดยอมรับ ส่งสัญญาณไปเปิดห้อง PvP เฉพาะ
                 socket.emit('accept_pvp_invite', {
                     targetUid: senderUid,
                     myUid: playerId,
@@ -1172,16 +1269,15 @@
             });
         });
 
-        // [ข้อ 1] เด้งไปห้อง PvP ที่จัดไว้เฉพาะเมื่อเริ่มแมตช์
         socket.on('start_pvp_match', (matchData) => {
             document.getElementById('lobby-screen').style.display = 'none';
             document.getElementById('pet-screen').style.display = 'none';
             document.getElementById('gacha-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'none';
             document.getElementById('pvp-screen').style.display = 'flex';
             
             let resultBox = document.getElementById('pvp-result-box');
-            resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">⚔️ เข้าสู่ห้องประลอง PvP สำเร็จ! กำลังเริ่มการต่อสู้...</span>`;
-            // สามารถเพิ่มฟังก์ชันแสดงผลการต่อสู้ในห้อง PvP ตรงนี้ได้ทันที
+            resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">⚔️ เข้าสู่ห้องประลอง PvP สำเร็จ! เริ่มการต่อสู้กับสัตว์เลี้ยง...</span>`;
         });
 
         socket.on('receive_broadcast_money', (data) => {
@@ -1192,6 +1288,17 @@
             saveGameProgress();
             updateUI();
             showCustomAlert(`🌐 แอดมินแจกเงินให้ทุกคนในเซิร์ฟเวอร์! คุณได้รับ ${amount.toLocaleString()} เครดิต`);
+        });
+
+        // [ข้อ 5] รับข้อความแชทโลกและแสดงผล
+        socket.on('receive_global_chat', (data) => {
+            let container = document.getElementById('chat-messages-container');
+            if (!container) return;
+            let div = document.createElement('div');
+            div.className = 'chat-msg';
+            div.innerHTML = `<span class="sender">${data.sender}:</span> ${data.message}`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
         });
 
         socket.on('search_player_response', (u) => {
@@ -1232,11 +1339,9 @@
         let tokens = 10;
         let petFood = 5;
         let myPets = [];
-        let currentDay = 1;
         let isAdmin = false;
         let userAvatar = "";
 
-        // ฐานข้อมูลสัตว์เลี้ยง 20+ ตัว
         const ALL_PETS_DATABASE = [
             { id: 1, name: "มังกรทองคำอมตะ", icon: "🐲✨", atk: 9999 },
             { id: 2, name: "ยูนิคอร์นศักดิ์สิทธิ์", icon: "🦄", atk: 500 },
@@ -1297,6 +1402,33 @@
             menu.classList.toggle('show');
         }
 
+        // [ข้อ 5] ฟังก์ชันพับ/ขยายหน้าต่างแชทโลก
+        function toggleGlobalChat() {
+            let body = document.getElementById('chat-messages-container');
+            let icon = document.getElementById('chat-toggle-icon');
+            if (body.style.display === 'none') {
+                body.style.display = 'flex';
+                icon.innerText = '▲';
+            } else {
+                body.style.display = 'none';
+                icon.innerText = '▼';
+            }
+        }
+
+        window.sendGlobalChatMessage = function() {
+            let input = document.getElementById('chat-input-box');
+            let msg = input.value.trim();
+            if (!msg) return;
+            socket.emit('send_global_chat', { sender: playerName || 'Guest', message: msg });
+            input.value = '';
+        }
+
+        window.handleChatKeyPress = function(e) {
+            if (e.key === 'Enter') {
+                sendGlobalChatMessage();
+            }
+        }
+
         window.toggleEventModal = function(show) {
             let modal = document.getElementById('event-modal');
             if (!modal) return;
@@ -1308,7 +1440,6 @@
             }
         }
 
-        // ฟังก์ชันโมเดลแจ้งเตือน Custom ของตัวเอง
         function showCustomAlert(message, isConfirm = false, onConfirm = null) {
             document.getElementById('myCustomAlertMessage').innerText = message;
             let btnGroup = document.getElementById('custom-alert-btn-group');
@@ -1374,6 +1505,7 @@
             socket.emit('search_player_request', keyword);
         }
 
+        // [ข้อ 1] ระบบโอนเงินข้ามอุปกรณ์ (คนละโทรศัพท์โอนได้ผ่านเซิร์ฟเวอร์กลาง)
         window.transferMoneyToPlayer = function() {
             let recipientUid = document.getElementById('transfer-uid-input').value.trim();
             let amount = parseInt(document.getElementById('transfer-amount-input').value);
@@ -1391,28 +1523,18 @@
                 return;
             }
 
-            try {
-                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                if (!users[recipientUid]) {
-                    showCustomAlert("ไม่พบ UID ผู้รับในระบบ!");
-                    return;
-                }
+            if (!isAdmin) credit -= amount;
+            socket.emit('transfer_money_request', {
+                recipientUid: recipientUid,
+                amount: amount,
+                senderName: playerName
+            });
 
-                if (!isAdmin) credit -= amount;
-                users[recipientUid].credit = (users[recipientUid].credit || 0) + amount;
-                
-                if (users[playerId]) {
-                    users[playerId].credit = credit;
-                }
-                localStorage.setItem('baccarat_users', JSON.stringify(users));
-
-                updateUI();
-                showCustomAlert(`โอนเงินจำนวน ${amount.toLocaleString()} เครดิต ไปยัง UID: ${recipientUid} สำเร็จ!`);
-                document.getElementById('transfer-uid-input').value = "";
-                document.getElementById('transfer-amount-input').value = "";
-            } catch (e) {
-                showCustomAlert("เกิดข้อผิดพลาดในการโอนเงิน");
-            }
+            saveGameProgress();
+            updateUI();
+            showCustomAlert(`โอนเงินจำนวน ${amount.toLocaleString()} เครดิต ไปยัง UID: ${recipientUid} สำเร็จ!`);
+            document.getElementById('transfer-uid-input').value = "";
+            document.getElementById('transfer-amount-input').value = "";
         }
 
         window.transferMoneyToEveryone = function() {
@@ -1454,7 +1576,6 @@
             }
         }
 
-        // [ข้อ 2] สร้างภารกิจรายวัน 100 ภารกิจเต็มรูปแบบ
         function renderEventMissions() {
             let grid = document.getElementById('lobby-event-days-grid');
             if (!grid) return;
@@ -1741,7 +1862,7 @@
                     if (existingId) {
                         playerId = existingId;
                         playerName = users[existingId].name;
-                        credit = Number(users[existingId].users) || Number(users[existingId].credit) || 1000;
+                        credit = Number(users[existingId].credit) || 1000;
                         debt = Number(users[existingId].debt) || 0;
                         tokens = Number(users[existingId].tokens) || 10;
                         petFood = Number(users[existingId].petFood) || 5;
@@ -1789,17 +1910,21 @@
 
         window.adminExecuteBan = function() {
             let target = document.getElementById('ban-uid-input').value.trim();
+            let reason = document.getElementById('admin-amount-input').value.trim() || "ทำผิดกฎของคาสิโน";
+            let duration = document.getElementById('ban-duration-select').value;
             let adminMsg = document.getElementById('admin-msg');
+            
             if (!target) { adminMsg.innerText = "กรุณากรอก UID หรือชื่อผู้เล่น!"; return; }
             
-            socket.emit('admin_ban_user', { target: target, reason: "ถูกแบนโดยผู้ดูแลระบบ" });
-            adminMsg.innerText = `แบนผู้เล่น ${target} สำเร็จ (ระบบจริง)`;
+            socket.emit('admin_ban_user', { target: target, reason: reason, duration: duration });
+            adminMsg.innerText = `แบนผู้เล่น ${target} (${duration}) สำเร็จ!`;
         }
 
         window.adminExecuteUnban = function() {
             let target = document.getElementById('ban-uid-input').value.trim();
             let adminMsg = document.getElementById('admin-msg');
             if (!target) { adminMsg.innerText = "กรุณากรอก UID หรือชื่อผู้เล่น!"; return; }
+            socket.emit('admin_unban_user', { target: target });
             adminMsg.innerText = `ปลดแบน ${target} สำเร็จ`;
         }
 
@@ -1834,10 +1959,10 @@
             adminMsg.innerText = `แจกสัตว์เลี้ยง ${petObj.icon} ${petObj.name} ให้ ${target} สำเร็จ!`;
         }
 
+        // [ข้อ 3] ระบบรีเซิร์ฟเวอร์ ส่งคำสั่งแจ้งเตือนและเตะทุกคนออกทันที
         window.adminExecuteKickServer = function() {
-            if (confirm("คุณต้องการยกเซิร์ฟเวอร์ (Kick ทุกคน) จริงๆ หรือไม่?")) {
-                socket.emit('admin_kick_server');
-            }
+            let reason = document.getElementById('admin-amount-input').value.trim() || "เซิร์ฟเวอร์กำลังรีเซ็ตระบบเพื่ออัปเดต";
+            socket.emit('admin_restart_server', { message: reason });
         }
 
         window.adminBroadcastMoneyToAll = function() {
