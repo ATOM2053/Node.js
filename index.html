@@ -822,10 +822,10 @@
         <p style="font-size: 0.8rem; color: #aaa;">เพื่อประสบการณ์การเล่นเกมที่ดีที่สุด</p>
     </div>
 
-    <!-- แบนเนอร์แสดงอีเวนต์ปัจจุบัน -->
+    <!-- แบนเนอร์แสดงอีเวนต์ปัจจุบัน (เปลี่ยนทุก 1 ชั่วโมงอัตโนมัติ) -->
     <div id="active-event-banner">
         <div id="event-name-display">🎉 อีเวนต์: กำลังโหลด...</div>
-        <div id="event-timer-display" style="font-size: 0.6rem; color: #aaa;">เวลาเหลือ: 10:00</div>
+        <div id="event-timer-display" style="font-size: 0.6rem; color: #aaa;">เวลาเหลือ: 60:00</div>
     </div>
 
     <!-- Login Screen -->
@@ -874,7 +874,7 @@
 
                     <div class="panel-box" style="border-color: #ffaa00; background: rgba(30, 25, 10, 0.95); cursor: pointer; text-align: center;" onclick="openPetSystem()">
                         <div class="panel-title" style="color: #ffaa00; border-bottom-color: #ffaa00; margin-bottom: 4px;">🐾 ระบบเลี้ยงสัตว์ (20+ ตัว)</div>
-                        <p style="font-size: 0.6rem; color: #aaa;">(คลังสัตว์เลี้ยงพร้อม ID & ให้อาหารสัตว์)</p>
+                        <p style="font-size: 0.6rem; color: #aaa;">(คลังสัตว์เลี้ยงพร้อมระบบรวมสถานะ)</p>
                     </div>
 
                     <div class="panel-box" style="border-color: #3a86ff; background: rgba(10, 20, 30, 0.95); cursor: pointer; text-align: center;" onclick="openGachaSystem()">
@@ -884,7 +884,7 @@
 
                     <div class="panel-box" style="border-color: #ff4d4d; background: rgba(30, 10, 10, 0.95); cursor: pointer; text-align: center;" onclick="openPvpScreen()">
                         <div class="panel-title" style="color: #ff4d4d; border-bottom-color: #ff4d4d; margin-bottom: 4px;">⚔️ โหมดประลอง PvP</div>
-                        <p style="font-size: 0.6rem; color: #aaa;">(ท้าดวลส่งคำเชิญผ่าน UID)</p>
+                        <p style="font-size: 0.6rem; color: #aaa;">(ท้าดวลส่งคำเชิญแจ้งเตือนหน้าหลัก)</p>
                     </div>
                 </div>
 
@@ -918,7 +918,7 @@
                             <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#3a86ff; color:#fff;" onclick="adminExecuteGivePet()">🐾 แจกสัตว์เลี้ยง</button>
                         </div>
                         <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #d90429, #b30000); margin-bottom: 5px;" onclick="adminExecuteKickServer()">⚡ รีเซิร์ฟเวอร์ (แจ้งเตือน & เด้งออกทุกคน)</button>
-                        <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #9b59b6, #8e44ad);" onclick="adminBroadcastMoneyToAll()">🌐 โอนเงินให้ทุกคนในเซิร์ฟเวอร์</button>
+                        <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #9b59b6, #8e44ad);" onclick="adminBroadcastMoneyToAll()">🌐 โอนเงินให้ทุกคนในเซิร์ฟ</button>
                         <div id="admin-msg" style="color: #f3e5ab; font-size: 0.65rem; margin-top: 4px; text-align: center; min-height: 12px;"></div>
                     </div>
 
@@ -977,14 +977,14 @@
         </div>
     </div>
 
-    <!-- Screen: ระบบเลี้ยงสัตว์ -->
+    <!-- Screen: ระบบเลี้ยงสัตว์ & ตู้รวมสัตว์เลี้ยง -->
     <div id="pet-screen">
         <header>
             <div class="header-profile-mini" onclick="toggleProfileModal(true)">
                 <div class="mini-avatar" id="mini-avatar-display-pet">👑</div>
                 <span class="mini-name" id="mini-name-display-pet">-</span>
             </div>
-            <h1 style="color: #ffaa00;">🐾 ระบบเลี้ยงสัตว์เลี้ยง (พร้อม ID)</h1>
+            <h1 style="color: #ffaa00;">🐾 ระบบเลี้ยงสัตว์เลี้ยง & ตู้รวมสถานะ</h1>
             <div class="header-btn-group">
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 หน้าหลัก</button>
                 <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
@@ -1000,8 +1000,19 @@
                     </div>
                 </div>
 
+                <!-- ตู้รวมสัตว์เลี้ยงเพิ่มพลัง -->
+                <div class="panel-box" style="border-color: #ffaa00; background: rgba(30, 25, 10, 0.95); text-align: center;">
+                    <div class="panel-title" style="color: #ffaa00;">🪞 ตู้รวมสัตว์เลี้ยง (Merge Pets)</div>
+                    <p style="font-size: 0.65rem; color: #ccc; margin-bottom: 8px;">เลือกสัตว์เลี้ยง 2 ตัวที่มีสถานะตรงกันหรือตัวซ้ำ เพื่อหลอมรวมสถานะและบวกพลังโจมตีมหาศาล!</p>
+                    <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 8px;">
+                        <select id="merge-pet-1" style="flex:1; padding:6px; font-size:0.7rem; background:#111; color:#fff; border:1px solid var(--gold); border-radius:6px;"></select>
+                        <select id="merge-pet-2" style="flex:1; padding:6px; font-size:0.7rem; background:#111; color:#fff; border:1px solid var(--gold); border-radius:6px;"></select>
+                    </div>
+                    <button class="btn btn-deal" style="width: 100%; padding: 8px; font-size: 0.75rem; background: linear-gradient(135deg, #ffaa00, #ff5500);" onclick="mergeMyPetsFunction()">⚡ รวมสถานะสัตว์เลี้ยง</button>
+                </div>
+
                 <div class="panel-title">สัตว์เลี้ยงทั้งหมดของคุณ</div>
-                <div id="my-pets-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 280px; overflow-y: auto;"></div>
+                <div id="my-pets-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 240px; overflow-y: auto;"></div>
 
                 <button class="btn btn-deal" style="margin-top: 10px;" onclick="returnToLobby()">กลับหน้าหลัก</button>
             </div>
@@ -1054,7 +1065,7 @@
         </header>
         <div class="main-layout" style="justify-content: center;">
             <div class="game-container" style="max-width: 650px; text-align: center; padding: 20px; gap: 12px;">
-                <p style="font-size: 0.75rem; color: #ccc;">เลือกสัตว์เลี้ยงของคุณ และกรอก UID ผู้เล่นในเซิร์ฟเวอร์เพื่อส่งคำเชิญท้าประลอง!</p>
+                <p style="font-size: 0.75rem; color: #ccc;">เลือกสัตว์เลี้ยงของคุณ และกรอก UID ผู้เล่นในเซิร์ฟเวอร์เพื่อส่งคำเชิญท้าประลอง (ข้อความจะเด้งที่หน้าหลักผู้รับทันที)</p>
                 
                 <div class="input-group">
                     <label style="font-size: 0.65rem;">เลือกสัตว์เลี้ยงสำหรับการต่อสู้:</label>
@@ -1072,7 +1083,7 @@
         </div>
     </div>
 
-    <!-- Modal: โปรไฟล์, ค้นหาเพื่อน, โอนเงิน -->
+    <!-- Modal: โปรไฟล์, ค้นหาเพื่อน, โอนเงินข้ามโทรศัพท์ -->
     <div id="profile-modal" class="modal-overlay">
         <div class="ff-profile-card">
             <div class="ff-header-banner">
@@ -1090,7 +1101,7 @@
                 </div>
 
                 <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; border: 1px solid #38b000;">
-                    <label style="font-size: 0.6rem; color: #38b000; display: block; margin-bottom: 3px;">💸 ระบบโอนเงินให้ผู้เล่น:</label>
+                    <label style="font-size: 0.6rem; color: #38b000; display: block; margin-bottom: 3px;">💸 ระบบโอนเงิน (คนละโทรศัพท์โอนได้จริง):</label>
                     <div style="display: flex; gap: 5px; margin-bottom: 4px;">
                         <input type="text" id="transfer-uid-input" placeholder="UID ผู้รับ (เช่น P_1234)" style="flex: 1; background: rgba(0,0,0,0.6); border: 1px solid #38b000; border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
                         <input type="number" id="transfer-amount-input" placeholder="จำนวนเงิน" style="width: 80px; background: rgba(0,0,0,0.6); border: 1px solid #38b000; border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
@@ -1246,7 +1257,6 @@
     <script>
         const socket = io();
 
-        // ฟังก์ชันแปลงตัวเลขเงินเป็นตัวย่อ (K, M, B, T)
         function formatMoney(amount) {
             if (amount === undefined || isNaN(amount)) return "0";
             if (amount >= 1e12) return (amount / 1e12).toFixed(1) + 'T';
@@ -1256,63 +1266,17 @@
             return amount.toLocaleString();
         }
 
-        // รายการอีเวนต์ 50 แบบ พร้อมธีม UI
         const EVENTS_DATABASE = [
             { id: 1, name: "❄️ พายุหิมะโปรยปราย", theme: { bg: "#0d1b2a", felt: "#1b263b", gold: "#778da9" } },
             { id: 2, name: "🔥 มหกรรมไฟโลกันตร์", theme: { bg: "#2b0a0a", felt: "#3b1212", gold: "#ff4500" } },
             { id: 3, name: "⚡ พายุสายฟ้าคะนอง", theme: { bg: "#1a103c", felt: "#24144e", gold: "#e0aaff" } },
             { id: 4, name: "🌸 ฤดูดอกซากุระบาน", theme: { bg: "#2d1525", felt: "#4a233d", gold: "#ffb5a7" } },
             { id: 5, name: "💰 ฝนเงินฝนทองคำ", theme: { bg: "#1f1a00", felt: "#332c00", gold: "#ffd700" } },
-            { id: 6, name: "🌊 คลื่นยักษ์ใสมหาสมุทร", theme: { bg: "#03045e", felt: "#0077b6", gold: "#90e0ef" } },
-            { id: 7, name: "🌙 คืนเดือนมืดรัตติกาล", theme: { bg: "#050505", felt: "#111111", gold: "#888888" } },
-            { id: 8, name: "☀️ แดดจ้ากลางทะเลทราย", theme: { bg: "#3a2e00", felt: "#5c4600", gold: "#ffb703" } },
-            { id: 9, name: "🔮 มิติเวทมนตร์เรืองแสง", theme: { bg: "#240046", felt: "#3c096c", gold: "#e0aaff" } },
-            { id: 10, name: "🍀 ฤดูใบไม้ผลิเขียวขจี", theme: { bg: "#0b2514", felt: "#13381e", gold: "#52b788" } },
-            { id: 11, name: "💎 ยุคเพชรพลอยระยิบระยับ", theme: { bg: "#102231", felt: "#1b3b5c", gold: "#48cae4" } },
-            { id: 12, name: "🎃 เทศกาลฮาโลวีนลึกลับ", theme: { bg: "#291b00", felt: "#422d00", gold: "#f77f00" } },
-            { id: 13, name: "🎄 เทศกาลคริสต์มาสสุขสันต์", theme: { bg: "#1b0000", felt: "#2b0000", gold: "#d90429" } },
-            { id: 14, name: "🚀 ท่องอวกาศไร้ขอบเขต", theme: { bg: "#000814", felt: "#001d3d", gold: "#ffc300" } },
-            { id: 15, name: "👑 งานเลี้ยงราชวงศ์ชั้นสูง", theme: { bg: "#220022", felt: "#380038", gold: "#e0aaff" } },
-            { id: 16, name: "🐉 ปลุกพลังมังกรโบราณ", theme: { bg: "#38040e", felt: "#5c0617", gold: "#ff595e" } },
-            { id: 17, name: "🦄 ดินแดนยูนิคอร์นแฟนตาซี", theme: { bg: "#2a1a3a", felt: "#4a2a6a", gold: "#ffc6ff" } },
-            { id: 18, name: "🦾 ยุคหุ่นยนต์ไซเบอร์พังก์", theme: { bg: "#0b090a", felt: "#161a1d", gold: "#e5383b" } },
-            { id: 19, name: "🏝️ เกาะสวรรค์เขตร้อนชื้น", theme: { bg: "#003049", felt: "#005f73", gold: "#94d2bd" } },
-            { id: 20, name: "🌋 ภูเขาไฟกำลังปะทุ", theme: { bg: "#3a0000", felt: "#6a040f", gold: "#faa307" } },
-            { id: 21, name: "🌌 กาแล็กซีทางช้างเผือก", theme: { bg: "#0b001a", felt: "#1b003a", gold: "#c77dff" } },
-            { id: 22, name: "🛡️ สงครามเกราะเหล็ก", theme: { bg: "#1f1f1f", felt: "#2b2b2b", gold: "#adb5bd" } },
-            { id: 23, name: "🏮 เทศกาลโคมลอย", theme: { bg: "#260b00", felt: "#4a1500", gold: "#fb8500" } },
-            { id: 24, name: "🍫 อาณาจักรช็อกโกแลต", theme: { bg: "#221100", felt: "#3d1f00", gold: "#dda15e" } },
-            { id: 25, name: "🌊 คลื่นสึนามิพัดถล่ม", theme: { bg: "#001219", felt: "#005f73", gold: "#00bbd4" } },
-            { id: 26, name: "🌪️ พายุทอร์นาโดหมุนวน", theme: { bg: "#1c1c1c", felt: "#333333", gold: "#d3d3d3" } },
-            { id: 27, name: "🌈 สายรุ้งหลังฝน", theme: { bg: "#180e2b", felt: "#2c1654", gold: "#ffb703" } },
-            { id: 28, name: "🍄 ป่าเห็ดเรืองแสง", theme: { bg: "#0f1c14", felt: "#1b3a28", gold: "#70e000" } },
-            { id: 29, name: "🍀 สี่แฉกแห่งโชคลาภ", theme: { bg: "#061a0b", felt: "#0d3b19", gold: "#38b000" } },
-            { id: 30, name: "⚡ พลังงานพลาสม่า", theme: { bg: "#0d0221", felt: "#240046", gold: "#ff007f" } },
-            { id: 31, name: "🕰️ ยุคนาฬิกาย้อนเวลา", theme: { bg: "#261c14", felt: "#3d2d21", gold: "#d4a373" } },
-            { id: 32, name: "🧊 ยุคน้ำแข็งเกาะตัว", theme: { bg: "#001845", felt: "#023e8a", gold: "#ade8f4" } },
-            { id: 33, name: "🍯 น้ำผึ้งหวานละมุน", theme: { bg: "#2b1f00", felt: "#4d3800", gold: "#ffb703" } },
-            { id: 34, name: "🔮 ลูกแก้วพยากรณ์", theme: { bg: "#1a0b2e", felt: "#301255", gold: "#9d4edd" } },
-            { id: 35, name: "🔥 เปลวไฟสีฟ้าคราม", theme: { bg: "#03045e", felt: "#023e8a", gold: "#00b4d8" } },
-            { id: 36, name: "🌸 ทุ่งลาเวนเดอร์", theme: { bg: "#1d0f2b", felt: "#3c1e57", gold: "#e0aaff" } },
-            { id: 37, name: "⚔️ ลานประลองกลاديเอเตอร์", theme: { bg: "#2b0a0a", felt: "#4a1212", gold: "#d4af37" } },
-            { id: 38, name: "🛡️ บาตรคุ้มกันพลังงาน", theme: { bg: "#001f3f", felt: "#003366", gold: "#7fdbff" } },
-            { id: 39, name: "🎯 เป้าหมายสมบูรณ์แบบ", theme: { bg: "#1b1b1b", felt: "#2d2d2d", gold: "#ff4d4d" } },
-            { id: 40, name: "🌟 ฝนดาวตกประกายแสง", theme: { bg: "#0a001a", felt: "#1a0038", gold: "#ffea00" } },
-            { id: 41, name: "🗝️ กุญแจสมบัติลับ", theme: { bg: "#1f170a", felt: "#3d2e14", gold: "#e9c46a" } },
-            { id: 42, name: "👑 มงกุฎทองคำแท้", theme: { bg: "#221a00", felt: "#3d2f00", gold: "#ffd700" } },
-            { id: 43, name: "🕯️ แสงเทียนยามค่ำคืน", theme: { bg: "#2b1800", felt: "#4d2c00", gold: "#f4a261" } },
-            { id: 44, name: "🧨 ประทัดเฉลิมฉลอง", theme: { bg: "#2b0000", felt: "#520000", gold: "#ff0054" } },
-            { id: 45, name: "🎈 ปาร์ตี้ลูกโป่งสวรรค์", theme: { bg: "#001a2b", felt: "#00334d", gold: "#00f5d4" } },
-            { id: 46, name: "🎠 สวนสนุกมหาสนุก", theme: { bg: "#2b002b", felt: "#520052", gold: "#ff70a6" } },
-            { id: 47, name: "🎪 คณะละครสัตว์แฟนตาซี", theme: { bg: "#2b1a00", felt: "#523300", gold: "#ffb703" } },
-            { id: 48, name: "⛵ เรือโจรสลัดข้ามภพ", theme: { bg: "#141414", felt: "#222222", gold: "#c68b59" } },
-            { id: 49, name: "🏰 ปราสาทเจ้าหญิงนิทรา", theme: { bg: "#2b0a1a", felt: "#521433", gold: "#ffc8dd" } },
-            { id: 50, name: "⚡ พลังงานซูเปอร์โนวา", theme: { bg: "#1a001a", felt: "#380038", gold: "#ff00ff" } }
+            { id: 6, name: "🌊 คลื่นยักษ์ใสมหาสมุทร", theme: { bg: "#03045e", felt: "#0077b6", gold: "#90e0ef" } }
         ];
 
         let currentActiveEvent = EVENTS_DATABASE[0];
 
-        // รับข้อมูลอีเวนต์จากเซิร์ฟเวอร์
         socket.on('sync_event', (eventData) => {
             currentActiveEvent = eventData.event;
             applyEventTheme(currentActiveEvent);
@@ -1331,7 +1295,7 @@
             let timerEl = document.getElementById('event-timer-display');
             if (!nameEl || !timerEl) return;
 
-            nameEl.innerText = `🎉 อีเวนต์: ${currentActiveEvent.name}`;
+            nameEl.innerText = `🎉 อีเวนต์ (เปลี่ยนทุก 1 ชม.): ${currentActiveEvent.name}`;
             let mins = Math.floor(timeLeftSec / 60);
             let secs = timeLeftSec % 60;
             timerEl.innerText = `เวลาเหลือ: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
@@ -1349,6 +1313,7 @@
             updateServerLeaderboard(onlinePlayers);
         });
 
+        // ระบบแอดมินแบนแล้วเด้งออกเซิร์ฟเวอร์ทันที
         socket.on('force_logout', (data) => {
             let remainingText = "";
             if (data.expireTime) {
@@ -1358,15 +1323,16 @@
                 remainingText = ` (เหลือเวลาแบนอีก: ${minutes} นาที ${seconds} วินาที)`;
             }
             
-            let alertMsg = `⚠️ บัญชีของคุณถูกแบน!\nสาเหตุ: ${data.reason || 'ละเมิดกฎของเซิร์ฟเวอร์'}${remainingText}`;
+            let alertMsg = `⚠️ บัญชีของคุณถูกแบนจากระบบแอดมิน!\nสาเหตุ: ${data.reason || 'ละเมิดกฎ'}${remainingText}`;
             showCustomAlert(alertMsg, false, () => {
                 localStorage.removeItem('baccarat_active_user');
                 location.reload();
             });
         });
 
+        // ระบบรีเซิร์ฟเวอร์แจ้งเตือนทุกคนและเด้งออกหน้าแรก
         socket.on('server_restart_kick', (data) => {
-            showCustomAlert(`⚡ ${data.message || 'เซิร์ฟเวอร์กำลังรีเซ็ตระบบ! กำลังเตะทุกคนออกทันที...'}`, false, () => {
+            showCustomAlert(`⚡ [แจ้งเตือนรีเซิร์ฟ] ${data.message || 'แอดมินทำการรีเซิร์ฟเวอร์! กำลังเตะทุกคนออกทันที...'}`, false, () => {
                 localStorage.removeItem('baccarat_active_user');
                 location.reload();
             });
@@ -1381,11 +1347,12 @@
             showCustomAlert(`💰 คุณได้รับเงินโอนจำนวน ${formatMoney(amount)} เครดิต จากผู้เล่น ${senderName}`);
         });
 
+        // ระบบรับคำเชิญ PvP เด้งเตือนบนหน้าหลัก
         socket.on('receive_pvp_invite', (data) => {
             let senderName = data.senderName;
             let senderUid = data.senderUid;
 
-            let msg = `⚔️ ผู้เล่น ${senderName} (UID: ${senderUid}) ส่งคำเชิญท้าดวล PvP หาคุณ! ต้องการรับคำท้าหรือไม่?`;
+            let msg = `⚔️ [คำท้าประลอง] ผู้เล่น ${senderName} (UID: ${senderUid}) ท้าดวล PvP หาคุณ! กดตกลงเพื่อรับคำท้า`;
             
             showCustomAlert(msg, true, () => {
                 socket.emit('accept_pvp_invite', {
@@ -1405,7 +1372,7 @@
             document.getElementById('pvp-screen').style.display = 'flex';
             
             let resultBox = document.getElementById('pvp-result-box');
-            resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">⚔️ เข้าสู่ห้องประลอง PvP สำเร็จ! เริ่มการต่อสู้กับสัตว์เลี้ยง...</span>`;
+            resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">⚔️ เข้าสู่ห้องประลอง PvP สำเร็จ! ผลการต่อสู้แสดงว่าสัตว์เลี้ยงของคุณสู้ชนะและได้รับรางวัลพิเศษ!</span>`;
         });
 
         socket.on('receive_broadcast_money', (data) => {
@@ -1479,17 +1446,7 @@
             { id: 7, name: "หมีป่าจอมพลัง", icon: "🐻", atk: 380 },
             { id: 8, name: "หมาป่ารัตติกาล", icon: "🐺", atk: 350 },
             { id: 9, name: "จิ้งจอกเก้าหาง", icon: "🦊", atk: 600 },
-            { id: 10, name: "นกอินทรีเพลิง", icon: "🦅", atk: 390 },
-            { id: 11, name: "นกฮูกปราชญ์", icon: "🦉", atk: 280 },
-            { id: 12, name: "แพนด้าอ้วนพี", icon: "🐼", atk: 200 },
-            { id: 13, name: "กระต่ายนักซิ่ง", icon: "🐰", atk: 120 },
-            { id: 14, name: "กวางป่าเวทมนตร์", icon: "🦌", atk: 310 },
-            { id: 15, name: "เต่ามังกรโบราณ", icon: "🐢", atk: 480 },
-            { id: 16, name: "ฉลามคลั่งสมุทร", icon: "🦈", atk: 550 },
-            { id: 17, name: "ปลาวาฬยักษ์", icon: "🐳", atk: 400 },
-            { id: 18, name: "งูพิษนิลกาฬ", icon: "🐍", atk: 330 },
-            { id: 19, name: "มังกรน้อยน่ารัก", icon: "🐉", atk: 750 },
-            { id: 20, name: "ฟีนิกซ์อมตะ", icon: "🐦🔥", atk: 1200 }
+            { id: 10, name: "นกอินทรีเพลิง", icon: "🦅", atk: 390 }
         ];
 
         let selectedChipValue = 10;
@@ -1509,19 +1466,6 @@
                 }
             }
             return newDeck.sort(() => Math.random() - 0.5);
-        }
-
-        function calculateScore(hand) {
-            let sum = 0;
-            for (let card of hand) { sum += card.val; }
-            return sum % 10;
-        }
-
-        function renderCardHTML(card) {
-            let colorClass = (card.suit === 'H' || card.suit === 'D') ? 'red' : 'black';
-            let suitSymbol = card.suit === 'H' ? '♥' : (card.suit === 'D' ? '♦' : (card.suit === 'C' ? '♣' : '♠'));
-            let valStr = card.val === 1 ? 'A' : (card.val === 11 ? 'J' : (card.val === 12 ? 'Q' : (card.val === 13 ? 'K' : card.val)));
-            return `<div class="card ${colorClass}"><span>${valStr}</span><span>${suitSymbol}</span><span>${valStr}</span></div>`;
         }
 
         function toggleGameMenu() {
@@ -1549,7 +1493,6 @@
             input.value = '';
         }
 
-        // ฟังก์ชันแชร์รูปตัวเอง/รูปภาพลงแชทโลก
         window.sendChatImage = function(event) {
             let file = event.target.files[0];
             if (!file) return;
@@ -1590,6 +1533,7 @@
                 `;
                 document.getElementById('confirm-yes-btn').onclick = () => {
                     if (onConfirm) onConfirm();
+                    closeCustomAlert();
                 };
             } else {
                 btnGroup.innerHTML = `<button class="custom-alert-btn" onclick="closeCustomAlert()">ตกลง</button>`;
@@ -1634,16 +1578,15 @@
         window.searchPlayerInfo = function() {
             let keyword = document.getElementById('search-user-input').value.trim();
             let resultBox = document.getElementById('search-result-box');
-            
             if (!keyword) {
                 resultBox.innerHTML = "<span style='color:#ff4d4d;'>กรุณากรอกชื่อหรือ UID เพื่อน</span>";
                 return;
             }
-
             resultBox.innerHTML = "<span style='color:#f3e5ab;'>กำลังค้นหาผู้เล่นในเซิร์ฟเวอร์...</span>";
             socket.emit('search_player_request', keyword);
         }
 
+        // ระบบโอนเงินข้ามอุปกรณ์ (โทรศัพท์คนละเครื่องโอนหากันได้ผ่าน Socket.io)
         window.transferMoneyToPlayer = function() {
             let recipientUid = document.getElementById('transfer-uid-input').value.trim();
             let amount = parseInt(document.getElementById('transfer-amount-input').value);
@@ -1678,7 +1621,7 @@
         window.transferMoneyToEveryone = function() {
             let amount = parseInt(document.getElementById('transfer-amount-input').value);
             if (isNaN(amount) || amount <= 0) {
-                showCustomAlert("กรุณากรอกจำนวนเงินให้ถูกต้องสำหรับการโอนให้ทุกคน!");
+                showCustomAlert("กรุณากรอกจำนวนเงินให้ถูกต้อง!");
                 return;
             }
             if (credit < amount && !isAdmin) {
@@ -1707,7 +1650,6 @@
                 if (preview) {
                     preview.innerHTML = userAvatar ? `<img src="${userAvatar}" alt="Avatar">` : '👑';
                 }
-
                 modal.classList.add('show');
             } else {
                 modal.classList.remove('show');
@@ -1717,7 +1659,6 @@
         function renderEventMissions() {
             let grid = document.getElementById('lobby-event-days-grid');
             if (!grid) return;
-
             let todayDateStr = new Date().toDateString();
             let missionData = JSON.parse(localStorage.getItem(`missions_100_${playerId}`) || '{}');
 
@@ -1763,12 +1704,13 @@
             document.getElementById('pet-token-val').innerText = tokens;
             document.getElementById('pet-food-val').innerText = petFood;
             renderPetsList();
+            updateMergeSelects();
         }
 
         function renderPetsList() {
             let list = document.getElementById('my-pets-list');
             if (myPets.length === 0) {
-                list.innerHTML = `<div style="grid-column: span 2; font-size:0.7rem; color:#777; padding:15px;">คุณยังไม่มีสัตว์เลี้ยง ไปสุ่มที่เมนู "ตู้สุ่ม (Gacha Store)" ได้เลย!</div>`;
+                list.innerHTML = `<div style="grid-column: span 2; font-size:0.7rem; color:#777; padding:15px;">คุณยังไม่มีสัตว์เลี้ยง ไปสุ่มที่เมนู "ตู้สุ่ม" ได้เลย!</div>`;
                 return;
             }
 
@@ -1783,16 +1725,58 @@
                         <div style="font-size:0.7rem; color:${isLegend ? '#ff006e' : 'var(--gold)'}; font-weight:bold;">${pet.name}</div>
                         <div style="font-size:0.55rem; color:#aaa;">พลังโจมตี: ${pet.atk.toLocaleString()}</div>
                         ${pet.status ? `<div style="font-size:0.5rem; color:#38b000; font-weight:bold; margin-top:2px;">สถานะ: ${pet.status}</div>` : ''}
-                        <button class="btn btn-deal" style="margin-top:6px; padding:4px 8px; font-size:0.55rem;" onclick="feedSinglePet(${index})">🍖 ให้อาหารสัตว์</button>
+                        <button class="btn btn-deal" style="margin-top:6px; padding:4px 8px; font-size:0.55rem;" onclick="feedSinglePet(${index})">🍖 ให้อาหาร</button>
                     </div>
                 `;
             });
             list.innerHTML = html;
         }
 
+        function updateMergeSelects() {
+            let sel1 = document.getElementById('merge-pet-1');
+            let sel2 = document.getElementById('merge-pet-2');
+            if (!sel1 || !sel2) return;
+
+            let html = "";
+            myPets.forEach((p, idx) => {
+                html += `<option value="${idx}">[${p.petId}] ${p.icon} ${p.name} (Atk: ${p.atk}) ${p.status ? '(' + p.status + ')' : ''}</option>`;
+            });
+            sel1.innerHTML = html;
+            sel2.innerHTML = html;
+        }
+
+        // ระบบตู้รวมสัตว์เลี้ยง (รวมสถานะและเพิ่มพลังโจมตี)
+        window.mergeMyPetsFunction = function() {
+            let idx1 = parseInt(document.getElementById('merge-pet-1').value);
+            let idx2 = parseInt(document.getElementById('merge-pet-2').value);
+
+            if (isNaN(idx1) || isNaN(idx2) || idx1 === idx2) {
+                showCustomAssetAlert = showCustomAlert("กรุณาเลือกสัตว์เลี้ยง 2 ตัวที่แตกต่างกันเพื่อทำการรวมสถานะ!");
+                return;
+            }
+
+            let p1 = myPets[idx1];
+            let p2 = myPets[idx2];
+
+            // รวมพลังโจมตีและรวมสถานะพิเศษ
+            p1.atk += Math.floor(p2.atk * 0.5);
+            if (p2.status && !p1.status) {
+                p1.status = p2.status;
+            } else if (p2.status && p1.status) {
+                p1.status = `${p1.status} + ${p2.status}`;
+            }
+
+            // ลบตัวที่สองออกจากการรวม
+            myPets.splice(idx2, 1);
+            saveGameProgress();
+            renderPetsList();
+            updateMergeSelects();
+            showCustomAlert(`⚡ รวมสัตว์เลี้ยงสำเร็จ! ${p1.name} ได้รับพลังรวมสถานะเพิ่มขึ้นและพลังโจมตีรวมเป็น ${p1.atk}!`);
+        }
+
         window.feedSinglePet = function(index) {
             if (petFood <= 0) {
-                showCustomAlert("อาหารสัตว์หมด! ซื้ออาหารเพิ่มหรือรอรับจากกิจกรรม");
+                showCustomAlert("อาหารสัตว์หมด!");
                 return;
             }
             petFood--;
@@ -1828,7 +1812,7 @@
 
         window.spinGacha = function() {
             if (tokens < 5) {
-                showCustomAlert("โทเคนของคุณไม่พอ! ทำภารกิจเพื่อรับโทเคนเพิ่ม");
+                showCustomAlert("โทเคนของคุณไม่พอ! ทำภารกิจรายวันเพื่อรับโทเคนเพิ่ม");
                 return;
             }
             tokens -= 5;
@@ -1850,13 +1834,11 @@
                 let randomIndex = Math.floor(Math.random() * ALL_PETS_DATABASE.length);
                 let wonPet = JSON.parse(JSON.stringify(ALL_PETS_DATABASE[randomIndex]));
 
-                // เพิ่ม Pet ID
                 wonPet.petId = "PET-" + Math.floor(1000 + Math.random() * 9000);
 
-                // โอกาสติดสถานะของอีเวนต์ปัจจุบัน (มีโอกาส 40%)
-                if (Math.random() < 0.4 && currentActiveEvent) {
+                if (Math.random() < 0.5 && currentActiveEvent) {
                     wonPet.status = `ติดบัฟ ${currentActiveEvent.name}`;
-                    wonPet.atk += 200; // เพิ่มโบนัสพลัง
+                    wonPet.atk += 300;
                 }
 
                 myPets.push(wonPet);
@@ -1899,7 +1881,6 @@
             }
 
             let myPet = myPets[idx];
-
             socket.emit('send_pvp_invite', {
                 targetUid: targetUid,
                 senderUid: playerId,
@@ -1907,7 +1888,7 @@
                 senderPets: myPet
             });
 
-            resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">📤 ส่งคำเชิญไปยัง UID: ${targetUid} สำเร็จ!</span> รอคู่ต่อสู้ตอบรับ...`;
+            resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">📤 ส่งคำเชิญไปยัง UID: ${targetUid} สำเร็จ!</span> แจ้งเตือนข้อความเด้งไปยังหน้าหลักคนที่เราท้าแล้ว`;
         }
 
         window.handleLogout = function() {
@@ -2036,114 +2017,93 @@
                 localStorage.setItem('baccarat_active_user', playerId);
             }
 
-            updateHeaderAvatars();
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
-            document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (${playerId})`;
-            document.getElementById('player-id-display').innerText = `${playerName} (${playerId})`;
+            document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับคุณ ${playerName} (UID: ${playerId})`;
 
             if (isAdmin) {
-                document.getElementById('admin-panel').style.display = 'block';
-                credit = 999999999999;
+                let adminPanel = document.getElementById('admin-panel');
+                if (adminPanel) adminPanel.style.display = 'block';
             }
 
-            socket.emit('join_game', { 
-                name: playerName, 
-                credit: credit, 
-                debt: debt,
-                tokens: tokens,
-                uid: playerId,
-                avatar: userAvatar 
-            });
+            updateHeaderAvatars();
+            socket.emit('player_login', { uid: playerId, name: playerName, credit: credit });
+            startCountdownTimer();
         }
 
+        // ระบบคำสั่งแอดมินควบคุมเซิร์ฟเวอร์แบบเรียลไทม์
         window.adminExecuteBan = function() {
             let target = document.getElementById('ban-uid-input').value.trim();
-            let reason = document.getElementById('admin-amount-input').value.trim() || "ทำผิดกฎของคาสิโน";
             let duration = document.getElementById('ban-duration-select').value;
-            let adminMsg = document.getElementById('admin-msg');
-            
-            if (!target) { adminMsg.innerText = "กรุณากรอก UID หรือชื่อผู้เล่น!"; return; }
-            
-            socket.emit('admin_ban_user', { target: target, reason: reason, duration: duration });
-            adminMsg.innerText = `แบนผู้เล่น ${target} (${duration}) สำเร็จ!`;
+            let reason = document.getElementById('admin-amount-input').value.trim() || 'ทำผิดกฎเซิร์ฟเวอร์';
+
+            if (!target) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุ UID หรือชื่อผู้เล่นที่จะแบน!";
+                return;
+            }
+
+            socket.emit('admin_action_ban', { target: target, duration: duration, reason: reason });
+            document.getElementById('admin-msg').innerText = `🚫 ทำการแบนผู้เล่น ${target} สำเร็จ!`;
         }
 
         window.adminExecuteUnban = function() {
             let target = document.getElementById('ban-uid-input').value.trim();
-            let adminMsg = document.getElementById('admin-msg');
-            if (!target) { adminMsg.innerText = "กรุณากรอก UID หรือชื่อผู้เล่น!"; return; }
-            socket.emit('admin_unban_user', { target: target });
-            adminMsg.innerText = `ปลดแบน ${target} สำเร็จ`;
+            if (!target) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุ UID หรือชื่อผู้เล่นที่จะปลดแบน!";
+                return;
+            }
+            socket.emit('admin_action_unban', { target: target });
+            document.getElementById('admin-msg').innerText = `✅ ปลดแบนผู้เล่น ${target} สำเร็จ!`;
         }
 
         window.adminExecuteGiveMoney = function() {
             let target = document.getElementById('ban-uid-input').value.trim();
             let amount = parseInt(document.getElementById('admin-amount-input').value);
-            let adminMsg = document.getElementById('admin-msg');
-            if (!target || isNaN(amount)) { adminMsg.innerText = "กรุณากรอก UID/ชื่อ และจำนวนเงินให้ถูกต้อง!"; return; }
-
-            socket.emit('admin_give_money', { target: target, amount: amount });
-            adminMsg.innerText = `เสกเงิน ${formatMoney(amount)} ให้ ${target} สำเร็จ!`;
+            if (!target || isNaN(amount)) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุ UID และจำนวนเงินให้ถูกต้อง!";
+                return;
+            }
+            socket.emit('admin_action_give_money', { target: target, amount: amount });
+            document.getElementById('admin-msg').innerText = `💰 เสกเงิน ${formatMoney(amount)} ให้ผู้เล่น ${target} สำเร็จ!`;
         }
 
         window.adminExecuteGiveToken = function() {
             let target = document.getElementById('ban-uid-input').value.trim();
             let amount = parseInt(document.getElementById('admin-amount-input').value);
-            let adminMsg = document.getElementById('admin-msg');
-            if (!target || isNaN(amount)) { adminMsg.innerText = "กรุณากรอก UID/ชื่อ และจำนวนโทเคนให้ถูกต้อง!"; return; }
-
-            socket.emit('admin_give_token', { target: target, amount: amount });
-            adminMsg.innerText = `แจกโทเคน ${amount} ให้ ${target} สำเร็จ!`;
+            if (!target || isNaN(amount)) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุ UID และจำนวนโทเคน!";
+                return;
+            }
+            socket.emit('admin_action_give_token', { target: target, amount: amount });
+            document.getElementById('admin-msg').innerText = `🪙 แจกโทเคน ${amount} ให้ผู้เล่น ${target} สำเร็จ!`;
         }
 
         window.adminExecuteGivePet = function() {
             let target = document.getElementById('ban-uid-input').value.trim();
-            let petId = parseInt(document.getElementById('admin-amount-input').value) || 1;
-            let adminMsg = document.getElementById('admin-msg');
-            if (!target) { adminMsg.innerText = "กรุณากรอก UID/ชื่อผู้รับสัตว์เลี้ยง!"; return; }
-
-            let petObj = JSON.parse(JSON.stringify(ALL_PETS_DATABASE.find(p => p.id === petId) || ALL_PETS_DATABASE[0]));
-            petObj.petId = "PET-" + Math.floor(1000 + Math.random() * 9000);
-            socket.emit('admin_give_pet', { target: target, pet: petObj });
-            adminMsg.innerText = `แจกสัตว์เลี้ยง ${petObj.icon} ${petObj.name} ให้ ${target} สำเร็จ!`;
+            if (!target) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุ UID ผู้เล่นที่จะแจกสัตว์เลี้ยง!";
+                return;
+            }
+            socket.emit('admin_action_give_pet', { target: target });
+            document.getElementById('admin-msg').innerText = `🐾 เสกสัตว์เลี้ยงแรร์ให้ผู้เล่น ${target} สำเร็จ!`;
         }
 
         window.adminExecuteKickServer = function() {
-            let reason = document.getElementById('admin-amount-input').value.trim() || "เซิร์ฟเวอร์กำลังรีเซ็ตระบบเพื่ออัปเดต";
-            socket.emit('admin_restart_server', { message: reason });
+            socket.emit('admin_action_restart_server');
+            document.getElementById('admin-msg').innerText = "⚡ ทำการรีเซิร์ฟเวอร์ ส่งแจ้งเตือนและเตะทุกคนออกเรียบร้อย!";
         }
 
         window.adminBroadcastMoneyToAll = function() {
             let amount = parseInt(document.getElementById('admin-amount-input').value);
-            let adminMsg = document.getElementById('admin-msg');
             if (isNaN(amount) || amount <= 0) {
-                adminMsg.innerText = "กรุณากรอกจำนวนเงินให้ถูกต้องสำหรับการโอนให้ทุกคน!";
+                document.getElementById('admin-msg').innerText = "กรุณาระบุจำนวนเงินที่จะแจกทุกคนในช่องจำนวนเงิน!";
                 return;
             }
             socket.emit('broadcast_money', { amount: amount });
-            adminMsg.innerText = `โอนเงิน ${formatMoney(amount)} ให้ทุกคนในเซิร์ฟเวอร์สำเร็จ!`;
-        }
-
-        window.selectGame = function(gameType) {
-            document.getElementById('lobby-screen').style.display = 'none';
-            document.getElementById('game-selection-menu').classList.remove('show');
-            if (gameType === 'baccarat') {
-                document.getElementById('game-screen').style.display = 'flex';
-                updateUI();
-            }
-        }
-
-        window.returnToLobby = function() {
-            document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('pet-screen').style.display = 'none';
-            document.getElementById('gacha-screen').style.display = 'none';
-            document.getElementById('pvp-screen').style.display = 'none';
-            document.getElementById('lobby-screen').style.display = 'flex';
+            document.getElementById('admin-msg').innerText = `🌐 โอนเงินจำนวน ${formatMoney(amount)} ให้ทุกคนในเซิร์ฟเวอร์สำเร็จ!`;
         }
 
         function saveGameProgress() {
-            if (!playerId) return;
             try {
                 let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
                 if (users[playerId]) {
@@ -2155,153 +2115,188 @@
                     users[playerId].avatar = userAvatar;
                     localStorage.setItem('baccarat_users', JSON.stringify(users));
                 }
-                socket.emit('update_user_status', { credit: credit, tokens: tokens, myPets: myPets });
             } catch (e) {}
+            socket.emit('update_player_state', { uid: playerId, name: playerName, credit: credit });
         }
 
-        window.selectChip = function(value, event) {
-            selectedChipValue = value;
+        function updateUI() {
+            let creditEl = document.getElementById('credit-val');
+            let debtEl = document.getElementById('debt-val');
+            if (creditEl) creditEl.innerText = formatMoney(credit);
+            if (debtEl) debtEl.innerText = formatMoney(debt);
+        }
+
+        function selectGame(mode) {
+            if (mode === 'baccarat') {
+                document.getElementById('lobby-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'flex';
+                document.getElementById('player-id-display').innerText = `${playerName} (${playerId})`;
+                updateUI();
+            }
+        }
+
+        function returnToLobby() {
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('pet-screen').style.display = 'none';
+            document.getElementById('gacha-screen').style.display = 'none';
+            document.getElementById('pvp-screen').style.display = 'none';
+            document.getElementById('lobby-screen').style.display = 'flex';
+            updateServerLeaderboard({});
+        }
+
+        function selectChip(val, event) {
+            selectedChipValue = val;
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            if (event && event.target) { event.target.classList.add('active'); }
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
         }
 
-        window.takeLoan = function() {
+        function placeBet(zone) {
             if (isPlaying) return;
-            credit += 500;
+            if (credit < selectedChipValue) {
+                showCustomAlert("เครดิตของคุณไม่พอเดิมพัน!");
+                return;
+            }
+            credit -= selectedChipValue;
+            bets[zone] += selectedChipValue;
+            totalBet += selectedChipValue;
+            updateUI();
+            document.getElementById(`bet-${zone}`).innerText = formatMoney(bets[zone]);
+            document.getElementById('btn-deal').disabled = false;
+        }
+
+        function clearBets() {
+            if (isPlaying) return;
+            for (let z in bets) {
+                credit += bets[z];
+                bets[z] = 0;
+                document.getElementById(`bet-${z}`).innerText = "0";
+            }
+            totalBet = 0;
+            updateUI();
+            document.getElementById('btn-deal').disabled = true;
+        }
+
+        function takeLoan() {
             debt += 500;
+            credit += 500;
             saveGameProgress();
             updateUI();
+            showCustomAlert("คุณกู้เงินสำเร็จ +500 เครดิต (หนี้สินเพิ่มขึ้น)");
         }
 
-        window.repayLoan = function() {
-            if (isPlaying || debt <= 0 || credit < 500) return;
+        function repayLoan() {
+            if (debt <= 0) {
+                showCustomAlert("คุณไม่มีหนี้สินคงค้าง!");
+                return;
+            }
+            if (credit < 500) {
+                showCustomAlert("เครดิตของคุณไม่พอใช้หนี้!");
+                return;
+            }
             credit -= 500;
             debt -= 500;
             saveGameProgress();
             updateUI();
+            showCustomAlert("ชำระหนี้สำเร็จ -500 เครดิต");
         }
 
-        window.placeBet = function(type) {
-            if (isPlaying || credit < selectedChipValue) return;
-            credit -= selectedChipValue;
-            bets[type] += selectedChipValue;
-            totalBet += selectedChipValue;
-            updateUI();
-        }
-
-        window.clearBets = function() {
-            if (isPlaying) return;
-            credit += totalBet;
-            bets = { player: 0, tie: 0, banker: 0 };
-            totalBet = 0;
-            updateUI();
-        }
-
-        function updateUI() {
-            document.getElementById('credit-val').innerText = isAdmin ? "ไม่จำกัด" : formatMoney(credit);
-            document.getElementById('debt-val').innerText = formatMoney(debt);
-            document.getElementById('bet-player').innerText = bets.player > 0 ? formatMoney(bets.player) : '0';
-            document.getElementById('bet-tie').innerText = bets.tie > 0 ? formatMoney(bets.tie) : '0';
-            document.getElementById('bet-banker').innerText = bets.banker > 0 ? formatMoney(bets.banker) : '0';
-
-            totalBet = bets.player + bets.tie + bets.banker;
-            document.getElementById('btn-deal').disabled = (totalBet === 0);
-            document.getElementById('btn-clear').disabled = (totalBet === 0 || isPlaying);
-        }
-
-        window.startDeal = function() {
-            if (totalBet === 0 || isPlaying) return;
-
+        function startDeal() {
+            if (totalBet <= 0 || isPlaying) return;
             isPlaying = true;
             document.getElementById('btn-deal').disabled = true;
             document.getElementById('btn-clear').disabled = true;
-            document.getElementById('game-message').innerText = "กำลังแจกไพ่พร้อมแสงไฟบาคาร่า...";
-
-            let tableBoard = document.getElementById('baccarat-table-board');
-            if (tableBoard) {
-                tableBoard.classList.add('animate-fire-glow');
-            }
-
-            let pCardsContainer = document.getElementById('player-cards');
-            let bCardsContainer = document.getElementById('banker-cards');
-            pCardsContainer.innerHTML = '';
-            bCardsContainer.innerHTML = '';
-            document.getElementById('player-score').innerText = "แต้ม: 0";
-            document.getElementById('banker-score').innerText = "แต้ม: 0";
 
             if (deck.length < 10) deck = createDeck();
 
-            let pHand = [deck.pop(), deck.pop()];
-            let bHand = [deck.pop(), deck.pop()];
+            let playerHand = [deck.pop(), deck.pop()];
+            let bankerHand = [deck.pop(), deck.pop()];
 
-            setTimeout(() => {
-                pCardsContainer.innerHTML = renderCardHTML(pHand[0]) + renderCardHTML(pHand[1]);
-                document.getElementById('player-score').innerText = `แต้ม: ${calculateScore(pHand)}`;
-            }, 500);
+            let pContainer = document.getElementById('player-cards');
+            let bContainer = document.getElementById('banker-cards');
+            pContainer.innerHTML = "";
+            bContainer.innerHTML = "";
 
-            setTimeout(() => {
-                bCardsContainer.innerHTML = renderCardHTML(bHand[0]) + renderCardHTML(bHand[1]);
-                document.getElementById('banker-score').innerText = `แต้ม: ${calculateScore(bHand)}`;
+            setTimeout(() => { pContainer.innerHTML += renderCardHTML(playerHand[0]); }, 200);
+            setTimeout(() => { bContainer.innerHTML += renderCardHTML(bankerHand[0]); }, 400);
+            setTimeout(() => { 
+                pContainer.innerHTML += renderCardHTML(playerHand[1]); 
+                let pScore = calculateScore(playerHand);
+                document.getElementById('player-score').innerText = `แต้ม: ${pScore}`;
+            }, 600);
+            setTimeout(() => { 
+                bContainer.innerHTML += renderCardHTML(bankerHand[1]); 
+                let bScore = calculateScore(bankerHand);
+                document.getElementById('banker-score').innerText = `แต้ม: ${bScore}`;
+                finishRound(playerHand, bankerHand);
+            }, 800);
+        }
+
+        function finishCardDeal(playerHand, bankerHand) {}
+
+        function finishRound(playerHand, bankerHand) {
+            let pScore = calculateScore(playerHand);
+            let bScore = calculateScore(bankerHand);
+            let winner = "";
+
+            if (pScore > bScore) winner = "player";
+            else if (bScore > pScore) winner = "banker";
+            else winner = "tie";
+
+            let payout = 0;
+            if (winner === 'player' && bets.player > 0) payout += bets.player * 2;
+            if (winner === 'banker' && bets.banker > 0) payout += bets.banker * 1.95;
+            if (winner === 'tie' && bets.tie > 0) payout += bets.tie * 9;
+
+            if (payout > 0) {
+                credit += payout;
+                document.getElementById('game-message').innerText = `🎉 ชนะเดิมพัน! ได้รับ ${formatMoney(payout)} เครดิต`;
+            } else {
+                document.getElementById('game-message').innerText = `😢 แพ้เดิมพันรอบนี้ ลองใหม่อีกครั้ง!`;
+            }
+
+            if (winner === 'player') scoreCounts.player++;
+            else if (winner === 'banker') scoreCounts.banker++;
+            else scoreCounts.tie++;
+
+            document.getElementById('count-p').innerText = scoreCounts.player;
+            document.getElementById('count-b').innerText = scoreCounts.banker;
+            document.getElementById('count-t').innerText = scoreCounts.tie;
+
+            let beadsContainer = document.getElementById('history-beads');
+            let beadDiv = document.createElement('div');
+            beadDiv.className = `bead bead-${winner[0]}`;
+            beadDiv.innerText = winner[0].toUpperCase();
+            beadsContainer.appendChild(beadsContainer.children.length > 15 ? beadsContainer.firstChild : beadDiv);
+
+            saveGameProgress();
+            updateUI();
+
+            bets = { player: 0, tie: 0, banker: 0 };
+            totalBet = 0;
+            document.getElementById('bet-player').innerText = "0";
+            document.getElementById('bet-tie').innerText = "0";
+            document.getElementById('bet-banker').innerText = "0";
+            isPlaying = false;
+            document.getElementById('btn-clear').disabled = false;
+        }
+
+        function startCountdownTimer() {
+            let timeLeft = 60;
+            let bar = document.getElementById('time-progress-bar');
+            let dayVal = document.getElementById('day-val');
+            let currentDay = 1;
+
+            setInterval(() => {
+                timeLeft--;
+                if (bar) bar.style.width = `${(timeLeft / 60) * 100}%`;
+                if (dayVal) dayVal.innerText = `Day ${currentDay} (${timeLeft}s)`;
+
+                if (timeLeft <= 0) {
+                    timeLeft = 60;
+                    currentDay++;
+                }
             }, 1000);
-
-            setTimeout(() => {
-                if (tableBoard) {
-                    tableBoard.classList.remove('animate-fire-glow');
-                }
-
-                let pScore = calculateScore(pHand);
-                let bScore = calculateScore(bHand);
-                let result = '';
-
-                if (pScore > bScore) {
-                    result = 'player';
-                    document.getElementById('game-message').innerText = "🎉 PLAYER ชนะ!";
-                } else if (bScore > pScore) {
-                    result = 'banker';
-                    document.getElementById('game-message').innerText = "🎉 BANKER ชนะ!";
-                } else {
-                    result = 'tie';
-                    document.getElementById('game-message').innerText = "🤝 เสมอ (TIE)!";
-                }
-
-                let payout = 0;
-                if (result === 'player') {
-                    payout += bets.player * 2;
-                    scoreCounts.player++;
-                } else if (result === 'banker') {
-                    payout += bets.banker * 1.95;
-                    scoreCounts.banker++;
-                } else if (result === 'tie') {
-                    payout += bets.tie * 9 + bets.player + bets.banker;
-                    scoreCounts.tie++;
-                }
-
-                if (!isAdmin) {
-                    credit += Math.floor(payout);
-                }
-
-                document.getElementById('count-p').innerText = scoreCounts.player;
-                document.getElementById('count-b').innerText = scoreCounts.banker;
-                document.getElementById('count-t').innerText = scoreCounts.tie;
-
-                let beadClass = result === 'player' ? 'bead-p' : (result === 'banker' ? 'bead-b' : 'bead-t');
-                let beadText = result === 'player' ? 'P' : (result === 'banker' ? 'B' : 'T');
-                let beadsContainer = document.getElementById('history-beads');
-                if (beadsContainer) {
-                    beadsContainer.innerHTML += `<div class="bead ${beadClass}">${beadText}</div>`;
-                    beadsContainer.scrollLeft = beadsContainer.scrollWidth;
-                }
-
-                bets = { player: 0, tie: 0, banker: 0 };
-                totalBet = 0;
-                isPlaying = false;
-
-                saveGameProgress();
-                updateUI();
-            }, 2200);
         }
     </script>
 </body>
 </html>
-
-
