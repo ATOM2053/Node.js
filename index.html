@@ -165,6 +165,8 @@
             flex-direction: column;
             gap: 15px;
             position: relative;
+            /* ป้องกันเนื้อหาทับซ้อนกับแชทโลกด้านล่าง */
+            padding-bottom: 80px;
         }
 
         .lobby-header {
@@ -704,7 +706,7 @@
             animation: gachaSpinAnim 0.5s infinite linear;
         }
 
-        /* [ข้อ 5] สไตล์สำหรับระบบแชทโลก (Global Chat) ลอยอยู่มุมขวาล่าง */
+        /* สไตล์สำหรับระบบแชทโลก (Global Chat) ลอยอยู่มุมขวาล่าง */
         .global-chat-widget {
             position: fixed;
             bottom: 20px;
@@ -908,7 +910,7 @@
         </div>
     </div>
 
-    <!-- [ข้อ 5] Widget แชทโลก (Global Chat) ลอยแสดงผลทุกหน้า -->
+    <!-- Widget แชทโลก (Global Chat) ลอยแสดงผลทุกหน้า -->
     <div class="global-chat-widget" id="global-chat-widget">
         <div class="chat-header" onclick="toggleGlobalChat()">
             <span>🌐 แชทโลก (Global Chat)</span>
@@ -1217,7 +1219,6 @@
             updateServerLeaderboard(onlinePlayers);
         });
 
-        // [ข้อ 2] โมเดลแจ้งเตือนแบน พร้อมเวลานับถอยหลังและสาเหตุ
         socket.on('force_logout', (data) => {
             let remainingText = "";
             if (data.expireTime) {
@@ -1234,7 +1235,6 @@
             });
         });
 
-        // [ข้อ 3] ระบบรีเซิร์ฟเวอร์ (แจ้งเตือนทุกคนทันที และเตะออกจากเซิร์ฟ)
         socket.on('server_restart_kick', (data) => {
             showCustomAlert(`⚡ ${data.message || 'เซิร์ฟเวอร์กำลังรีเซ็ตระบบ! กำลังเตะทุกคนออกทันที...'}`, false, () => {
                 localStorage.removeItem('baccarat_active_user');
@@ -1242,7 +1242,6 @@
             });
         });
 
-        // [ข้อ 1] โอนเงินหากันระหว่างคนละโทรศัพท์ (ผ่านเซิร์ฟเวอร์กลาง)
         socket.on('receive_money_transfer', (data) => {
             let amount = data.amount;
             let senderName = data.senderName;
@@ -1252,7 +1251,6 @@
             showCustomAlert(`💰 คุณได้รับเงินโอนจำนวน ${amount.toLocaleString()} เครดิต จากผู้เล่น ${senderName}`);
         });
 
-        // [ข้อ 4] แจ้งเตือนท้า PvP ทุกที่ ไม่ว่าจะทำอะไรอยู่
         socket.on('receive_pvp_invite', (data) => {
             let senderName = data.senderName;
             let senderUid = data.senderUid;
@@ -1290,7 +1288,6 @@
             showCustomAlert(`🌐 แอดมินแจกเงินให้ทุกคนในเซิร์ฟเวอร์! คุณได้รับ ${amount.toLocaleString()} เครดิต`);
         });
 
-        // [ข้อ 5] รับข้อความแชทโลกและแสดงผล
         socket.on('receive_global_chat', (data) => {
             let container = document.getElementById('chat-messages-container');
             if (!container) return;
@@ -1402,7 +1399,6 @@
             menu.classList.toggle('show');
         }
 
-        // [ข้อ 5] ฟังก์ชันพับ/ขยายหน้าต่างแชทโลก
         function toggleGlobalChat() {
             let body = document.getElementById('chat-messages-container');
             let icon = document.getElementById('chat-toggle-icon');
@@ -1505,7 +1501,6 @@
             socket.emit('search_player_request', keyword);
         }
 
-        // [ข้อ 1] ระบบโอนเงินข้ามอุปกรณ์ (คนละโทรศัพท์โอนได้ผ่านเซิร์ฟเวอร์กลาง)
         window.transferMoneyToPlayer = function() {
             let recipientUid = document.getElementById('transfer-uid-input').value.trim();
             let amount = parseInt(document.getElementById('transfer-amount-input').value);
@@ -1959,7 +1954,6 @@
             adminMsg.innerText = `แจกสัตว์เลี้ยง ${petObj.icon} ${petObj.name} ให้ ${target} สำเร็จ!`;
         }
 
-        // [ข้อ 3] ระบบรีเซิร์ฟเวอร์ ส่งคำสั่งแจ้งเตือนและเตะทุกคนออกทันที
         window.adminExecuteKickServer = function() {
             let reason = document.getElementById('admin-amount-input').value.trim() || "เซิร์ฟเวอร์กำลังรีเซ็ตระบบเพื่ออัปเดต";
             socket.emit('admin_restart_server', { message: reason });
