@@ -12,7 +12,7 @@ const io = new Server(server, {
 app.use(express.static(path.join(__dirname)));
 
 let onlinePlayers = {};
-let bannedPlayers = {}; 
+let bannedPlayers = {}; // เก็บข้อมูลแบน { uid: { reason, expireTime } }
 
 // รายการอีเวนต์ 50 แบบบนเซิร์ฟเวอร์
 const EVENTS_DATABASE = [
@@ -69,7 +69,7 @@ const EVENTS_DATABASE = [
 ];
 
 let currentGlobalEvent = EVENTS_DATABASE[0];
-let eventEndTime = Date.now() + 10 * 60 * 1000; // อยู่ 10 นาที
+let eventEndTime = Date.now() + 10 * 60 * 1000; 
 let usedEventIds = [];
 
 function rotateGlobalEvent() {
@@ -81,17 +81,15 @@ function rotateGlobalEvent() {
     let randomIndex = Math.floor(Math.random() * availableEvents.length);
     currentGlobalEvent = availableEvents[randomIndex];
     usedEventIds.push(currentGlobalEvent.id);
-    eventEndTime = Date.now() + 10 * 60 * 1000; // 10 นาที
+    eventEndTime = Date.now() + 10 * 60 * 1000;
 }
 
 rotateGlobalEvent();
 
-// สลับอีเวนต์ทุกๆ 1 ชั่วโมง
 setInterval(() => {
     rotateGlobalEvent();
 }, 60 * 60 * 1000);
 
-// ส่งอัปเดตอีเวนต์ให้ผู้เล่นทุก 1 วินาที
 setInterval(() => {
     let timeLeft = Math.max(0, Math.floor((eventEndTime - Date.now()) / 1000));
     if (timeLeft <= 0) {
@@ -104,10 +102,10 @@ setInterval(() => {
 io.on('connection', (socket) => {
   console.log('ผู้เล่นเชื่อมต่อ:', socket.id);
 
-  // ส่งอีเวนต์ปัจจุบันทันทีที่ผู้เล่นเชื่อมต่อ
   let initialTimeLeft = Math.max(0, Math.floor((eventEndTime - Date.now()) / 1000));
   socket.emit('sync_event', { event: currentGlobalEvent, timeLeft: initialTimeLeft });
 
+  // 1. เข้าร่วมเกมและตรวจสอบสถานะแบน
   socket.on('join_game', (data) => {
     if (bannedPlayers[data.uid]) {
       let banInfo = bannedPlayers[data.uid];
@@ -123,17 +121,144 @@ io.on('connection', (socket) => {
     }
 
     onlinePlayers[socket.id] = {
+      socketId: socket.id,
       name: data.name,
       credit: data.credit || 1000,
+      token: data.token || 100,
       uid: data.uid || socket.id,
       pets: data.myPets || []
     };
     io.emit('update_players_list', onlinePlayers);
   });
 
+  // อัปเดตข้อมูลผู้เล่นเรียลไทม์ (ซิงค์ localStorage)
+  socket.on('update_player_data', (data) => {
+    if (onlinePlayers[socket.id]) {
+      onlinePlayers[socket.id].credit = data.credit;
+      onlinePlayers[socket.id].token = data.token;
+      onlinePlayers[socket.id].pets = data.pets;
+      io.emit('update_players_list', onlinePlayers);
+    }
+  });
+
+  // 2. ระบบโอนเงินข้ามโทรศัพท์ (ระหว่างผู้เล่น)
+  socket.on('transfer_money', (data) => {
+    let sender = onlinePlayers[socket.id];
+    let targetSocketId = data.targetSocketId;
+    let amount = parseInt(data.amount);
+
+    if (sender && onlinePlayers[targetSocketId] && amount > 0) {
+      if (sender.credit >= amount) {
+        sender.credit -= amount;
+        onlinePlayers[targetSocketId].credit += amount;
+
+        // ส่งข้อมูลอัปเดตไปให้ผู้รับและผู้ส่ง
+        io.to(targetSocketId).emit('receive_transfer', { from: sender.name, amount: amount, newBalance: onlinePlayers[targetSocketId].credit });
+        socket.emit('transfer_success', { to: onlinePlayers[targetSocketId].name, amount: amount, newBalance: sender.credit });
+        io.emit('update_players_list', onlinePlayers);
+      } else {
+        socket.emit('alert_message', { message: "❌ เครดิตของคุณไม่พอโอน!" });
+      }
+    }
+  });
+
+  // 3. ระบบแชทส่วนกลาง
   socket.on('send_global_chat', (data) => {
     io.emit('receive_global_chat', data);
   });
+
+  // 4. ระบบท้า PvP (ส่งป๊อปอัปแจ้งเตือนเด่นชัด)
+  socket.on('send_pvp_invite', (data) => {
+    let targetSocketId = data.targetSocketId;
+    if (onlinePlayers[socket.id] && onlinePlayers[targetSocketId]) {
+      io.to(targetSocketId).emit('receive_pvp_invite', {
+        fromSocketId: socket.id,
+        fromName: onlinePlayers[socket.id].name
+      });
+    }
+  });
+
+  socket.on('accept_pvp_invite', (data) => {
+    io.to(data.fromSocketId).emit('pvp_accepted', { opponentName: onlinePlayers[socket.id]?.name });
+  });
+
+  // ================= ADMIN PANEL COMMANDS ================= //
+
+  // แบนผู้เล่น (เด้งออกจากเซิร์ฟเวอร์ทันที พร้อมระบุเหตุผลและเวลา)
+  socket.on('admin_ban_player', (data) => {
+    // ใส่รหัสเช็คสิทธิ์แอดมินตรงนี้ (เช่น เช็คจาก uid หรือ Token ลับ)
+    let targetId = data.targetUid;
+    let durationMinutes = parseInt(data.duration) || 60; // ค่าเริ่มต้นแบน 60 นาที
+    let expireTime = Date.now() + (durationMinutes * 60 * 1000);
+
+    bannedPlayers[targetId] = {
+      reason: data.reason || "ทำผิดกฎระเบียบเซิร์ฟเวอร์",
+      expireTime: expireTime
+    };
+
+    // ค้นหา Socket ของผู้เล่นที่โดนแบนแล้วเตะออกทันที
+    for (let sId in onlinePlayers) {
+      if (onlinePlayers[sId].uid === targetId) {
+        io.to(sId).emit('force_logout', { 
+          reason: bannedPlayers[targetId].reason, 
+          expireTime: expireTime 
+        });
+        io.sockets.sockets.get(sId)?.disconnect(true);
+        break;
+      }
+    }
+    io.emit('update_players_list', onlinePlayers);
+  });
+
+  // ปลดแบนผู้เล่น
+  socket.on('admin_unban_player', (data) => {
+    delete bannedPlayers[data.targetUid];
+  });
+
+  // เสกเงิน / แจกโทเคนให้ผู้เล่น
+  socket.on('admin_give_assets', (data) => {
+    let targetSocketId = data.targetSocketId;
+    if (onlinePlayers[targetSocketId]) {
+      if (data.type === 'credit') {
+        onlinePlayers[targetSocketId].credit += parseInt(data.amount);
+      } else if (data.type === 'token') {
+        onlinePlayers[targetSocketId].token += parseInt(data.amount);
+      }
+      io.to(targetSocketId).emit('admin_reward_noti', { type: data.type, amount: data.amount });
+      io.emit('update_players_list', onlinePlayers);
+    }
+  });
+
+  // เสกสัตว์เลี้ยงให้ผู้เล่น
+  socket.on('admin_give_pet', (data) => {
+    let targetSocketId = data.targetSocketId;
+    if (onlinePlayers[targetSocketId]) {
+      let newPet = { id: Date.now(), name: data.petName, power: parseInt(data.petPower) || 500, main: false, sub: false };
+      onlinePlayers[targetSocketId].pets.push(newPet);
+      io.to(targetSocketId).emit('pet_received', newPet);
+      io.emit('update_players_list', onlinePlayers);
+    }
+  });
+
+  // รีเซิร์ฟเวอร์ (แจ้งเตือนเด้งออกทุกคน)
+  socket.on('admin_restart_server', (data) => {
+    io.emit('server_restarting', { message: data.message || "⚠️ เซิร์ฟเวอร์กำลังรีสตาร์ทเพื่ออัปเดตระบบ!" });
+    setTimeout(() => {
+      process.exit(0); // หรือเคลียร์ระบบตามโครงสร้างโฮสต์
+    }, 3000);
+  });
+
+  // โอนเงินแจกทุกคนในเซิร์ฟเวอร์ (Airdrop)
+  socket.on('admin_airdrop_money', (data) => {
+    let amount = parseInt(data.amount) || 1000;
+    for (let sId in onlinePlayers) {
+      onlinePlayers[sId].credit += amount;
+      io.to(sId).emit('airdrop_received', { amount: amount });
+    }
+    io.emit('update_players_list', onlinePlayers);
+  });
+
+  // ======================================================== //
 
   socket.on('disconnect', () => {
     delete onlinePlayers[socket.id];
@@ -142,5 +267,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(3000, () => {
-  console.log('Server is running on port 3000');
+  console.log('🚀 Server is running smoothly on port 3000 (Online Multiplayer Ready)');
 });
