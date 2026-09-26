@@ -14,6 +14,9 @@ app.use(express.static(path.join(__dirname)));
 let onlinePlayers = {};
 let bannedPlayers = {}; // เก็บข้อมูลแบน { uid: { reason, expireTime } }
 
+// 🔑 กำหนดรหัสผ่านลับสำหรับแอดมิน (สามารถเปลี่ยนเป็นรหัสของคุณเองได้เลย)
+const ADMIN_SECRET_KEY = "my_secret_admin_code_999";
+
 // รายการอีเวนต์ 50 แบบบนเซิร์ฟเวอร์
 const EVENTS_DATABASE = [
     { id: 1, name: "❄️ พายุหิมะโปรยปราย", theme: { bg: "#0d1b2a", felt: "#1b263b", gold: "#778da9" } },
@@ -105,7 +108,7 @@ io.on('connection', (socket) => {
   let initialTimeLeft = Math.max(0, Math.floor((eventEndTime - Date.now()) / 1000));
   socket.emit('sync_event', { event: currentGlobalEvent, timeLeft: initialTimeLeft });
 
-  // 1. เข้าร่วมเกมและตรวจสอบสถานะแบน
+  // 1. เข้าร่วมเกมและเช็คแบน
   socket.on('join_game', (data) => {
     if (bannedPlayers[data.uid]) {
       let banInfo = bannedPlayers[data.uid];
@@ -131,7 +134,7 @@ io.on('connection', (socket) => {
     io.emit('update_players_list', onlinePlayers);
   });
 
-  // อัปเดตข้อมูลผู้เล่นเรียลไทม์ (ซิงค์ localStorage)
+  // ซิงค์ข้อมูลผู้เล่น (localStorage)
   socket.on('update_player_data', (data) => {
     if (onlinePlayers[socket.id]) {
       onlinePlayers[socket.id].credit = data.credit;
@@ -141,7 +144,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  // 2. ระบบโอนเงินข้ามโทรศัพท์ (ระหว่างผู้เล่น)
+  // 2. ระบบโอนเงินข้ามผู้เล่นผ่าน Socket.io
   socket.on('transfer_money', (data) => {
     let sender = onlinePlayers[socket.id];
     let targetSocketId = data.targetSocketId;
@@ -152,7 +155,6 @@ io.on('connection', (socket) => {
         sender.credit -= amount;
         onlinePlayers[targetSocketId].credit += amount;
 
-        // ส่งข้อมูลอัปเดตไปให้ผู้รับและผู้ส่ง
         io.to(targetSocketId).emit('receive_transfer', { from: sender.name, amount: amount, newBalance: onlinePlayers[targetSocketId].credit });
         socket.emit('transfer_success', { to: onlinePlayers[targetSocketId].name, amount: amount, newBalance: sender.credit });
         io.emit('update_players_list', onlinePlayers);
@@ -167,7 +169,7 @@ io.on('connection', (socket) => {
     io.emit('receive_global_chat', data);
   });
 
-  // 4. ระบบท้า PvP (ส่งป๊อปอัปแจ้งเตือนเด่นชัด)
+  // 4. ระบบท้า PvP (ส่งป๊อปอัปเด่นชัด)
   socket.on('send_pvp_invite', (data) => {
     let targetSocketId = data.targetSocketId;
     if (onlinePlayers[socket.id] && onlinePlayers[targetSocketId]) {
@@ -182,13 +184,17 @@ io.on('connection', (socket) => {
     io.to(data.fromSocketId).emit('pvp_accepted', { opponentName: onlinePlayers[socket.id]?.name });
   });
 
-  // ================= ADMIN PANEL COMMANDS ================= //
+  // ================= ADMIN PANEL COMMANDS (SECURED) ================= //
 
-  // แบนผู้เล่น (เด้งออกจากเซิร์ฟเวอร์ทันที พร้อมระบุเหตุผลและเวลา)
+  // แบนผู้เล่น (เด้งออกทันที พร้อมเหตุผล)
   socket.on('admin_ban_player', (data) => {
-    // ใส่รหัสเช็คสิทธิ์แอดมินตรงนี้ (เช่น เช็คจาก uid หรือ Token ลับ)
+    if (data.adminKey !== ADMIN_SECRET_KEY) {
+      socket.emit('alert_message', { message: "❌ รหัสแอดมินไม่ถูกต้อง!" });
+      return;
+    }
+
     let targetId = data.targetUid;
-    let durationMinutes = parseInt(data.duration) || 60; // ค่าเริ่มต้นแบน 60 นาที
+    let durationMinutes = parseInt(data.duration) || 60;
     let expireTime = Date.now() + (durationMinutes * 60 * 1000);
 
     bannedPlayers[targetId] = {
@@ -196,7 +202,6 @@ io.on('connection', (socket) => {
       expireTime: expireTime
     };
 
-    // ค้นหา Socket ของผู้เล่นที่โดนแบนแล้วเตะออกทันที
     for (let sId in onlinePlayers) {
       if (onlinePlayers[sId].uid === targetId) {
         io.to(sId).emit('force_logout', { 
@@ -212,11 +217,13 @@ io.on('connection', (socket) => {
 
   // ปลดแบนผู้เล่น
   socket.on('admin_unban_player', (data) => {
+    if (data.adminKey !== ADMIN_SECRET_KEY) return;
     delete bannedPlayers[data.targetUid];
   });
 
-  // เสกเงิน / แจกโทเคนให้ผู้เล่น
+  // เสกเงิน / แจกโทเคน
   socket.on('admin_give_assets', (data) => {
+    if (data.adminKey !== ADMIN_SECRET_KEY) return;
     let targetSocketId = data.targetSocketId;
     if (onlinePlayers[targetSocketId]) {
       if (data.type === 'credit') {
@@ -229,8 +236,9 @@ io.on('connection', (socket) => {
     }
   });
 
-  // เสกสัตว์เลี้ยงให้ผู้เล่น
+  // เสกสัตว์เลี้ยง
   socket.on('admin_give_pet', (data) => {
+    if (data.adminKey !== ADMIN_SECRET_KEY) return;
     let targetSocketId = data.targetSocketId;
     if (onlinePlayers[targetSocketId]) {
       let newPet = { id: Date.now(), name: data.petName, power: parseInt(data.petPower) || 500, main: false, sub: false };
@@ -242,14 +250,16 @@ io.on('connection', (socket) => {
 
   // รีเซิร์ฟเวอร์ (แจ้งเตือนเด้งออกทุกคน)
   socket.on('admin_restart_server', (data) => {
+    if (data.adminKey !== ADMIN_SECRET_KEY) return;
     io.emit('server_restarting', { message: data.message || "⚠️ เซิร์ฟเวอร์กำลังรีสตาร์ทเพื่ออัปเดตระบบ!" });
     setTimeout(() => {
-      process.exit(0); // หรือเคลียร์ระบบตามโครงสร้างโฮสต์
+      process.exit(0);
     }, 3000);
   });
 
-  // โอนเงินแจกทุกคนในเซิร์ฟเวอร์ (Airdrop)
+  // แจกเงินทุกคนในเซิร์ฟเวอร์ (Airdrop)
   socket.on('admin_airdrop_money', (data) => {
+    if (data.adminKey !== ADMIN_SECRET_KEY) return;
     let amount = parseInt(data.amount) || 1000;
     for (let sId in onlinePlayers) {
       onlinePlayers[sId].credit += amount;
@@ -258,7 +268,7 @@ io.on('connection', (socket) => {
     io.emit('update_players_list', onlinePlayers);
   });
 
-  // ======================================================== //
+  // ================================================================= //
 
   socket.on('disconnect', () => {
     delete onlinePlayers[socket.id];
