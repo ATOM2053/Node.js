@@ -408,6 +408,21 @@
         .info-label { font-size: 0.55rem; color: var(--gold-light); text-transform: uppercase; }
         .info-value { font-size: 0.75rem; font-weight: bold; color: #fff; }
 
+        @keyframes fireGlowTable {
+            0% {
+                box-shadow: inset 0 0 20px rgba(0,0,0,0.7), 0 0 5px #ff4500, inset 0 0 5px #ff4500;
+                border-color: var(--felt-border);
+            }
+            50% {
+                box-shadow: inset 0 0 25px rgba(0,0,0,0.7), 0 0 25px #ff8c00, inset 0 0 15px #ffd700;
+                border-color: #ffd700;
+            }
+            100% {
+                box-shadow: inset 0 0 20px rgba(0,0,0,0.7), 0 0 5px #ff4500, inset 0 0 5px #ff4500;
+                border-color: var(--felt-border);
+            }
+        }
+
         .table-board {
             background-color: var(--table-felt);
             border: 4px solid var(--felt-border);
@@ -420,6 +435,11 @@
             position: relative;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.7);
             transition: border-color 0.5s;
+        }
+
+        .table-board.animate-fire-glow {
+            animation: fireGlowTable 1.5s infinite ease-in-out;
+            border-color: #ffd700;
         }
 
         .cards-area {
@@ -802,7 +822,7 @@
         <p style="font-size: 0.8rem; color: #aaa;">เพื่อประสบการณ์การเล่นเกมที่ดีที่สุด</p>
     </div>
 
-    <!-- แบนเนอร์แสดงอีเวนต์ปัจจุบัน (สุ่มทุก 1 ชม.) -->
+    <!-- แบนเนอร์แสดงอีเวนต์ปัจจุบัน -->
     <div id="active-event-banner">
         <div id="event-name-display">🎉 อีเวนต์: กำลังโหลด...</div>
         <div id="event-timer-display" style="font-size: 0.6rem; color: #aaa;">เวลาเหลือ: 60:00</div>
@@ -853,8 +873,8 @@
                     </div>
 
                     <div class="panel-box" style="border-color: #ffaa00; background: rgba(30, 25, 10, 0.95); cursor: pointer; text-align: center;" onclick="openPetSystem()">
-                        <div class="panel-title" style="color: #ffaa00; border-bottom-color: #ffaa00; margin-bottom: 4px;">🐾 ระบบเลี้ยงสัตว์ & รวมสัตว์เลี้ยง</div>
-                        <p style="font-size: 0.6rem; color: #aaa;">(คลังสัตว์เลี้ยงพร้อม ID, ให้อาหาร และรวมสถานะ)</p>
+                        <div class="panel-title" style="color: #ffaa00; border-bottom-color: #ffaa00; margin-bottom: 4px;">🐾 ระบบเลี้ยงสัตว์ & ตู้รวมสถานะ</div>
+                        <p style="font-size: 0.6rem; color: #aaa;">(คลังสัตว์เลี้ยง รวมสถานะ เพิ่มพลังโจมตี)</p>
                     </div>
 
                     <div class="panel-box" style="border-color: #3a86ff; background: rgba(10, 20, 30, 0.95); cursor: pointer; text-align: center;" onclick="openGachaSystem()">
@@ -864,13 +884,13 @@
 
                     <div class="panel-box" style="border-color: #ff4d4d; background: rgba(30, 10, 10, 0.95); cursor: pointer; text-align: center;" onclick="openPvpScreen()">
                         <div class="panel-title" style="color: #ff4d4d; border-bottom-color: #ff4d4d; margin-bottom: 4px;">⚔️ โหมดประลอง PvP</div>
-                        <p style="font-size: 0.6rem; color: #aaa;">(ท้าดวลส่งคำเชิญผ่าน UID และแจ้งเตือนหน้าหลัก)</p>
+                        <p style="font-size: 0.6rem; color: #aaa;">(ท้าดวลส่งคำเชิญเด้งเตือนในหน้าหลักทันที)</p>
                     </div>
                 </div>
 
                 <div class="lobby-main-content">
                     <div id="admin-panel" class="panel-box">
-                        <div class="panel-title">🛡️ หมวดหมู่แอดมิน (จัดการระบบจริง)</div>
+                        <div class="panel-title">🛡️ หมวดหมู่แอดมิน (จัดการระบบจริงออนไลน์)</div>
                         <div class="input-group" style="margin-bottom: 8px;">
                             <label for="ban-uid-input" style="font-size: 0.65rem;">ระบุ UID (หรือชื่อ):</label>
                             <input type="text" id="ban-uid-input" placeholder="กรอก UID เช่น P_xxxx หรือชื่อผู้เล่น" style="font-size: 0.8rem; padding: 6px;">
@@ -893,9 +913,9 @@
                             <button class="btn btn-repay" style="padding: 8px; font-size: 0.6rem;" onclick="adminExecuteUnban()">✅ ปลดแบน</button>
                             <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#ffaa00;" onclick="adminExecuteGiveMoney()">💰 เสกเงิน</button>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 6px;">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin-bottom: 6px;">
                             <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#38b000; color:#fff;" onclick="adminExecuteGiveToken()">🪙 แจกโทเคน</button>
-                            <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#3a86ff; color:#fff;" onclick="adminExecuteGivePet()">🐾 แจกสัตว์เลี้ยง</button>
+                            <button class="btn btn-deal" style="padding: 8px; font-size: 0.6rem; background:#3a86ff; color:#fff;" onclick="adminExecuteGivePet()">🐾 เสกสัตว์เลี้ยง</button>
                         </div>
                         <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #d90429, #b30000); margin-bottom: 5px;" onclick="adminExecuteKickServer()">⚡ รีเซิร์ฟเวอร์ (แจ้งเตือน & เด้งออกทุกคน)</button>
                         <button class="btn btn-repay" style="width: 100%; padding: 8px; font-size: 0.65rem; background: linear-gradient(135deg, #9b59b6, #8e44ad);" onclick="adminBroadcastMoneyToAll()">🌐 โอนเงินให้ทุกคนในเซิร์ฟเวอร์</button>
@@ -957,14 +977,14 @@
         </div>
     </div>
 
-    <!-- Screen: ระบบเลี้ยงสัตว์ & รวมสถานะสัตว์เลี้ยง -->
+    <!-- Screen: ระบบเลี้ยงสัตว์ & ตู้รวมสัตว์เลี้ยง -->
     <div id="pet-screen">
         <header>
             <div class="header-profile-mini" onclick="toggleProfileModal(true)">
                 <div class="mini-avatar" id="mini-avatar-display-pet">👑</div>
                 <span class="mini-name" id="mini-name-display-pet">-</span>
             </div>
-            <h1 style="color: #ffaa00;">🐾 ระบบเลี้ยงสัตว์ & รวมสถานะ</h1>
+            <h1 style="color: #ffaa00;">🐾 ระบบเลี้ยงสัตว์ & ตู้รวมสถานะสัตว์เลี้ยง</h1>
             <div class="header-btn-group">
                 <button class="btn-top-action" onclick="returnToLobby()">🏠 หน้าหลัก</button>
                 <button class="btn-top-action btn-logout" onclick="handleLogout()">🚪 ออกจากระบบ</button>
@@ -972,15 +992,15 @@
         </header>
         <div class="main-layout" style="justify-content: center;">
             <div class="game-container" style="max-width: 650px; text-align: center; padding: 20px; gap: 12px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; flex-wrap: wrap; gap: 6px;">
                     <div>โทเคน: <b id="pet-token-val" style="color: var(--gold);">0</b> 🪙 | อาหาร: <b id="pet-food-val" style="color: #38b000;">5</b> ชิ้น</div>
                     <div style="display: flex; gap: 6px;">
                         <button class="btn btn-repay" onclick="feedAllPets()">🍖 ให้อาหารทั้งหมด (10 🪙)</button>
-                        <button class="btn btn-deal" style="background:#3a86ff; color:#fff;" onclick="openMergePetsModal()">✨ รวมสถานะสัตว์เลี้ยง</button>
+                        <button class="btn btn-deal" style="background:#ff006e; color:#fff;" onclick="openPetMergeModal()">🧬 รวมสัตว์เลี้ยง (เพิ่มพลัง)</button>
                     </div>
                 </div>
 
-                <div class="panel-title">สัตว์เลี้ยงทั้งหมดของคุณ</div>
+                <div class="panel-title">สัตว์เลี้ยงทั้งหมดของคุณ (เลือกสัตว์เพื่อนำไปรวม)</div>
                 <div id="my-pets-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 280px; overflow-y: auto;"></div>
 
                 <button class="btn btn-deal" style="margin-top: 10px;" onclick="returnToLobby()">กลับหน้าหลัก</button>
@@ -988,25 +1008,25 @@
         </div>
     </div>
 
-    <!-- Modal: รวมสถานะสัตว์เลี้ยง -->
-    <div id="merge-pets-modal" class="modal-overlay">
+    <!-- Modal: ตู้รวมสัตว์เลี้ยงและรวมสถานะ -->
+    <div id="pet-merge-modal" class="modal-overlay">
         <div class="ff-profile-card">
-            <div class="ff-header-banner" style="background: linear-gradient(90deg, #3a86ff, #7209b7);">
-                <span class="ff-header-title">✨ รวมสถานะสัตว์เลี้ยง (Fusion)</span>
-                <button class="ff-close-btn" onclick="toggleMergePetsModal(false)">✕</button>
+            <div class="ff-header-banner" style="background: linear-gradient(90deg, #ff006e, #7209b7);">
+                <span class="ff-header-title">🧬 ตู้รวมสัตว์เลี้ยง & สถานะ (Fusion Chamber)</span>
+                <button class="ff-close-btn" onclick="togglePetMergeModal(false)">✕</button>
             </div>
             <div class="ff-body">
-                <p style="font-size: 0.75rem; color: #ccc; text-align: center;">เลือกสัตว์เลี้ยงหลักและสัตว์เลี้ยงรองเพื่อนำสถานะและพลังมารวมกัน!</p>
+                <p style="font-size: 0.7rem; color: #ccc; text-align: center;">เลือกสัตว์เลี้ยงหลัก 1 ตัว และสัตว์เลี้ยงรอง 1 ตัวเพื่อหลอมรวมสถานะและเพิ่มพลังโจมตีอย่างมหาศาล!</p>
                 <div class="input-group">
                     <label style="font-size: 0.65rem;">สัตว์เลี้ยงหลัก (ตัวรับพลัง):</label>
-                    <select id="merge-primary-select" style="font-size: 0.8rem; padding: 8px;"></select>
+                    <select id="merge-primary-select" style="font-size: 0.8rem; padding: 6px;"></select>
                 </div>
                 <div class="input-group">
-                    <label style="font-size: 0.65rem;">สัตว์เลี้ยงรอง (ตัวที่จะถูกนำมารวม):</label>
-                    <select id="merge-secondary-select" style="font-size: 0.8rem; padding: 8px;"></select>
+                    <label style="font-size: 0.65rem;">สัตว์เลี้ยงรอง (ตัวนำมาหลอมรวม):</label>
+                    <select id="merge-secondary-select" style="font-size: 0.8rem; padding: 6px;"></select>
                 </div>
-                <button class="btn btn-deal" style="width: 100%; padding: 10px; font-size: 0.8rem; background: #38b000; color: #fff; margin-top: 5px;" onclick="executeMergePets()">✨ ยืนยันการรวมสถานะ</button>
-                <button class="btn btn-clear" style="width: 100%; padding: 8px; font-size: 0.75rem; margin-top: 5px;" onclick="toggleMergePetsModal(false)">ปิดหน้าต่าง</button>
+                <button class="btn btn-deal" style="width: 100%; padding: 10px; font-size: 0.8rem; background: linear-gradient(135deg, #ff006e, #d90429); color:#fff; margin-top: 5px;" onclick="executePetMerge()">⚡ ยืนยันการรวมสัตว์เลี้ยง</button>
+                <button class="btn btn-clear" style="width: 100%; padding: 8px; font-size: 0.75rem; margin-top: 5px;" onclick="togglePetMergeModal(false)">ปิดหน้าต่าง</button>
             </div>
         </div>
     </div>
@@ -1093,7 +1113,7 @@
                 </div>
 
                 <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; border: 1px solid #38b000;">
-                    <label style="font-size: 0.6rem; color: #38b000; display: block; margin-bottom: 3px;">💸 ระบบโอนเงินให้ผู้เล่น (คนละโทรศัพท์ก็โอนได้):</label>
+                    <label style="font-size: 0.6rem; color: #38b000; display: block; margin-bottom: 3px;">💸 ระบบโอนเงินให้ผู้เล่น (โอนข้ามโทรศัพท์ได้จริง):</label>
                     <div style="display: flex; gap: 5px; margin-bottom: 4px;">
                         <input type="text" id="transfer-uid-input" placeholder="UID ผู้รับ (เช่น P_1234)" style="flex: 1; background: rgba(0,0,0,0.6); border: 1px solid #38b000; border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
                         <input type="number" id="transfer-amount-input" placeholder="จำนวนเงิน" style="width: 80px; background: rgba(0,0,0,0.6); border: 1px solid #38b000; border-radius: 6px; color: #fff; padding: 6px 8px; font-size: 0.7rem; outline: none;">
@@ -1263,7 +1283,22 @@
             { id: 2, name: "🔥 มหกรรมไฟโลกันตร์", theme: { bg: "#2b0a0a", felt: "#3b1212", gold: "#ff4500" } },
             { id: 3, name: "⚡ พายุสายฟ้าคะนอง", theme: { bg: "#1a103c", felt: "#24144e", gold: "#e0aaff" } },
             { id: 4, name: "🌸 ฤดูดอกซากุระบาน", theme: { bg: "#2d1525", felt: "#4a233d", gold: "#ffb5a7" } },
-            { id: 5, name: "💰 ฝนเงินฝนทองคำ", theme: { bg: "#1f1a00", felt: "#332c00", gold: "#ffd700" } }
+            { id: 5, name: "💰 ฝนเงินฝนทองคำ", theme: { bg: "#1f1a00", felt: "#332c00", gold: "#ffd700" } },
+            { id: 6, name: "🌊 คลื่นยักษ์ใสมหาสมุทร", theme: { bg: "#03045e", felt: "#0077b6", gold: "#90e0ef" } },
+            { id: 7, name: "🌙 คืนเดือนมืดรัตติกาล", theme: { bg: "#050505", felt: "#111111", gold: "#888888" } },
+            { id: 8, name: "☀️ แดดจ้ากลางทะเลทราย", theme: { bg: "#3a2e00", felt: "#5c4600", gold: "#ffb703" } },
+            { id: 9, name: "🔮 มิติเวทมนตร์เรืองแสง", theme: { bg: "#240046", felt: "#3c096c", gold: "#e0aaff" } },
+            { id: 10, name: "🍀 ฤดูใบไม้ผลิเขียวขจี", theme: { bg: "#0b2514", felt: "#13381e", gold: "#52b788" } },
+            { id: 11, name: "💎 ยุคเพชรพลอยระยิบระยับ", theme: { bg: "#102231", felt: "#1b3b5c", gold: "#48cae4" } },
+            { id: 12, name: "🎃 เทศกาลฮาโลวีนลึกลับ", theme: { bg: "#291b00", felt: "#422d00", gold: "#f77f00" } },
+            { id: 13, name: "🎄 เทศกาลคริสต์มาสสุขสันต์", theme: { bg: "#1b0000", felt: "#2b0000", gold: "#d90429" } },
+            { id: 14, name: "🚀 ท่องอวกาศไร้ขอบเขต", theme: { bg: "#000814", felt: "#001d3d", gold: "#ffc300" } },
+            { id: 15, name: "👑 งานเลี้ยงราชวงศ์ชั้นสูง", theme: { bg: "#220022", felt: "#380038", gold: "#e0aaff" } },
+            { id: 16, name: "🐉 ปลุกพลังมังกรโบราณ", theme: { bg: "#38040e", felt: "#5c0617", gold: "#ff595e" } },
+            { id: 17, name: "🦄 ดินแดนยูนิคอร์นแฟนตาซี", theme: { bg: "#2a1a3a", felt: "#4a2a6a", gold: "#ffc6ff" } },
+            { id: 18, name: "🦾 ยุคหุ่นยนต์ไซเบอร์พังก์", theme: { bg: "#0b090a", felt: "#161a1d", gold: "#e5383b" } },
+            { id: 19, name: "🏝️ เกาะสวรรค์เขตร้อนชื้น", theme: { bg: "#003049", felt: "#005f73", gold: "#94d2bd" } },
+            { id: 20, name: "🌋 ภูเขาไฟกำลังปะทุ", theme: { bg: "#3a0000", felt: "#6a040f", gold: "#faa307" } }
         ];
 
         let currentActiveEvent = EVENTS_DATABASE[0];
@@ -1336,12 +1371,12 @@
             showCustomAlert(`💰 คุณได้รับเงินโอนจำนวน ${formatMoney(amount)} เครดิต จากผู้เล่น ${senderName}`);
         });
 
-        // ข้อความท้า PvP เด้งเตือนในหน้าหลัก
+        // ข้อ 5: แก้ไขข้อความท้า PvP ให้ข้อความเด้งในหน้าหลักทันที
         socket.on('receive_pvp_invite', (data) => {
             let senderName = data.senderName;
             let senderUid = data.senderUid;
 
-            let msg = `⚔️ ผู้เล่น ${senderName} (UID: ${senderUid}) ส่งคำเชิญท้าดวล PvP หาคุณ! ต้องการรับคำท้าหรือไม่?`;
+            let msg = `⚔️ [แจ้งเตือนหน้าหลัก] ผู้เล่น ${senderName} (UID: ${senderUid}) ส่งคำเชิญท้าดวล PvP หาคุณ! ต้องการรับคำท้าหรือไม่?`;
             
             showCustomAlert(msg, true, () => {
                 socket.emit('accept_pvp_invite', {
@@ -1535,7 +1570,6 @@
                 `;
                 document.getElementById('confirm-yes-btn').onclick = () => {
                     if (onConfirm) onConfirm();
-                    closeCustomAlert();
                 };
             } else {
                 btnGroup.innerHTML = `<button class="custom-alert-btn" onclick="closeCustomAlert()">ตกลง</button>`;
@@ -1590,6 +1624,7 @@
             socket.emit('search_player_request', keyword);
         }
 
+        // ข้อ 3: ระบบโอนเงินของผู้เล่น โอนข้ามโทรศัพท์ได้จริงผ่านออนไลน์
         window.transferMoneyToPlayer = function() {
             let recipientUid = document.getElementById('transfer-uid-input').value.trim();
             let amount = parseInt(document.getElementById('transfer-amount-input').value);
@@ -1766,53 +1801,55 @@
             showCustomAlert("🍖 ให้อาหารสัตว์เลี้ยงทุกตัวสำเร็จ! พลังโจมตีเพิ่มขึ้น +100");
         }
 
-        // ระบบรวมสัตว์เลี้ยงและรวมสถานะ (ข้อ 4)
-        window.openMergePetsModal = function() {
+        // ข้อ 4: ตู้รวมสัตว์เลี้ยงและรวมสถานะ เพิ่มพลังให้สัตว์เลี้ยง
+        window.openPetMergeModal = function() {
             if (myPets.length < 2) {
-                showCustomAlert("คุณต้องมีสัตว์เลี้ยงอย่างน้อย 2 ตัวขึ้นไปจึงจะสามารถรวมสถานะได้!");
+                showCustomAlert("คุณต้องมีสัตว์เลี้ยงอย่างน้อย 2 ตัวจึงจะสามารถใช้งานตู้รวมสัตว์เลี้ยงได้!");
                 return;
             }
             let primarySelect = document.getElementById('merge-primary-select');
             let secondarySelect = document.getElementById('merge-secondary-select');
             let html = "";
             myPets.forEach((p, idx) => {
-                html += `<option value="${idx}">[${p.petId}] ${p.icon} ${p.name} (Atk: ${p.atk})</option>`;
+                html += `<option value="${idx}">[ID: ${p.petId}] ${p.icon} ${p.name} (Atk: ${p.atk})</option>`;
             });
             primarySelect.innerHTML = html;
             secondarySelect.innerHTML = html;
-            document.getElementById('merge-pets-modal').classList.add('show');
+            document.getElementById('pet-merge-modal').classList.add('show');
         }
 
-        window.toggleMergePetsModal = function(show) {
-            let modal = document.getElementById('merge-pets-modal');
-            if (show) modal.classList.add('show');
+        window.togglePetMergeModal = function(show) {
+            let modal = document.getElementById('pet-merge-modal');
+            if (show) openPetMergeModal();
             else modal.classList.remove('show');
         }
 
-        window.executeMergePets = function() {
-            let pIdx = parseInt(document.getElementById('merge-primary-select').value);
-            let sIdx = parseInt(document.getElementById('merge-secondary-select').value);
+        window.executePetMerge = function() {
+            let primaryIdx = parseInt(document.getElementById('merge-primary-select').value);
+            let secondaryIdx = parseInt(document.getElementById('merge-secondary-select').value);
 
-            if (pIdx === sIdx) {
-                showCustomAlert("ไม่สามารถรวมสัตว์เลี้ยงตัวเดียวกันได้!");
+            if (primaryIdx === secondaryIdx) {
+                showCustomAlert("ไม่สามารถเลือกสัตว์เลี้ยงตัวเดียวกันในการรวมได้!");
                 return;
             }
 
-            let primaryPet = myPets[pIdx];
-            let secondaryPet = myPets[sIdx];
+            let primaryPet = myPets[primaryIdx];
+            let secondaryPet = myPets[secondaryIdx];
 
             // รวมพลังโจมตีและสถานะ
             primaryPet.atk += Math.floor(secondaryPet.atk * 0.5);
-            if (secondaryPet.status) {
-                primaryPet.status = primaryPet.status ? primaryPet.status + " + " + secondaryPet.status : secondaryPet.status;
+            if (secondaryPet.status && !primaryPet.status) {
+                primaryPet.status = secondaryPet.status;
+            } else if (secondaryPet.status && primaryPet.status) {
+                primaryPet.status += ` + ${secondaryPet.status}`;
             }
 
             // ลบตัวรองออก
-            myPets.splice(sIdx, 1);
+            myPets.splice(secondaryIdx, 1);
             saveGameProgress();
-            toggleMergePetsModal(false);
-            openPetSystem();
-            showCustomAlert(`✨ รวมสถานะสำเร็จ! ${primaryPet.name} ได้รับพลังโจมตีเพิ่มขึ้นและรวมสถานะเรียบร้อย`);
+            togglePetMergeModal(false);
+            renderPetsList();
+            showCustomAlert(`🧬 รวมสัตว์เลี้ยงสำเร็จ! ${primaryPet.name} ได้รับพลังเพิ่มขึ้นและรวมสถานะเรียบร้อยแล้ว!`);
         }
 
         window.openGachaSystem = function() {
@@ -1903,57 +1940,6 @@
             resultBox.innerHTML = `<span style="color:#38b000; font-weight:bold;">📤 ส่งคำเชิญไปยัง UID: ${targetUid} สำเร็จ!</span> รอคู่ต่อสู้ตอบรับ...`;
         }
 
-        // ระบบแอดมินครบถ้วน (ข้อ 1)
-        window.adminExecuteBan = function() {
-            let target = document.getElementById('ban-uid-input').value.trim();
-            let reason = document.getElementById('admin-amount-input').value.trim() || 'ละเมิดกฎเซิร์ฟเวอร์';
-            let duration = document.getElementById('ban-duration-select').value;
-            if (!target) { showCustomAlert("กรุณาระบุ UID หรือชื่อผู้เล่นที่ต้องการแบน"); return; }
-            socket.emit('admin_action_ban', { target, reason, duration });
-            document.getElementById('admin-msg').innerText = `แบนผู้เล่น ${target} เรียบร้อยแล้ว`;
-        }
-
-        window.adminExecuteUnban = function() {
-            let target = document.getElementById('ban-uid-input').value.trim();
-            if (!target) { showCustomAlert("กรุณาระบุ UID หรือชื่อผู้เล่นที่ต้องการปลดแบน"); return; }
-            socket.emit('admin_action_unban', { target });
-            document.getElementById('admin-msg').innerText = `ปลดแบนผู้เล่น ${target} เรียบร้อยแล้ว`;
-        }
-
-        window.adminExecuteGiveMoney = function() {
-            let target = document.getElementById('ban-uid-input').value.trim();
-            let amount = parseInt(document.getElementById('admin-amount-input').value);
-            if (!target || isNaN(amount)) { showCustomAlert("กรุณาระบุ UID และจำนวนเงินให้ถูกต้อง"); return; }
-            socket.emit('admin_action_give_money', { target, amount });
-            document.getElementById('admin-msg').innerText = `เสกเงินให้ ${target} จำนวน ${formatMoney(amount)} สำเร็จ`;
-        }
-
-        window.adminExecuteGiveToken = function() {
-            let target = document.getElementById('ban-uid-input').value.trim();
-            let amount = parseInt(document.getElementById('admin-amount-input').value);
-            if (!target || isNaN(amount)) { showCustomAlert("กรุณาระบุ UID และจำนวนโทเคนให้ถูกต้อง"); return; }
-            socket.emit('admin_action_give_token', { target, amount });
-            document.getElementById('admin-msg').innerText = `แจกโทเคนให้ ${target} จำนวน ${amount} สำเร็จ`;
-        }
-
-        window.adminExecuteGivePet = function() {
-            let target = document.getElementById('ban-uid-input').value.trim();
-            if (!target) { showCustomAlert("กรุณาระบุ UID ผู้เล่น"); return; }
-            socket.emit('admin_action_give_pet', { target });
-            document.getElementById('admin-msg').innerText = `แจกสัตว์เลี้ยงให้ ${target} สำเร็จ`;
-        }
-
-        window.adminExecuteKickServer = function() {
-            socket.emit('admin_action_restart_server', { message: 'แอดมินทำการรีเซิร์ฟเวอร์ระบบทั้งหมด!' });
-        }
-
-        window.adminBroadcastMoneyToAll = function() {
-            let amount = parseInt(document.getElementById('admin-amount-input').value);
-            if (isNaN(amount) || amount <= 0) { showCustomAlert("กรุณาระบุจำนวนเงินที่ต้องการแจกทุกคน"); return; }
-            socket.emit('broadcast_money', { amount });
-            document.getElementById('admin-msg').innerText = `โอนเงินให้ทุกคนในเซิร์ฟเวอร์จำนวน ${formatMoney(amount)} สำเร็จ`;
-        }
-
         window.handleLogout = function() {
             localStorage.removeItem('baccarat_active_user');
             location.reload();
@@ -1983,144 +1969,171 @@
             userArray.forEach((user, index) => {
                 let rankClass = index === 0 ? "top-1" : (index === 1 ? "top-2" : (index === 2 ? "top-3" : ""));
                 let displayName = `${user.name} (${user.id})`;
-                if (user.id === playerId) displayName += " (คุณ)";
-
                 html += `
                     <div class="leaderboard-item ${rankClass}">
-                        <span class="lb-rank">#${index + 1}</span>
-                        <span class="lb-name" title="${user.name}">🟢 ${displayName}</span>
-                        <span class="lb-score">${isAdmin && user.id === playerId ? 'ไม่จำกัด' : formatMoney(user.credit)}</span>
+                        <div class="lb-rank">#${index + 1}</div>
+                        <div class="lb-name">${displayName}</div>
+                        <div class="lb-score">${formatMoney(user.credit)}</div>
                     </div>
                 `;
             });
-
             listContainer.innerHTML = html;
-            let onlineDisplay = document.getElementById('online-counter-display');
-            if (onlineDisplay) onlineDisplay.innerText = `👥 ออนไลน์: ${Math.max(1, userArray.length)}`;
         }
 
-        window.handleLogin = function(isAutoLogin = false, savedId = null) {
-            let inputName = "";
-            let inputPass = "";
-            let errorBox = document.getElementById('login-error');
+        // ข้อ 1: ฟังก์ชันแอดมินครบถ้วน (แบน, ปลดแบน, เสกเงิน, โทเคน, สัตว์เลี้ยง, รีเซิร์ฟเวอร์แจ้งเตือน, โอนเงินให้ทุกคน)
+        window.adminExecuteBan = function() {
+            let target = document.getElementById('ban-uid-input').value.trim();
+            let reason = document.getElementById('admin-amount-input').value.trim() || "ละเมิดกฎเซิร์ฟเวอร์";
+            let duration = document.getElementById('ban-duration-select').value;
+            if (!target) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุ UID หรือชื่อผู้เล่นที่จะแบน!";
+                return;
+            }
+            socket.emit('admin_action_ban', { target: target, reason: reason, duration: duration });
+            document.getElementById('admin-msg').innerText = `แบนผู้เล่น ${target} สำเร็จ!`;
+        }
 
-            if (isAutoLogin) {
+        window.adminExecuteUnban = function() {
+            let target = document.getElementById('ban-uid-input').value.trim();
+            if (!target) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุ UID หรือชื่อผู้เล่นที่จะปลดแบน!";
+                return;
+            }
+            socket.emit('admin_action_unban', { target: target });
+            document.getElementById('admin-msg').innerText = `ปลดแบนผู้เล่น ${target} สำเร็จ!`;
+        }
+
+        window.adminExecuteGiveMoney = function() {
+            let target = document.getElementById('ban-uid-input').value.trim();
+            let amount = parseInt(document.getElementById('admin-amount-input').value);
+            if (!target || isNaN(amount)) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุ UID และจำนวนเงินให้ถูกต้อง!";
+                return;
+            }
+            socket.emit('admin_action_give_money', { target: target, amount: amount });
+            document.getElementById('admin-msg').innerText = `เสกเงิน ${formatMoney(amount)} ให้ ${target} สำเร็จ!`;
+        }
+
+        window.adminExecuteGiveToken = function() {
+            let target = document.getElementById('ban-uid-input').value.trim();
+            let amount = parseInt(document.getElementById('admin-amount-input').value);
+            if (!target || isNaN(amount)) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุ UID และจำนวนโทเคนให้ถูกต้อง!";
+                return;
+            }
+            socket.emit('admin_action_give_token', { target: target, amount: amount });
+            document.getElementById('admin-msg').innerText = `แจกโทเคน ${amount} ให้ ${target} สำเร็จ!`;
+        }
+
+        window.adminExecuteGivePet = function() {
+            let target = document.getElementById('ban-uid-input').value.trim();
+            if (!target) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุ UID ผู้เล่นที่จะรับสัตว์เลี้ยง!";
+                return;
+            }
+            let randomPet = JSON.parse(JSON.stringify(ALL_PETS_DATABASE[Math.floor(Math.random() * ALL_PETS_DATABASE.length)]));
+            randomPet.petId = "PET-" + Math.floor(1000 + Math.random() * 9000);
+            socket.emit('admin_action_give_pet', { target: target, pet: randomPet });
+            document.getElementById('admin-msg').innerText = `เสกสัตว์เลี้ยง ${randomPet.name} ให้ ${target} สำเร็จ!`;
+        }
+
+        window.adminExecuteKickServer = function() {
+            socket.emit('admin_action_restart_server', { message: "แอดมินทำการรีเซิร์ฟเวอร์และแจ้งเตือนทุกคน!" });
+        }
+
+        window.adminBroadcastMoneyToAll = function() {
+            let amount = parseInt(document.getElementById('admin-amount-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                document.getElementById('admin-msg').innerText = "กรุณาระบุจำนวนเงินให้ถูกต้องสำหรับการแจกทุกคน!";
+                return;
+            }
+            socket.emit('broadcast_money', { amount: amount });
+            document.getElementById('admin-msg').innerText = `โอนเงิน ${formatMoney(amount)} ให้ทุกคนในเซิร์ฟเวอร์เรียบร้อย!`;
+        }
+
+        function saveGameProgress() {
+            let userData = {
+                playerId: playerId,
+                playerName: playerName,
+                credit: credit,
+                debt: debt,
+                tokens: tokens,
+                petFood: petFood,
+                myPets: myPets,
+                userAvatar: userAvatar,
+                isAdmin: isAdmin
+            };
+            localStorage.setItem(`baccarat_user_${playerId}`, JSON.stringify(userData));
+            localStorage.setItem('baccarat_active_user', playerId);
+
+            socket.emit('update_player_stats', {
+                uid: playerId,
+                name: playerName,
+                credit: credit,
+                avatar: userAvatar
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('credit-val').innerText = isAdmin ? "ไม่จำกัด (Admin)" : formatMoney(credit);
+            document.getElementById('debt-val').innerText = formatMoney(debt);
+            document.getElementById('player-id-display').innerText = `${playerName} (${playerId})`;
+            updateHeaderAvatars();
+        }
+
+        window.handleLogin = function(isAuto = false, savedId = "") {
+            let nameInput = document.getElementById('username-input').value.trim();
+            let passInput = document.getElementById('password-input').value.trim();
+            let errEl = document.getElementById('login-error');
+
+            if (isAuto) {
                 playerId = savedId;
-                try {
-                    let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                    if (users[playerId]) {
-                        playerName = users[playerId].name;
-                        credit = isAdmin ? 999999999999 : (Number(users[playerId].credit) || 1000);
-                        debt = Number(users[playerId].debt) || 0;
-                        tokens = Number(users[playerId].tokens) || 10;
-                        petFood = Number(users[playerId].petFood) || 5;
-                        myPets = users[playerId].myPets || [];
-                        userAvatar = users[playerId].avatar || "";
-                        isAdmin = users[playerId].isAdmin || false;
-                    } else { return; }
-                } catch (e) { return; }
+                let loaded = JSON.parse(localStorage.getItem(`baccarat_user_${playerId}`) || '{}');
+                playerName = loaded.playerName || "Player";
+                credit = loaded.credit !== undefined ? loaded.credit : 1000;
+                debt = loaded.debt || 0;
+                tokens = loaded.tokens !== undefined ? loaded.tokens : 10;
+                petFood = loaded.petFood !== undefined ? loaded.petFood : 5;
+                myPets = loaded.myPets || [];
+                userAvatar = loaded.userAvatar || "";
+                isAdmin = loaded.isAdmin || false;
             } else {
-                inputName = document.getElementById('username-input').value.trim();
-                inputPass = document.getElementById('password-input').value.trim();
-
-                if (inputName === "") { 
-                    errorBox.innerText = "กรุณากรอกชื่อผู้เล่น!"; 
-                    return; 
+                if (!nameInput) {
+                    errEl.innerText = "กรุณากรอกชื่อผู้เล่น!";
+                    return;
                 }
+                playerName = nameInput;
+                playerId = "P_" + Math.floor(1000 + Math.random() * 9000);
 
-                let users = {};
-                try { users = JSON.parse(localStorage.getItem('baccarat_users') || '{}'); } catch (e) {}
-
-                if (inputName === SECRET_ADMIN_USER || inputName.toLowerCase() === "admin") {
-                    if (inputPass !== SECRET_ADMIN_PASS) {
-                        errorBox.innerText = "รหัสผ่านแอดมินไม่ถูกต้อง!";
-                        return;
-                    }
+                if (nameInput === SECRET_ADMIN_USER && passInput === SECRET_ADMIN_PASS) {
                     isAdmin = true;
-                    playerId = "ADMIN_ROOT";
-                    playerName = "Administrator";
-                    credit = 999999999999;
-                    tokens = 999;
-                    petFood = 999;
-                    userAvatar = "";
-                } else {
-                    let existingId = null;
-                    for (let id in users) {
-                        if (users[id].name && users[id].name.toLowerCase() === inputName.toLowerCase()) {
-                            existingId = id;
-                            break;
-                        }
-                    }
-
-                    if (existingId) {
-                        playerId = existingId;
-                        playerName = users[existingId].name;
-                        credit = Number(users[existingId].credit) || 1000;
-                        debt = Number(users[existingId].debt) || 0;
-                        tokens = Number(users[existingId].tokens) || 10;
-                        petFood = Number(users[existingId].petFood) || 5;
-                        myPets = users[existingId].myPets || [];
-                        userAvatar = users[existingId].avatar || "";
-                        isAdmin = users[existingId].isAdmin || false;
-                    } else {
-                        playerId = "P_" + Math.floor(1000 + Math.random() * 9000);
-                        playerName = inputName;
-                        credit = 1000;
-                        debt = 0;
-                        tokens = 10;
-                        petFood = 5;
-                        myPets = [];
-                        userAvatar = "";
-                        users[playerId] = { 
-                            name: playerName, credit, debt, tokens, petFood, myPets, avatar: "", isAdmin: false
-                        };
-                        try { localStorage.setItem('baccarat_users', JSON.stringify(users)); } catch (e) {}
-                    }
+                    playerId = "ADMIN_01";
                 }
-                localStorage.setItem('baccarat_active_user', playerId);
+
+                let loaded = JSON.parse(localStorage.getItem(`baccarat_user_${playerId}`) || '{}');
+                if (loaded.credit !== undefined) {
+                    credit = loaded.credit;
+                    debt = loaded.debt || 0;
+                    tokens = loaded.tokens !== undefined ? loaded.tokens : 10;
+                    petFood = loaded.petFood !== undefined ? loaded.petFood : 5;
+                    myPets = loaded.myPets || [];
+                    userAvatar = loaded.userAvatar || "";
+                }
             }
 
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
             document.getElementById('lobby-welcome-msg').innerText = `ยินดีต้อนรับผู้เล่น: ${playerName} (UID: ${playerId})`;
-            
+
             if (isAdmin) {
-                let adminPanel = document.getElementById('admin-panel');
-                if (adminPanel) adminPanel.style.display = 'block';
+                document.getElementById('admin-panel').style.display = 'block';
             }
 
-            updateHeaderAvatars();
-            socket.emit('player_join_lobby', { uid: playerId, name: playerName, credit: credit });
+            updateUI();
+            saveGameProgress();
         }
 
-        function saveGameProgress() {
-            try {
-                let users = JSON.parse(localStorage.getItem('baccarat_users') || '{}');
-                if (!users[playerId]) users[playerId] = {};
-                users[playerId].name = playerName;
-                users[playerId].credit = credit;
-                users[playerId].debt = debt;
-                users[playerId].tokens = tokens;
-                users[playerId].petFood = petFood;
-                users[playerId].myPets = myPets;
-                users[playerId].avatar = userAvatar;
-                users[playerId].isAdmin = isAdmin;
-                localStorage.setItem('baccarat_users', JSON.stringify(users));
-                socket.emit('update_player_stats', { uid: playerId, name: playerName, credit: credit });
-            } catch (e) {}
-        }
-
-        function updateUI() {
-            let creditValEl = document.getElementById('credit-val');
-            if (creditValEl) creditValEl.innerText = isAdmin ? "ไม่จำกัด" : formatMoney(credit);
-            let debtValEl = document.getElementById('debt-val');
-            if (debtValEl) debtValEl.innerText = formatMoney(debt);
-            let playerIdDisplay = document.getElementById('player-id-display');
-            if (playerIdDisplay) playerIdDisplay.innerText = playerId;
-            updateHeaderAvatars();
-        }
-
-        function selectGame(mode) {
+        window.selectGame = function(mode) {
             if (mode === 'baccarat') {
                 document.getElementById('lobby-screen').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'flex';
@@ -2128,112 +2141,159 @@
             }
         }
 
-        function returnToLobby() {
-            ['game-screen', 'pet-screen', 'gacha-screen', 'pvp-screen'].forEach(id => {
-                let el = document.getElementById(id);
-                if (el) el.style.display = 'none';
-            });
+        window.returnToLobby = function() {
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('pet-screen').style.display = 'none';
+            document.getElementById('gacha-screen').style.display = 'none';
+            document.getElementById('pvp-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'flex';
             updateUI();
         }
 
-        function selectChip(val, event) {
+        window.selectChip = function(val, event) {
             selectedChipValue = val;
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
-        function placeBet(zone) {
+        window.placeBet = function(zone) {
             if (isPlaying) return;
             if (credit < selectedChipValue && !isAdmin) {
-                showCustomAlert("เครดิตของคุณไม่เพียงพอสำหรับการเดิมพัน!");
+                showCustomAlert("เครดิตของคุณไม่พอเดิมพัน!");
                 return;
             }
             if (!isAdmin) credit -= selectedChipValue;
             bets[zone] += selectedChipValue;
             totalBet += selectedChipValue;
-            updateUI();
-            document.getElementById(`bet-${zone}`).innerText = formatMoney(bets[zone]);
+
+            document.getElementById(`bet-${zone}`).innerText = bets[zone];
             document.getElementById('btn-deal').disabled = false;
+            updateUI();
+            saveGameProgress();
         }
 
-        function clearBets() {
+        window.clearBets = function() {
             if (isPlaying) return;
-            if (!isAdmin) credit += totalBet;
-            bets = { player: 0, tie: 0, banker: 0 };
+            for (let z in bets) {
+                credit += bets[z];
+                bets[z] = 0;
+                document.getElementById(`bet-${z}`).innerText = "0";
+            }
             totalBet = 0;
-            updateUI();
-            ['player', 'tie', 'banker'].forEach(z => document.getElementById(`bet-${z}`).innerText = '0');
             document.getElementById('btn-deal').disabled = true;
+            updateUI();
+            saveGameProgress();
         }
 
-        function takeLoan() {
-            debt += 500;
+        window.takeLoan = function() {
             credit += 500;
-            saveGameProgress();
+            debt += 500;
             updateUI();
-            showCustomAlert("กู้เงินสำเร็จ +500 เครดิต (หนี้สินเพิ่มขึ้น)");
+            saveGameProgress();
+            showCustomAlert("กู้เงินสำเร็จ +500 เครดิต (มีหนี้เพิ่มขึ้น)");
         }
 
-        function repayLoan() {
-            if (debt <= 0) { showCustomAlert("คุณไม่มีหนี้สินที่ต้องชำระ!"); return; }
-            let payAmount = Math.min(500, credit, debt);
-            if (payAmount <= 0) { showCustomAlert("เครดิตไม่พอจ่ายหนี้!"); return; }
-            credit -= payAmount;
-            debt -= payAmount;
-            saveGameProgress();
+        window.repayLoan = function() {
+            if (debt <= 0) {
+                showCustomAlert("คุณไม่มีหนี้สินคงค้าง!");
+                return;
+            }
+            let repayAmt = Math.min(500, credit, debt);
+            if (repayAmt <= 0) {
+                showCustomAlert("เครดิตของคุณไม่พอใช้หนี้!");
+                return;
+            }
+            credit -= repayAmt;
+            debt -= repayAmt;
             updateUI();
-            showCustomAlert(`ชำระหนี้สำเร็จ -${payAmount} เครดิต`);
+            saveGameProgress();
+            showCustomAlert(`ชำระหนี้สำเร็จ -${repayAmt} เครดิต`);
         }
 
-        function startDeal() {
-            if (totalBet === 0 || isPlaying) return;
+        window.startDeal = function() {
+            if (isPlaying || totalBet === 0) return;
             isPlaying = true;
             document.getElementById('btn-deal').disabled = true;
             document.getElementById('btn-clear').disabled = true;
 
+            let msgEl = document.getElementById('game-message');
+            msgEl.innerText = "กำลังแจกไพ่...";
+
             if (deck.length < 10) deck = createDeck();
 
-            let pHand = [deck.pop(), deck.pop()];
-            let bHand = [deck.pop(), deck.pop()];
+            let playerHand = [deck.pop(), deck.pop()];
+            let bankerHand = [deck.pop(), deck.pop()];
 
-            document.getElementById('player-cards').innerHTML = renderCardHTML(pHand[0]) + renderCardHTML(pHand[1]);
-            document.getElementById('banker-cards').innerHTML = renderCardHTML(bHand[0]) + renderCardHTML(bHand[1]);
+            let pCardsContainer = document.getElementById('player-cards');
+            let bCardsContainer = document.getElementById('banker-cards');
+            pCardsContainer.innerHTML = "";
+            bCardsContainer.innerHTML = "";
 
-            let pScore = calculateScore(pHand);
-            let bScore = calculateScore(bHand);
+            setTimeout(() => { pCardsContainer.innerHTML += renderCardHTML(playerHand[0]); }, 300);
+            setTimeout(() => { bCardsContainer.innerHTML += renderCardHTML(bankerHand[0]); }, 600);
+            setTimeout(() => { pCardsContainer.innerHTML += renderCardHTML(playerHand[1]); }, 900);
+            setTimeout(() => { 
+                bCardsContainer.innerHTML += renderCardHTML(bankerHand[1]); 
+                evaluateBaccaratRound(playerHand, bankerHand);
+            }, 1200);
+        }
+
+        function evaluateBaccaratRound(pH, bH) {
+            let pScore = calculateScore(pH);
+            let bScore = calculateScore(bH);
 
             document.getElementById('player-score').innerText = `แต้ม: ${pScore}`;
             document.getElementById('banker-score').innerText = `แต้ม: ${bScore}`;
 
-            let resultWinner = "";
-            if (pScore > bScore) resultWinner = 'player';
-            else if (bScore > pScore) resultWinner = 'banker';
-            else resultWinner = 'tie';
+            let winner = "";
+            if (pScore > bScore) winner = "player";
+            else if (bScore > pScore) winner = "banker";
+            else winner = "tie";
 
+            let msgEl = document.getElementById('game-message');
             let payout = 0;
-            if (bets[resultWinner] > 0) {
-                if (resultWinner === 'player') payout = bets['player'] * 2;
-                else if (resultWinner === 'banker') payout = bets['banker'] * 1.95;
-                else if (resultWinner === 'tie') payout = bets['tie'] * 9;
+
+            if (winner === 'player') {
+                msgEl.innerText = "🎉 ฝั่ง Player ชนะ!";
+                scoreCounts.player++;
+                document.getElementById('count-p').innerText = scoreCounts.player;
+                if (bets.player > 0) payout += bets.player * 2;
+            } else if (winner === 'banker') {
+                msgEl.innerText = "🎉 ฝั่ง Banker ชนะ!";
+                scoreCounts.banker++;
+                document.getElementById('count-b').innerText = scoreCounts.banker;
+                if (bets.banker > 0) payout += bets.banker + (bets.banker * 0.95);
+            } else {
+                msgEl.innerText = "🤝 เสมอ (Tie)!";
+                scoreCounts.tie++;
+                document.getElementById('count-t').innerText = scoreCounts.tie;
+                if (bets.tie > 0) payout += bets.tie * 9;
+                else {
+                    payout += bets.player + bets.banker;
+                }
             }
 
-            setTimeout(() => {
-                credit += payout;
-                saveGameProgress();
-                updateUI();
+            if (payout > 0) {
+                credit += Math.floor(payout);
+                msgEl.innerText += ` คุณได้รับเงินรางวัล ${formatMoney(Math.floor(payout))} เครดิต!`;
+            }
 
-                let msg = "";
-                if (payout > 0) msg = `🎉 คุณชนะเดิมพัน! ได้รับ ${formatMoney(payout)} เครดิต`;
-                else msg = `❌ น่าเสียดาย รอบนี้คุณแพ้`;
-                document.getElementById('game-message').innerText = msg;
+            let beadContainer = document.getElementById('history-beads');
+            let beadClass = winner === 'player' ? 'bead-p' : (winner === 'banker' ? 'bead-b' : 'bead-t');
+            let beadText = winner === 'player' ? 'P' : (winner === 'banker' ? 'B' : 'T');
+            beadContainer.innerHTML += `<div class="bead ${beadClass}">${beadText}</div>`;
+            beadContainer.scrollLeft = beadContainer.scrollWidth;
 
-                bets = { player: 0, tie: 0, banker: 0 };
-                totalBet = 0;
-                ['player', 'tie', 'banker'].forEach(z => document.getElementById(`bet-${z}`).innerText = '0');
-                isPlaying = false;
-                document.getElementById('btn-clear').disabled = false;
-            }, 1000);
+            bets = { player: 0, tie: 0, banker: 0 };
+            totalBet = 0;
+            document.getElementById('bet-player').innerText = "0";
+            document.getElementById('bet-tie').innerText = "0";
+            document.getElementById('bet-banker').innerText = "0";
+
+            isPlaying = false;
+            document.getElementById('btn-clear').disabled = false;
+            updateUI();
+            saveGameProgress();
         }
     </script>
 </body>
